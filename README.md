@@ -1,5 +1,5 @@
-# cs180project-021-team-42
-cs180project-021-team-42 created by GitHub Classroom
+# CS180 Project - Team 42
+## Custom in memory data store with client-server architecture
 
 We are using Django as the general framework for our web application. 
 
