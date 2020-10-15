@@ -23,5 +23,4 @@ urlpatterns = [
     path('response/', include('response.urls')),
     url(r'^$', views.index, name = 'index'),
     url(r'.NFL/', views.click_button, name = 'click_button'),
-    url(r'^response/', include('response.urls')), # so our index view maps to the main website
 ]
