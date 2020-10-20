@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body style="background-color:powderblue;">
+
+<h1>This is the NFL SITE</h1>
+<img src="/static/images/nfl.jpg" width = "300" height="300">	
+<h2>Choose What You Want To View: </h2>
+<!-- One way to press a button and give it what to do onClick -->
+<button style="margin:5px;" type="submit" onclick="location.href='rusherpage/'">Rushers</button>
+
+
+<!-- Another way to create buttons and have them do something on click with extra attrib. -->
+<form action="catcherpage/" method="get">
+    <button style="margin:5px;" name="catching" type="submit" value="Catchers">Catchers</button>
+</form>
+
+<form action="passerpage/" method="get">
+    <button style="margin:5px;" name="passing" type="submit" value="Passers">Passers</button>
+</form>
+
+</body>
+</html>

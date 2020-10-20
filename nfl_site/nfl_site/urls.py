@@ -20,7 +20,7 @@ from response import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('response/', include('response.urls')),
-    url(r'^$', views.index, name = 'index'),
-    url(r'.NFL/', views.click_button, name = 'click_button'),
+    #path('response/', include('response.urls')),
+    #default url goes straight to response
+    path('',include('response.urls'))
 ]
