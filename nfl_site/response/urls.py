@@ -4,7 +4,9 @@ from response import views
 
 app_name = 'response'
 urlpatterns = [
-    path('', views.index, name = 'index'),
-    # Create NFL/ path with image upon button click
-    path('NFL/', views.click_button, name = 'click_button')
+    path('', views.home, name='home'),
+    path('rusherpage/',  views.rusher_page,  name='rusher_page'),
+    path('catcherpage/',views.catcher_page,name='catcher_page'),
+    path('passerpage/',views.passer_page,name='passer_page')
+
 ]
