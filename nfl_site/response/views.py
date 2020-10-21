@@ -88,6 +88,7 @@ def combine_page(request):
     player_last_name = ''
     combine_year = 0
     combine_event = ''
+    combine_pos = ''
 
     if request.method == "POST": # Means someone filled out our form
         form = forms.CombineForm(request.POST)
@@ -97,6 +98,7 @@ def combine_page(request):
             player_last_name = form.cleaned_data.get('player_last_name').title()
             combine_year = form.cleaned_data.get('combine_year')
             combine_event = form.cleaned_data.get('combine_event')
+            combine_pos = form.cleaned_data.get('combine_pos')
             
             # Now we need to filter the combine data based on the values entered
             if player_first_name != "" and player_last_name != "" and str(combine_year) == "None" and combine_event != "":
@@ -147,11 +149,44 @@ def combine_page(request):
                     'Height',
                     'Weight',
                 ]
-            elif player_first_name == "" and player_last_name == "" and str(combine_year) != "None" and combine_event != "":
+            elif player_first_name == "" and player_last_name == "" and str(combine_year) != "None" and combine_event == "" and combine_pos != "":
+                # Display players in the combine for selected combine year and position group
+                combine_filtered = \
+                    combine[
+                        (combine['combineYear'] == combine_year) &
+                        (combine['combinePosition'] == combine_pos)
+                    ][['nameFirst','nameLast','combinePosition','position','college','combineHeightConv','combineWeight']]
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    'Height',
+                    'Weight',
+                ]
+            elif player_first_name == "" and player_last_name == "" and str(combine_year) != "None" and combine_event != "" and combine_pos == "":
                 # Display players in the combine for the selected event for the selected year
                 combine_filtered = \
                     combine[
                         (combine['combineYear'] == combine_year)
+                    ][['nameFirst','nameLast','combinePosition','position','college','combineHeightConv','combineWeight', combine_event]]
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    'Height',
+                    'Weight',
+                    COMBINE_DICT[combine_event]
+                ]
+            elif player_first_name == "" and player_last_name == "" and str(combine_year) != "None" and combine_event != "" and combine_pos != "":
+                # Display players in the combine for the selected event, position group, and year
+                combine_filtered = \
+                    combine[
+                        (combine['combineYear'] == combine_year) &
+                        (combine['combinePosition'] == combine_pos)
                     ][['nameFirst','nameLast','combinePosition','position','college','combineHeightConv','combineWeight', combine_event]]
                 combine_filtered.columns = [
                     'First Name',

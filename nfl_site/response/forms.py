@@ -21,6 +21,35 @@ COMBINE_EVENTS = [
     ('combineWonderlic', 'Wonderlic'),
 ]
 
+# Define combine position groups
+COMBINE_POS = [
+    ('', ''),
+    ('WR', 'Wide Receiver'),     
+    ('CB', 'Cornerback'),      
+    ('RB', 'Running Back'),      
+    ('DE', 'Defensive End'),      
+    ('OLB', 'Outside Linebacker'),     
+    ('OT', 'Offensive Tackle'),      
+    ('DT', 'Defensive Tackle'),      
+    ('TE', 'Tight-End'),      
+    ('OG', 'Offensive Guard'),      
+    ('ILB', 'Inside Linebacker'),     
+    ('FS', 'Free Safety'),      
+    ('SS', 'Strong Safety'),      
+    ('C', 'Center'),       
+    ('FB', 'Fullback'),      
+    ('LB', 'Linebacker'),       
+    ('P', 'Punter'),        
+    ('OL', 'Offensive Line'),       
+    ('K', 'Kicker'),        
+    ('DL', 'Defensive Line'),       
+    ('DB', 'Defensive Back'),       
+    ('S', 'Safety'),        
+    ('EDG', 'Edge'),      
+    ('PK', 'Placekicker'),       
+    ('LS', 'Left Safety'),        
+    ('NT', 'Nosetackle'),  
+]
 # Define years that the combine was held to select from
 COMBINE_YEARS = [tuple([x,x]) for x in range(1987, 2020)]
 COMBINE_YEARS.insert(0, ('', ''))
@@ -31,7 +60,8 @@ class CombineForm(forms.Form):
     player_last_name = forms.CharField(label = 'Enter player last name', required = False)
     combine_year = forms.IntegerField(label = 'Select combine year', required = False, widget = forms.Select(choices=COMBINE_YEARS))
     combine_event = forms.CharField(label = 'Select combine measurement', required = False, widget = forms.Select(choices=COMBINE_EVENTS))
-    
+    combine_pos = forms.CharField(label = 'Select combine position group', required = False, widget = forms.Select(choices=COMBINE_POS))
+
     # This is extra protection code to prevent a bot from entering bogus info on your site
     bot_catcher = forms.CharField(required=False, 
                                   widget=forms.HiddenInput, # Field won't show up on page for user, will be in background HTML
