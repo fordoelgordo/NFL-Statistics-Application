@@ -8,3 +8,6 @@ nfl_site/response/migrations/__pycache__/
 
 nfl_site/combine/__pycache__/
 nfl_site/combine/migrations/
+
+nfl_site/passing/__pycache__/
+nfl_site/passing/migrations/

@@ -38,7 +38,7 @@ def catcher_page(request):
     return render(request,'response/catcher.html')
 
 def passer_page(request):
-    return render(request,'response/passer.html')
+    return render(request,'passing/passing.html')
 
 '''
 Author: FSt.J
