@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'response' # Adding our response app
+    'response', # Adding our response app
+    'combine', # Adding the combine app
 ]
 
 MIDDLEWARE = [

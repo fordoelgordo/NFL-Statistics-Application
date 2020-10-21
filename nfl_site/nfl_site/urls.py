@@ -16,11 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls import url
-from response import views
+from response import views as resp_views
+from combine import views as combine_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     #path('response/', include('response.urls')),
     #default url goes straight to response
-    path('',include('response.urls'))
+    path('',include('response.urls')),
+    # URL path for combine app
+    path('',include('combine.urls'))
 ]
