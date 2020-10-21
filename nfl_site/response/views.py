@@ -45,6 +45,7 @@ Author: FSt.J
 Code Comments: adding relative path variable to point to the directory location of my NFL datasets.
                For me, they're one directory above our project directory in a folder called nfl_data
 '''
+'''
 # NFL Data relative path
 data_path = '../../nfl_data/'
 
@@ -204,4 +205,5 @@ def combine_page(request):
     #context = {'form':form, 'data':data}
     context = {'form': form, 'df_dict':df_dict, 'df_rec':df_rec}
 
-    return render(request, 'response/combine.html', context)
+    return render(request, 'combine/combine.html', context)
+'''

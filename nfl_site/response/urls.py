@@ -9,6 +9,5 @@ urlpatterns = [
     path('catcherpage/',views.catcher_page,name='catcher_page'),
     path('passerpage/',views.passer_page,name='passer_page'),
     # Adding URL for combine page
-    path('combinepage/', views.combine_page,name='combine_page'),
-
+    #path('combinepage/', views.combine_page,name='combine_page'),
 ]
