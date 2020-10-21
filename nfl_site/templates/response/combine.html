@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Combine Statistics Page</title>
+        <!--Add boostrap styling-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+    <body>
+        <h1>NFL Combine Statistics</h1>
+    <button onclick="window.location.href='/'">Back Home!</button>
+    <div class="container">
+        <form method="POST">
+            {{form.as_p}}
+            {% csrf_token %} <!--Enable users to enter info on the form-->
+            <input type="submit" class="btn btn-primary" value="Submit">
+        </form>
+    </div>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Combine Year</th>
+                    <th>Combine Position</th>
+                    <th>College Position</th>
+                    <th>College</th>
+                    <th>Combine Event</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if data %}
+                {% for i in data %}
+                    <tr>
+                        <td>{{i.nameFirst}}</td>
+                        <td>{{i.nameLast}}</td>
+                        <td>{{i.combineYear}}</td>
+                        <td>{{i.combinePosition}}</td>
+                        <td>{{i.position}}</td>
+                        <td>{{i.college}}</td>
+                        <td>{{i.combine_event}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+            </tbody>
+        </table>
+    </div>
+</html>
