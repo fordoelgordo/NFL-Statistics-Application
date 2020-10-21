@@ -48,13 +48,39 @@ Code Comments: adding relative path variable to point to the directory location 
 # NFL Data relative path
 data_path = '../../nfl_data/'
 
-# FSt.J adding button to get to the combine page
+# Function to convert decimal height to cleaner form
+def conv_height(h):
+    ft = int(divmod(h,12)[0])
+    inch = round(int(divmod(h,12)[1]),0)
+    if h == 0 or h == "" or h == " ":
+        return ""
+    else:
+        return str(ft)+"'"+str(inch)+"\""
+
+# Define a dict to map combine event header to clean name
+COMBINE_DICT = {
+    '': '', # Provide the option to not select a combine measurement
+    'combineArm': 'Arm Length',
+    'combine40yd': '40-yard dash',
+    'combineVert': 'Vertical jump',
+    'combineBench': 'Bench Press',
+    'combineShuttle': 'Shuttle drill',
+    'combineBroad': 'Broad Jump',
+    'combine3cone': '3-Cone Drill',
+    'combine60ydShuttle': '60-yard shuttle',
+    'combineWonderlic':'Wonderlic',
+}
+
+# response/combine page rendering
 def combine_page(request):
     form = forms.CombineForm()
-    data = []
+    #data = []
+    df_dict = []
+    df_rec = []
 
     # Read in combine.csv dataset
     combine = pd.read_csv(data_path + 'combine.csv')
+    combine['combineHeightConv'] = combine['combineHeight'].apply(lambda x: conv_height(x))
 
     # Set holding variables
     player_dict = {} # Store the player's ID and associated combine statistic
@@ -71,31 +97,76 @@ def combine_page(request):
             player_last_name = form.cleaned_data.get('player_last_name').title()
             combine_year = form.cleaned_data.get('combine_year')
             combine_event = form.cleaned_data.get('combine_event')
-            print(player_first_name != "")
-            print(player_last_name != "")
-            print(str(combine_year) == "None")
-            print(combine_event == "")
-
+            
             # Now we need to filter the combine data based on the values entered
-            if player_first_name != "" and player_last_name != "" and str(combine_year) != "None" and combine_event != "":
-                # All 4 fields have been entered, filter the data appropriately
+            if player_first_name != "" and player_last_name != "" and str(combine_year) == "None" and combine_event != "":
+                # Display player and combine event for selected event
                 combine_filtered = \
                     combine[
                         (combine['nameFirst'] == player_first_name) &
-                        (combine['nameLast'] == player_last_name) &
-                        (combine['combineYear'] == combine_year)
+                        (combine['nameLast'] == player_last_name) 
                     ][['nameFirst','nameLast','combineYear','combinePosition','position','college',combine_event]]
-                json_records = combine_filtered.reset_index().to_json(orient ='records')  
-                data = json.loads(json_records)
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Combine Year',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    COMBINE_DICT[combine_event]
+                ]
             elif player_first_name != "" and player_last_name != "" and str(combine_year) == "None" and combine_event == "":
+                # Display regular stats for just a selected player
                 combine_filtered = \
                     combine[
                         (combine['nameFirst'] == player_first_name) &
                         (combine['nameLast'] == player_last_name)
-                    ][['nameFirst','nameLast','combineYear','combinePosition','position','college']]
-                json_records = combine_filtered.reset_index().to_json(orient ='records')  
-                data = json.loads(json_records)
-    
-    context = {'form':form, 'data':data}
-    
+                    ][['nameFirst','nameLast','combineYear','combinePosition','position','college','combineHeightConv','combineWeight']]
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Combine Year',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    'Height',
+                    'Weight',
+                ]
+            elif player_first_name == "" and player_last_name == "" and str(combine_year) != "None" and combine_event == "":
+                # Display players in the combine for selected combine year
+                combine_filtered = \
+                    combine[
+                        (combine['combineYear'] == combine_year) 
+                    ][['nameFirst','nameLast','combinePosition','position','college','combineHeightConv','combineWeight']]
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    'Height',
+                    'Weight',
+                ]
+            elif player_first_name == "" and player_last_name == "" and str(combine_year) != "None" and combine_event != "":
+                # Display players in the combine for the selected event for the selected year
+                combine_filtered = \
+                    combine[
+                        (combine['combineYear'] == combine_year)
+                    ][['nameFirst','nameLast','combinePosition','position','college','combineHeightConv','combineWeight', combine_event]]
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    'Height',
+                    'Weight',
+                    COMBINE_DICT[combine_event]
+                ]
+            df_dict = combine_filtered.to_dict()
+            df_rec = combine_filtered.to_dict(orient='records')
+                    
+    #context = {'form':form, 'data':data}
+    context = {'form': form, 'df_dict':df_dict, 'df_rec':df_rec}
+
     return render(request, 'response/combine.html', context)

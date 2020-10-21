@@ -17,33 +17,21 @@
         </form>
     </div>
     <div class="container">
-        <table>
+        <table class="table table-condensed table-bordered">
             <thead>
                 <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Combine Year</th>
-                    <th>Combine Position</th>
-                    <th>College Position</th>
-                    <th>College</th>
-                    <th>Combine Event</th>
+                    {% for key, value in df_dict.items %}
+                        <th width="1%">{{ key }}</th>
+                    {% endfor %}
                 </tr>
             </thead>
-            <tbody>
-                {% if data %}
-                {% for i in data %}
-                    <tr>
-                        <td>{{i.nameFirst}}</td>
-                        <td>{{i.nameLast}}</td>
-                        <td>{{i.combineYear}}</td>
-                        <td>{{i.combinePosition}}</td>
-                        <td>{{i.position}}</td>
-                        <td>{{i.college}}</td>
-                        <td>{{i.combine_event}}</td>
-                    </tr>
+            {% for rec in df_rec %}
+                <tr>
+                    {% for i2, k2 in rec.items %}
+                        <td>{{ k2 }}</td>
                     {% endfor %}
-                    {% endif %}
-            </tbody>
+                </tr>
+            {% endfor %}
         </table>
     </div>
 </html>
