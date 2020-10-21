@@ -2,9 +2,12 @@ nfl_site/db.sqlite3
 nfl_site/nfl_site/__pycache__/
 .DS_Store
 Sprint-1/.DS_Store
-
+.idea/
 nfl_site/response/__pycache__/
 nfl_site/response/migrations/__pycache__/
 
 nfl_site/combine/__pycache__/
 nfl_site/combine/migrations/
+
+nfl_site/receiving/pycache/
+nfl_site/receiving/migrations/
