@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'combine', # Adding the combine app
     'passing', # Adding the passing app
     'rushers' # Adding the rushers app
+    'receiving',
 ]
 
 MIDDLEWARE = [

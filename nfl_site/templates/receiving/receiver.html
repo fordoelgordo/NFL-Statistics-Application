@@ -1,0 +1,25 @@
+<html>
+<body>
+<h1>WE ARE AT THE Receiving SITE!!!!!!</h1>
+<!-- the `/` just points back to the home directory -->
+<button onclick="window.location.href='/'">Back Home!</button>
+
+<form action="" method="Post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="Submit" name="submit" value="Submit"/>
+</form>
+
+
+{% if submit_button == "Submit" %}
+    <h1>Name: {{ first_name }} {{ last_name }}</h1>
+    {% for key, value in player_dict.items %}
+        <!-- <li>ID: {{ key }} Total receiving yards: {{ value }}</li> -->
+        <h4>{{ first_name }} {{ last_name }} ({{ key }}) </h4>
+        <p>Total receiving yards: {{ value }}</p>
+    {% endfor %}
+{% endif %}
+
+
+</body>
+</html>
