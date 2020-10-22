@@ -9,7 +9,8 @@ def rusher_page(request):
     submitbutton = request.POST.get("submit")
     # store players id and rushing yards
     player_dict = {}  
-    player_name = ''
+    first_name = ''
+    last_name = ''
     player_team = []
 
     #check if form has been clicked or not
@@ -17,8 +18,9 @@ def rusher_page(request):
 
     if form.is_valid():
         player_dict.clear()  # clear info from previous search
-        player_name = form.cleaned_data.get("player_name")  # get player name from form
-        split_name = player_name.split()  # split input to get firstname and lastname
+        first_name = form.cleaned_data.get("first_name")  # get player first name from form
+        last_name = form.cleaned_data.get("last_name") # get player last name from form
+        #split_name = player_name.split()  # split input to get firstname and lastname
 
         # load players csv from dataset
         df_players = readPlayers()
@@ -30,7 +32,7 @@ def rusher_page(request):
         df_teams = readTeams()
 
         # filter out players based on the name entered
-        name_filter = readPlayerName(df_players,split_name)
+        name_filter = readPlayerName(df_players,first_name,last_name)
         
         if len(name_filter) == 0:
             # if player does not exist set tuple to false and empty string
@@ -42,7 +44,8 @@ def rusher_page(request):
 
         if not temp_tup[0]:
             # if first value in the tuple is false the name entered does nott exist in data set
-            player_name = 'Does not exist in data set'
+            first_name = 'Does not exist'
+            last_name = ' in data set!'
             player_dict = []
         else:
 
@@ -70,7 +73,7 @@ def rusher_page(request):
                     # print(player_dict)
 
 
-    context = {'form': form, 'player_name': player_name, 'player_dict': player_dict, 'submit_button': submitbutton, 'player_team': player_team}
+    context = {'form': form, 'first_name': first_name, 'last_name':last_name, 'player_dict': player_dict, 'submit_button': submitbutton, 'player_team': player_team}
 
     return render(request, 'rushers/rusher.html', context)
 
@@ -82,8 +85,8 @@ def readRushers():
     return pd.read_csv("/Users/eduardorocha/workspace/IntroToSWE/rusher.csv")
 
 
-def readPlayerName(df_players,split_name):
-    return df_players.loc[(df_players['nameFirst'] == split_name[0]) & (df_players['nameLast'] == split_name[1])]
+def readPlayerName(df_players,first_name,last_name):
+    return df_players.loc[(df_players['nameFirst'] == first_name) & (df_players['nameLast'] == last_name)]
 
 def readTeams():
     df = pd.read_csv("/Users/eduardorocha/workspace/IntroToSWE/draft.csv")
