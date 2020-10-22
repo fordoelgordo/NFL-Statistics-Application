@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'response', # Adding our response app
     'combine', # Adding the combine app
+    'receiving',
 ]
 
 MIDDLEWARE = [

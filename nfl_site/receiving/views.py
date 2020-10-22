@@ -4,7 +4,7 @@ import pandas as pd
 from .forms import ReceiveForm
 
 
-def recieving_page(request):
+def receiving_page(request):
     submitbutton = request.POST.get("submit")
 
     player_dict = {}  # store players id and receiving yards

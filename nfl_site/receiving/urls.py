@@ -4,5 +4,5 @@ from receiving import views
 
 app_name = 'receiving'
 urlpatterns = [
-    path('', views.recieving_page, name='recieving_page'),
+    path('receivingpage/', views.receiving_page, name='receiving_page'),
 ]
