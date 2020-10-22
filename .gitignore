@@ -12,3 +12,4 @@ nfl_site/combine/migrations/__pycache__/
 
 nfl_site/receiving/__pycache__/
 nfl_site/receiving/migrations/__pycache__/
+nfl_site/db.sqlite3
