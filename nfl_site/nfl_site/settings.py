@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'response', # Adding our response app
     'combine', # Adding the combine app
     'passing', # Adding the passing app
+    'rushers' # Adding the rushers app
 ]
 
 MIDDLEWARE = [
