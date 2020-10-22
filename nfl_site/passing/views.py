@@ -3,7 +3,7 @@ from passing import forms
 
 import pandas as pd
 
-_DATA_PATH = '/Users/kdean/Documents/Dev/cs180/cs180project-021-team-42/archive/'
+_DATA_PATH = '../archive/'
 
 # Create your views here.
 def pass_page(request):
