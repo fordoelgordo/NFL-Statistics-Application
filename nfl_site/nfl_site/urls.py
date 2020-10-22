@@ -26,6 +26,6 @@ urlpatterns = [
     path('',include('response.urls')),
     # URL path for combine app
     path('',include('combine.urls')),
-    path('',include('passing.urls'))
+    path('',include('passing.urls')),
     path('',include('rushers.urls'))
 ]
