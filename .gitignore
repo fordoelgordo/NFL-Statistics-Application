@@ -7,7 +7,7 @@ nfl_site/response/__pycache__/
 nfl_site/response/migrations/__pycache__/
 
 nfl_site/combine/__pycache__/
-nfl_site/combine/migrations/
+nfl_site/combine/migrations/__pycache__/
 
-nfl_site/receiving/pycache/
-nfl_site/receiving/migrations/
+nfl_site/receiving/__pycache__/
+nfl_site/receiving/migrations/__pycache__/
