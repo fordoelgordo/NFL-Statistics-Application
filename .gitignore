@@ -10,3 +10,5 @@ nfl_site/combine/migrations/__pycache__/
 
 nfl_site/rushers/__pycache__/
 nfl_site/rushers/migrations/__pycache__/
+nfl_site/passing/__pycache__/
+nfl_site/passing/migrations/__pycache__/
