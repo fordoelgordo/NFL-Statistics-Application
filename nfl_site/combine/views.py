@@ -64,8 +64,8 @@ def combine_page(request):
             combine_pos = form.cleaned_data.get('combine_pos')
             
             # Now we need to filter the combine data based on the values entered
+            # FILTER 1: first name, last name, event are populated
             if player_first_name != "" and player_last_name != "" and str(combine_year) == "None" and combine_event != "":
-                # FILTER 1: first name, last name, year, event are all populated
                 combine_filtered = \
                     combine[
                         (combine['nameFirst'] == player_first_name) &
@@ -80,8 +80,8 @@ def combine_page(request):
                     'College',
                     COMBINE_DICT[combine_event]
                 ]
+            # FILTER 2: first name, last name populated only    
             elif player_first_name != "" and player_last_name != "" and str(combine_year) == "None" and combine_event == "":
-                # FILTER 2: first name, last name populated only
                 combine_filtered = \
                     combine[
                         (combine['nameFirst'] == player_first_name) &
@@ -97,8 +97,8 @@ def combine_page(request):
                     'Height',
                     'Weight',
                 ]
+            # FILTER 3: combine year populated ONLY
             elif player_first_name == "" and player_last_name == "" and str(combine_year) != "None" and combine_event == "":
-                # FILTER 3: combine year populated ONLY
                 combine_filtered = \
                     combine[
                         (combine['combineYear'] == combine_year) 
@@ -112,8 +112,8 @@ def combine_page(request):
                     'Height',
                     'Weight',
                 ]
+            # FILTER 4: combine year and combine position populated    
             elif player_first_name == "" and player_last_name == "" and str(combine_year) != "None" and combine_event == "" and combine_pos != "":
-                # FILTER 4: combine year and combine position populated
                 combine_filtered = \
                     combine[
                         (combine['combineYear'] == combine_year) &
@@ -128,8 +128,8 @@ def combine_page(request):
                     'Height',
                     'Weight',
                 ]
+            # FILTER 5: combine year, combine event populated
             elif player_first_name == "" and player_last_name == "" and str(combine_year) != "None" and combine_event != "" and combine_pos == "":
-                # FILTER 5: combine year, combine event populated
                 combine_filtered = \
                     combine[
                         (combine['combineYear'] == combine_year)
@@ -144,8 +144,8 @@ def combine_page(request):
                     'Weight',
                     COMBINE_DICT[combine_event]
                 ]
+            # FILTER 6: combine year, combine event, combine position populated
             elif player_first_name == "" and player_last_name == "" and str(combine_year) != "None" and combine_event != "" and combine_pos != "":
-                # FILTER 6: combine year, combine event, combine position populated
                 combine_filtered = \
                     combine[
                         (combine['combineYear'] == combine_year) &
@@ -161,8 +161,8 @@ def combine_page(request):
                     'Weight',
                     COMBINE_DICT[combine_event]
                 ]
+            # FILTER 7: combine position populated ONLY
             elif player_first_name == "" and player_last_name == "" and str(combine_year) == "None" and combine_event == "" and combine_pos != "":
-                # FILTER 7: combine position populated ONLY
                 combine_filtered = \
                     combine[
                         (combine['combinePosition'] == combine_pos)
@@ -177,7 +177,142 @@ def combine_page(request):
                     'Height',
                     'Weight',
                 ]
-            
+            # FILTER 8: first name ONLY, combine year, position
+            elif player_first_name != "" and player_last_name == "" and str(combine_year) != "None" and combine_pos != "":
+                combine_filtered = \
+                    combine[
+                        (combine['nameFirst'] == player_first_name) &
+                        (combine['combineYear'] == combine_year) &
+                        (combine['combinePosition'] == combine_pos)
+                    ][['nameFirst','nameLast','combineYear','combinePosition','position','college','combineHeightConv','combineWeight']]
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Year',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    'Height',
+                    'Weight',
+                ]
+            # FILTER 9: last name ONLY, combine year, position
+            elif player_first_name != "" and player_last_name == "" and str(combine_year) != "None" and combine_pos != "":
+                combine_filtered = \
+                    combine[
+                        (combine['nameLast'] == player_last_name) &
+                        (combine['combineYear'] == combine_year) &
+                        (combine['combinePosition'] == combine_pos)
+                    ][['nameFirst','nameLast','combineYear','combinePosition','position','college','combineHeightConv','combineWeight']]
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Year',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    'Height',
+                    'Weight',
+                ]
+            # FILTER 10: first name ONLY, combine year
+            elif player_first_name != "" and player_last_name == "" and str(combine_year) != "None" and combine_pos == "":
+                combine_filtered = \
+                    combine[
+                        (combine['nameFirst'] == player_first_name) &
+                        (combine['combineYear'] == combine_year) 
+                    ][['nameFirst','nameLast','combineYear','combinePosition','position','college','combineHeightConv','combineWeight']]
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Year',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    'Height',
+                    'Weight',
+                ]
+            # FILTER 11: last name ONLY, combine year
+            elif player_first_name == "" and player_last_name != "" and str(combine_year) != "None" and combine_pos == "":
+                combine_filtered = \
+                    combine[
+                        (combine['nameLast'] == player_last_name) &
+                        (combine['combineYear'] == combine_year) 
+                    ][['nameFirst','nameLast','combineYear','combinePosition','position','college','combineHeightConv','combineWeight']]
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Year',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    'Height',
+                    'Weight',
+                ]
+            # FILTER 12: first name ONLY, position group
+            elif player_first_name != "" and player_last_name == "" and str(combine_year) == "None" and combine_pos != "":
+                combine_filtered = \
+                    combine[
+                        (combine['nameFirst'] == player_first_name) &
+                        (combine['combinePosition'] == combine_pos) 
+                    ][['nameFirst','nameLast','combineYear','combinePosition','position','college','combineHeightConv','combineWeight']]
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Year',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    'Height',
+                    'Weight',
+                ]
+            # FILTER 13: last name ONLY, position group
+            elif player_first_name == "" and player_last_name != "" and str(combine_year) == "None" and combine_pos != "":
+                combine_filtered = \
+                    combine[
+                        (combine['nameLast'] == player_first_name) &
+                        (combine['combinePosition'] == combine_pos) 
+                    ][['nameFirst','nameLast','combineYear','combinePosition','position','college','combineHeightConv','combineWeight']]
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Year',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    'Height',
+                    'Weight',
+                ]
+            # FILTER 14: first name ONLY
+            elif player_first_name != "" and player_last_name == "":
+                combine_filtered = \
+                    combine[
+                        (combine['nameFirst'] == player_first_name)
+                    ][['nameFirst','nameLast','combineYear','combinePosition','position','college','combineHeightConv','combineWeight']]
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Year',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    'Height',
+                    'Weight',
+                ]
+            # FILTER 15: last name ONLY
+            elif player_first_name == "" and player_last_name != "":
+                combine_filtered = \
+                    combine[
+                        (combine['nameLast'] == player_first_name)
+                    ][['nameFirst','nameLast','combineYear','combinePosition','position','college','combineHeightConv','combineWeight']]
+                combine_filtered.columns = [
+                    'First Name',
+                    'Last Name',
+                    'Year',
+                    'Combine Position',
+                    'College Position',
+                    'College',
+                    'Height',
+                    'Weight',
+                ]
             df_dict = combine_filtered.to_dict()
             df_rec = combine_filtered.to_dict(orient='records')
         

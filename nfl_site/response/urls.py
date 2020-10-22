@@ -5,7 +5,7 @@ from response import views
 app_name = 'response'
 urlpatterns = [
     path('', views.home, name='home'),
-    path('rusherpage/',  views.rusher_page,  name='rusher_page'),
+    #path('rusherpage/',  views.rusher_page,  name='rusher_page'),
     path('catcherpage/',views.catcher_page,name='catcher_page'),
     path('passerpage/',views.passer_page,name='passer_page'),
     # Adding URL for combine page

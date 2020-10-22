@@ -1,0 +1,27 @@
+<html>
+<body style="background-color:darksalmon;">
+<h1>WELCOME TO THE RUSHERS SITE!</h1>
+<button onclick="window.location.href='/'">Back Home!</button>
+
+
+<form action="" method="Post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="Submit" name="submit" value="Submit"/>
+</form>
+
+
+{% if submit_button == "Submit" %}
+    <h1>Name: {{ player_name }}</h1>
+    {% for key, value in player_dict.items %}
+        <!-- <li>ID: {{ key }} Total rushing yards: {{ value }}</li> -->
+        <h4>Name: {{ player_name }} ID: {{ key }} Team(s):{{' '}}  
+        {% for element in player_team %}
+            {{element}} 
+        {% endfor %}
+        </h4>
+        <p>Total rushing yards: {{ value }}</p>
+    {% endfor %}
+{% endif %}
+</body>
+</html>
