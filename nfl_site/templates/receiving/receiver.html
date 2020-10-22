@@ -12,10 +12,10 @@
 
 
 {% if submit_button == "Submit" %}
-    <h1>Name: {{ player_name }}</h1>
+    <h1>Name: {{ first_name }} {{ last_name }}</h1>
     {% for key, value in player_dict.items %}
         <!-- <li>ID: {{ key }} Total receiving yards: {{ value }}</li> -->
-        <h4>{{ player_name }} ({{ key }}) </h4>
+        <h4>{{ first_name }} {{ last_name }} ({{ key }}) </h4>
         <p>Total receiving yards: {{ value }}</p>
     {% endfor %}
 {% endif %}
