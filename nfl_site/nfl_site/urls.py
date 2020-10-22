@@ -25,5 +25,6 @@ urlpatterns = [
     #default url goes straight to response
     path('',include('response.urls')),
     # URL path for combine app
-    path('',include('combine.urls'))
+    path('',include('combine.urls')),
+    path('',include('rushers.urls'))
 ]

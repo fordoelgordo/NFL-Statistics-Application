@@ -31,8 +31,8 @@ def click_button(request):
 def home(request):
     return render(request,'response/home.html')
 
-def rusher_page(request):
-    return render(request,'response/rusher.html')
+# def rusher_page(request):
+#     return render(request,'rushers/rusher.html')
 
 def catcher_page(request):
     return render(request,'response/catcher.html')
