@@ -22,7 +22,7 @@ def receiving_page(request):
         # if dictionary is empty player does not exist in data frame
         # prepare display message indicating so
         if not player_dict:
-            first_name = "Does Not"
+            first_name = "Does Not Exist"
             last_name = "in data set!!!"
 
     context = {'form': form, 'first_name': first_name, 'last_name': last_name,
