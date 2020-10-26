@@ -9,7 +9,7 @@ Code Comments: adding relative path variable to point to the directory location 
                For me, they're one directory above our project directory in a folder called nfl_data
 '''
 # NFL Data relative path
-data_path = '../../nfl_data/'
+data_path = 'static/archive/'
 
 # Function to convert decimal height to cleaner form
 def conv_height(h):
