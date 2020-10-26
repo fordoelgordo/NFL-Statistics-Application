@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 
 from .nfldata import get_player_dict
-from .forms import ReceiveForm
+from .forms import ReceiveForm, TopReceiveForm
 
 
 def receiving_page(request):
@@ -32,5 +32,15 @@ def receiving_page(request):
 
 
 def top_receiving_page(request):
+    submit_button = request.POST.get("submit")
 
-    return render(request, 'receiving/topreceiving.html', {})
+    form = TopReceiveForm(request.POST or None)
+
+    if form.is_valid():
+        player_num = form.cleaned_data.get('player_num')
+
+        print('---------------' + str(player_num) + '---------------')
+
+    context = {'form': form}
+
+    return render(request, 'receiving/topreceiving.html', context)

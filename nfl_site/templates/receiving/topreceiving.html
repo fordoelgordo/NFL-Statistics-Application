@@ -17,7 +17,17 @@
     <button onclick="window.location.href='/'">Back Home!</button>
     <button onclick="window.location.href='/receivingpage/'">Receiving Statistics</button>
 
-    
+    <div class="container text-center">
+        <div class="container">
+            <h3>Enter Player Information</h3>
+        </div>
+        <form action="" method="Post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="Submit" class="btn btn-primary" name="submit" value="Submit"/>
+        </form>
+    </div>
+
 
 </body>
 </html>
