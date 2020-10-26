@@ -36,12 +36,16 @@ def top_receiving_page(request):
 
     form = TopReceiveForm(request.POST or None)
 
+    top_player_dict = {}
+    column_names = ['Player ID', 'Full Name', 'Total Receiving Yards']
+
     if form.is_valid():
         player_num = form.cleaned_data.get('player_num')
 
-        print('---------------' + str(player_num) + '---------------')
-        top_n_players(player_num)
+        # get dictionary containing top players
+        top_player_dict = top_n_players(player_num)
 
-    context = {'form': form}
+    context = {'form': form, 'column_names': column_names,
+               'top_player_dict': top_player_dict, 'submit_button': submit_button}
 
     return render(request, 'receiving/topreceiving.html', context)

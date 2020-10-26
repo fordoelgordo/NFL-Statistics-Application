@@ -64,7 +64,9 @@ def top_n_players(num):
     result = name_filter[['playerId', 'nameFull', 'recYards']] \
         .groupby(by=['playerId', 'nameFull']).sum().sort_values(by=['recYards'], ascending=False).head(num)
 
+    '''
     result_dict = result.to_dict()['recYards']
-
     for key, val in result_dict.items():
         print(str(key[0]) + ' ' + key[1] + ' : ' + str(val))
+    '''
+    return result.to_dict()['recYards']
