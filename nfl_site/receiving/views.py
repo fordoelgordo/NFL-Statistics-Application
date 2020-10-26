@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 
-from .nfldata import get_player_dict
+from .nfldata import get_player_dict, top_n_players
 from .forms import ReceiveForm, TopReceiveForm
 
 
@@ -40,6 +40,7 @@ def top_receiving_page(request):
         player_num = form.cleaned_data.get('player_num')
 
         print('---------------' + str(player_num) + '---------------')
+        top_n_players(player_num)
 
     context = {'form': form}
 

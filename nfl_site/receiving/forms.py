@@ -7,4 +7,4 @@ class ReceiveForm(forms.Form):
 
 
 class TopReceiveForm(forms.Form):
-    player_num = forms.IntegerField(label='Number of players')
+    player_num = forms.IntegerField(label='Number of players', max_value=100, min_value=1)
