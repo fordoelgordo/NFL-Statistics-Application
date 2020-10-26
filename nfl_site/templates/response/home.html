@@ -1,27 +1,59 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="utf-8">
+    <title>Team 42 NFL Site</title>
+        <!--Add boostrap styling-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<style>       
+    hr{
+        height: 1px;
+        background-color: rgb(255, 0, 0);
+        border: none;
+    }
+</style>
 <body style="background-color:powderblue;">
 
 <h1>This is the NFL SITE</h1>
 <img src="/static/images/nfl.jpg" width = "300" height="300">	
 <h2>Choose What You Want To View: </h2>
-<!-- One way to press a button and give it what to do onClick -->
-<form action="rusherspage/" method="get">
-    <button style="margin:5px;" name="rushers" type="submit" value="Rushers">Rushers</button>
-</form>
+<hr>
 
-<!-- Another way to create buttons and have them do something on click with extra attrib. -->
-<form action="receivingpage/" method="get">
-    <button style="margin:5px;" name="receiving" type="submit" value="receiving">Receiving</button>
-</form>
+{% if data_exists %}
+    <div>
+        <!-- One way to press a button and give it what to do onClick -->
+        <form action="rusherspage/" method="get">
+            <button style="margin:5px;" name="rushers" type="submit" value="Rushers">Rushers</button>
+        </form>
 
-<form action="passerpage/" method="get">
-    <button style="margin:5px;" name="passing" type="submit" value="Passers">Passers</button>
-</form>
-<!--Note that the home.html utilizes the combinepage/ URL i've defined in my combine app-->
-<form action="combinepage/" method="get">
-    <button style="margin:5px;" name="combine" type="submit" value="Combine">Combine</button>
-</form>
+        <!-- Another way to create buttons and have them do something on click with extra attrib. -->
+        <form action="receivingpage/" method="get">
+            <button style="margin:5px;" name="receiving" type="submit" value="receiving">Receiving</button>
+        </form>
+
+        <form action="passerpage/" method="get">
+            <button style="margin:5px;" name="passing" type="submit" value="Passers">Passers</button>
+        </form>
+        <!--Note that the home.html utilizes the combinepage/ URL i've defined in my combine app-->
+        <form action="combinepage/" method="get">
+            <button style="margin:5px;" name="combine" type="submit" value="Combine">Combine</button>
+        </form>
+    </div>
+{% else %}
+    {% if start_download %}
+        <div id='downloading'>
+            <h2>Downloading Data...May Take a Few Minutes...</h2>
+        </div>
+    {% else %}
+        <div id='btn'>
+            <label style="color:rgb(255, 0, 0)" for="dwn">Data Does Not Exist</label>
+            <form style="color:rgb(0, 0, 0)" action="#" method="get">
+                <input type="submit" class="btn btn-primary" name="Download" value="Download" id='dwn'>
+            </form>
+        </div>
+    {% endif %}
+{% endif %}
 
 </body>
 </html>
