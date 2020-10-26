@@ -14,7 +14,6 @@ from itertools import islice
 
 from response import forms # Import forms module from response app
 
-download=False  
 
 # Create your views here.
 # Commenting this code out, these were for v1.1 of our site
@@ -34,20 +33,15 @@ def click_button(request):
 # browser for a web application or In the UI for a desktop application.
 
 def home(request):
-    global download
+
     if not pathlib.Path('static/archive/').exists():
         data_exists = False
-
-        if download:
-            '''gdd.download_file_from_google_drive(file_id='13kkIW87tneP6wLQuEMd1PTPYJ4h7orq3',
-                                        dest_path='static/data.zip',
-                                        unzip=True)'''
-            data_exists = True
-            #return render(request,'response/home.html', {'data_exists': data_exists})
-
         if request.GET.get('Download') == 'Download':
-            download=True
-            return render(request,'response/home.html', {'data_exists': data_exists, 'start_download': download})
+            gdd.download_file_from_google_drive(file_id='13kkIW87tneP6wLQuEMd1PTPYJ4h7orq3',
+                                        dest_path='static/data.zip',
+                                        unzip=True)
+            data_exists = True
+            return render(request,'response/home.html', {'data_exists': data_exists})
 
     else:
         data_exists = True

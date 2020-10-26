@@ -41,18 +41,12 @@
         </form>
     </div>
 {% else %}
-    {% if start_download %}
-        <div id='downloading'>
-            <h2>Downloading Data...May Take a Few Minutes...</h2>
-        </div>
-    {% else %}
-        <div id='btn'>
-            <label style="color:rgb(255, 0, 0)" for="dwn">Data Does Not Exist</label>
-            <form style="color:rgb(0, 0, 0)" action="#" method="get">
-                <input type="submit" class="btn btn-primary" name="Download" value="Download" id='dwn'>
-            </form>
-        </div>
-    {% endif %}
+    <div id='btn'>
+        <label style="color:rgb(255, 0, 0)" for="dwn">Data Does Not Exist</label>
+        <form style="color:rgb(0, 0, 0)" method="get">
+            <input type="submit" class="btn btn-primary" name="Download" value="Download" id='dwn'>
+        </form>
+    </div>
 {% endif %}
 
 </body>
