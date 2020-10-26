@@ -7,6 +7,8 @@ from django.views import generic
 import csv
 import pandas as pd
 import json # use to convert pandas dataframe into json object which we can use in html
+import pathlib
+from google_drive_downloader import GoogleDriveDownloader as gdd
 from itertools import islice
 
 from response import forms # Import forms module from response app
@@ -29,6 +31,11 @@ def click_button(request):
 # browser for a web application or In the UI for a desktop application.
 
 def home(request):
+    if not pathlib.Path('../static/archive/').exists():
+        gdd.download_file_from_google_drive(file_id='13kkIW87tneP6wLQuEMd1PTPYJ4h7orq3',
+                                    dest_path='./static/data.zip',
+                                    unzip=True)
+
     return render(request,'response/home.html')
 
 # def rusher_page(request):
