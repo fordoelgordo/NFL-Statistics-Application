@@ -29,3 +29,8 @@ def receiving_page(request):
                'player_dict': player_dict, 'submit_button': submitbutton}
 
     return render(request, 'receiving/receiver.html', context)
+
+
+def top_receiving_page(request):
+
+    return render(request, 'receiving/topreceiving.html', {})
