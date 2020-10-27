@@ -17,13 +17,18 @@
       <br>
       <hr>
       <br>
+
+
       {% if submit_button == "Submit" %}
       <!-- Write your comments here 
          <img alt="Tom Brady" class="img-responsive" src="https://static.www.nfl.com/image/private/t_player_profile_landscape/f_auto/league/sfehmfwtg9i5gdcpqzgf">
          -->
          {% if exists == 0 %}
-         <h2>Error: {{first_name}} {{last_name}}</h2>
-         {%endif%} 
+            <h2>Error: {{first_name}} {{last_name}}</h2>
+         {% else %}
+            <img src= "{{player_img}}" alt="image">
+         {% endif %} 
+          
 
       <table class="table table-condensed table-bordered">
          <tr>

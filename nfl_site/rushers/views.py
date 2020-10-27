@@ -20,6 +20,7 @@ def rusher_page(request):
     player_team = []
     outputDataFrame = pd.DataFrame()
     exists = None
+    player_img = ''
 
     # load players csv from dataset
     df_players = readPlayers()
@@ -37,7 +38,6 @@ def rusher_page(request):
         player_dict.clear()  # clear info from previous search
         first_name = form.cleaned_data.get("first_name")  # get player first name from form
         last_name = form.cleaned_data.get("last_name") # get player last name from form
-        getImageLinks(first_name,last_name)
         # filter out players based on the name entered
         outputDataFrame = get_player_dict(df_players,first_name,last_name,df_rusher)
 
@@ -47,10 +47,12 @@ def rusher_page(request):
             first_name = "Player Does Not Exist"
             last_name = "In Data Set!"
             exists = 0
+        else:
+            player_img =  getImageLinks(first_name,last_name)
 
     context = {'form': form, 'first_name': first_name, 'last_name':last_name, 'player_dict': player_dict, 
     'submit_button': submitbutton, 'player_team': player_team, 'columns' : outputDataFrame.columns, 'output':outputDataFrame,
-    'exists':exists}
+    'exists':exists, 'player_img':player_img}
     return render(request, 'rushers/rusher.html', context)
 
 
@@ -121,9 +123,20 @@ def get_player_dict(df_players, first_name, last_name, df_rusher):
 
 def getImageLinks(first_name,last_name):
     site ='https://www.nfl.com/players/'+str(first_name)+'-'+str(last_name)+'/'
+    substr = 'https://static.www.nfl.com/image/private/t_player_profile_landscape/'
     print(site)
     html = urlopen(site)
     bs = BeautifulSoup(html, 'html.parser')
-    images = bs.find_all('img', {'src':re.compile('.jpg')})
-    for image in images: 
+    full_name = str(first_name)+' '+str(last_name)
+    images = bs.find_all('img', {"alt": full_name })
+    pathToImage = ''
+    for image in images:
         print(image['src']+'\n')
+        url = image['src']
+        if substr in url:
+            pathToImage = url.replace('t_lazy/','')
+            print(pathToImage)
+    return pathToImage
+
+
+
