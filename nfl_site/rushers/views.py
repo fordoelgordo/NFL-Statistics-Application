@@ -124,14 +124,12 @@ def get_player_dict(df_players, first_name, last_name, df_rusher):
 def getImageLinks(first_name,last_name):
     site ='https://www.nfl.com/players/'+str(first_name)+'-'+str(last_name)+'/'
     substr = 'https://static.www.nfl.com/image/private/t_player_profile_landscape/'
-    print(site)
     html = urlopen(site)
     bs = BeautifulSoup(html, 'html.parser')
     full_name = str(first_name)+' '+str(last_name)
     images = bs.find_all('img', {"alt": full_name })
     pathToImage = ''
     for image in images:
-        print(image['src']+'\n')
         url = image['src']
         if substr in url:
             pathToImage = url.replace('t_lazy/','')

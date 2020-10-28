@@ -14,19 +14,25 @@
          <input type="Submit" name="submit" value="Submit"/>
       </form>
 
-      <br>
       <hr>
       <br>
 
+      
+      <style>
+         img {
+           display: block;
+           margin-left: auto;
+           margin-right: auto;
+           border: 5px solid #874444;
+         }
+      </style>
 
       {% if submit_button == "Submit" %}
-      <!-- Write your comments here 
-         <img alt="Tom Brady" class="img-responsive" src="https://static.www.nfl.com/image/private/t_player_profile_landscape/f_auto/league/sfehmfwtg9i5gdcpqzgf">
-         -->
+
          {% if exists == 0 %}
             <h2>Error: {{first_name}} {{last_name}}</h2>
          {% else %}
-            <img src= "{{player_img}}" alt="image">
+            <img src= "{{player_img}}" alt="image" >
          {% endif %} 
           
 
