@@ -14,3 +14,6 @@ nfl_site/passing/__pycache__/
 nfl_site/passing/migrations/__pycache__/
 nfl_site/receiving/__pycache__/
 nfl_site/receiving/migrations/__pycache__/
+
+nfl_site/static/__MACOSX/
+nfl_site/static/data.zip

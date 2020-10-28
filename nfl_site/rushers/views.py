@@ -79,17 +79,17 @@ def rusher_page(request):
 
 
 def readPlayers():
-    return pd.read_csv("/Users/eduardorocha/workspace/IntroToSWE/players.csv")
+    return pd.read_csv("static/archive/players.csv")
 
 def readRushers():
-    return pd.read_csv("/Users/eduardorocha/workspace/IntroToSWE/rusher.csv")
+    return pd.read_csv("static/archive/rusher.csv")
 
 
 def readPlayerName(df_players,first_name,last_name):
     return df_players.loc[(df_players['nameFirst'] == first_name) & (df_players['nameLast'] == last_name)]
 
 def readTeams():
-    df = pd.read_csv("/Users/eduardorocha/workspace/IntroToSWE/draft.csv")
+    df = pd.read_csv("static/archive/draft.csv")
     team_df = df[['teamId','draftTeam']].drop_duplicates()
     return team_df
 

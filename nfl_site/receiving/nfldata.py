@@ -1,9 +1,11 @@
 import pandas as pd
+import pathlib
 
-# load player csv from dataset
-df_players = pd.read_csv("static/archive/players.csv")
-# load receiver csv from dataset
-df_receiver = pd.read_csv("static/archive/receiver.csv")
+if pathlib.Path('static/archive/').exists():
+    # load player csv from dataset
+    df_players = pd.read_csv("static/archive/players.csv")
+    # load receiver csv from dataset
+    df_receiver = pd.read_csv("static/archive/receiver.csv")
 
 
 def get_player_id(firstname, lastname):
