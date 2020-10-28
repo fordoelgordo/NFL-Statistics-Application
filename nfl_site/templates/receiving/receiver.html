@@ -28,12 +28,29 @@
     </div>
 
     {% if submit_button == "Submit" %}
-        <h3>Name: {{ first_name }} {{ last_name }}</h3>
-        {% for key, value in player_dict.items %}
-            <!-- <li>ID: {{ key }} Total receiving yards: {{ value }}</li> -->
-            <h4>{{ first_name }} {{ last_name }} ({{ key }}) </h4>
-            <p>Total receiving yards: {{ value }}</p>
-        {% endfor %}
+        <div class="container" style="padding-top: 25px">
+            <!-- only shows if player not in data set -->
+            <h3>{{ error_msg }}</h3>
+
+            <table class="table table-condensed table-bordered">
+                <thead>
+                    <tr>
+                        {% for item in column_names %}
+                            <th>{{ item }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in player_dict.items %}
+                        <tr>
+                            <td>{{ key }}</td>
+                            <td>{{ full_name }}</td>
+                            <td> {{ value }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% endif %}
 
 </body>
