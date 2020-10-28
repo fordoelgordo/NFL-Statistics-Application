@@ -1,12 +1,13 @@
-/* Define styling for player_management.html*
+/* Define styling for player_management.html */
 
 /* Style the playerNames div */
 #playerNames {
     margin-left: 15px;
     margin-bottom: 15px;
+    color: red !important;
 }
 #playerNames form h4 {
-    color: red;
+    color: red !important; 
 }
 
 /* Format the player display table */
@@ -16,6 +17,12 @@
 #displayTable table {
     margin-left: 15px;
     width: 70%;
+    margin-bottom: 15px;
+}
+
+/* Format the edit buttons */
+#actionButtons {
+    margin-top: 15px;
 }
 
 /* Style for playerAttributes div */
@@ -23,7 +30,7 @@
     margin-top: 25px;
     margin-left: 15px;
 }
-#playerAttributes h4 {
+#playerAttributes h5 {
     color: red;
     font: bold;
 }
