@@ -6,6 +6,7 @@
         <title>Player Management Site</title>
          <!-- Bootstrap 4 -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <link rel="stylesheet" href="{% static "player_management/player_management.css" %}">
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
@@ -19,27 +20,27 @@
         <!-- Tempus Dominus Bootstrap 4 -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css" integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs=" crossorigin="anonymous" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js" integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script> <!-- Add custom css styling sheet-->
-            <link rel="stylesheet" href="{% static "player_management/player_management.css" %}">
+            
     </head>
     <body>
         <!-- Webpage header-->
         <div id="header">
             <div class = "jumbotron">
                 <h1>Edit the player database here</h1>
-                <input type="submit" class = "btn btn-primary" onclick="window.location.href='/'" value="Back Home!">
+                <input type="submit" class = "btn btn-primary btn-sm" onclick="window.location.href='/'" value="Back Home!">
                 <!-- <button onclick="window.location.href='/'">Back Home!</button> -->
             </div>
         </div>
         <!-- div for player names-->
         <div id="playerNames">
             <form method="POST">
-                <h4><b>Begin by searching for a player</b></h4> 
+                <h5>Begin by searching for a player</h5> 
                 <label>Player first name:</label>
                 {{ form.player_first_name }}
                 <label>Player last name:</label>
                 {{ form.player_last_name }}
                 {% csrf_token %} <!--Enable users to enter info on the form-->
-                <input type="submit" class="btn btn-primary" value="Submit">
+                <input type="submit" class="btn btn-primary btn-sm" value="Submit">
             </form>
         </div>
         <div id="displayTable">
@@ -64,9 +65,21 @@
             <p id="existstag"><i>Player does not exist!</i></p>
             {% endif %}
         </div>
+        <!-- div for action buttons -->
+        <div id="actionButtons">
+            {% if exists %}
+                <button type="button" class="btn btn-success btn-sm" disabled="disabled">Add Player</button>
+                <button type="button" class="btn btn-warning btn-sm">Edit Player</button>
+                <button type="button" class="btn btn-danger btn-sm">Delete Player</button>
+            {% else %}
+                <button type="button" class="btn btn-success btn-sm">Add Player</button>
+                <button type="button" class="btn btn-warning btn-sm" disabled="disabled">Edit Player</button>
+                <button type="button" class="btn btn-danger btn-sm" disabled="disabled">Delete Player</button>
+            {% endif %}
+        </div>
         <!-- div for player attributes-->
         <div id="playerAttributes">
-            <h4><b>Enter player attributes to amend</b></h4>
+            <h5><b>Enter player attributes to amend</b></h5>
             <p>
                 <label>Position:</label>
                 {{ form.player_pos }}
