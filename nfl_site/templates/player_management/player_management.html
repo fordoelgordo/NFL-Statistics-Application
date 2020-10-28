@@ -1,12 +1,28 @@
 <!DOCTYPE html>
+{% load static %}
 <html>
     <head>
         <meta charset="utf-8">
         <title>Player Management Site</title>
-        <!--Add boostrap styling-->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+         <!-- Bootstrap 4 -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+        <!-- Font Awesome -->
+        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+        <!-- Moment.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js" integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>
+
+        <!-- Tempus Dominus Bootstrap 4 -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css" integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs=" crossorigin="anonymous" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js" integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script> <!-- Add custom css styling sheet-->
+            <link rel="stylesheet" href="{% static "player_management/player_management.css" %}">
     </head>
     <body>
+        <!-- Webpage header-->
         <div id="header">
             <div class = "jumbotron">
                 <h1>Edit the player database here</h1>
@@ -14,30 +30,75 @@
                 <!-- <button onclick="window.location.href='/'">Back Home!</button> -->
             </div>
         </div>
-        <div id="playerInfo">
+        <!-- div for player names-->
+        <div id="playerNames">
             <form method="POST">
-                {{form}} <!-- Neables forms to go top to bottom not left to right-->
+                <h4><b>Begin by searching for a player</b></h4> 
+                <label>Player first name:</label>
+                {{ form.player_first_name }}
+                <label>Player last name:</label>
+                {{ form.player_last_name }}
                 {% csrf_token %} <!--Enable users to enter info on the form-->
-                <p></p>
                 <input type="submit" class="btn btn-primary" value="Submit">
             </form>
         </div>
-    <div>
-        <table class="table table-condensed table-bordered">
-            <thead>
-                <tr>
-                    {% for key, value in df_dict.items %}
-                        <th width="1%">{{ key }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            {% for rec in df_rec %}
-                <tr>
-                    {% for i2, k2 in rec.items %}
-                        <td>{{ k2 }}</td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
+        <div id="displayTable">
+            {% if exists %}
+            <table class="table table-condensed table-bordered">
+                <thead>
+                    <tr>
+                        {% for key, value in df_dict.items %}
+                            <th width="1%">{{ key }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                {% for rec in df_rec %}
+                    <tr>
+                        {% for i2, k2 in rec.items %}
+                            <td>{{ k2 }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p id="existstag"><i>Player does not exist!</i></p>
+            {% endif %}
+        </div>
+        <!-- div for player attributes-->
+        <div id="playerAttributes">
+            <h4><b>Enter player attributes to amend</b></h4>
+            <p>
+                <label>Position:</label>
+                {{ form.player_pos }}
+            </p>
+            <p>
+                <label>College:</label>
+                {{ form.player_college }}
+            </p>
+            <p id="datepicker">
+                <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                    <label>DOB:</label>
+                    {{ form.player_dob }}
+                    <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+                  
+                  <script>
+                    $(function () {
+                      $("#datetimepicker1").datetimepicker({
+                        format: 'DD/MM/YYYY',
+                      });
+                    });
+                  </script>
+            </p>
+           <p>
+                <label>Height:</label>
+                {{ form.player_height }}
+           </p>
+            <p>
+                <label>Weight:</label>
+                {{ form.player_weight }}
+            </p>
+        </div>
 </html>
