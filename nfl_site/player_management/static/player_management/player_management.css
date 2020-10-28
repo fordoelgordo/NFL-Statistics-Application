@@ -15,7 +15,7 @@
 }
 #displayTable table {
     margin-left: 15px;
-    width: 60%;
+    width: 70%;
 }
 
 /* Style for playerAttributes div */
@@ -30,6 +30,9 @@
 #datetimepicker1 {
     width: 10%;
     margin-left: 15px;
+}
+.pos-placeholder::-webkit-input-placeholder {
+    font-size: 12px;
 }
 
 

@@ -40,7 +40,7 @@ def player_management(request):
             player_first_name = form.cleaned_data.get('player_first_name').title()
             player_last_name = form.cleaned_data.get('player_last_name').title()
             player_pos = form.cleaned_data.get('player_pos')
-            player_dob = form.cleaned_data.get('plyaer_dob')
+            player_dob = form.cleaned_data.get('player_dob')
             player_college = form.cleaned_data.get('player_college')
             player_height = form.cleaned_data.get('player_height')
             player_weight = form.cleaned_data.get('player_weight')
@@ -48,11 +48,13 @@ def player_management(request):
             # Filter the players.csv for the entered info
             player_first_name = "\'" + player_first_name + "\'"
             player_last_name = "\'" + player_last_name + "\'"
+ 
             # Set variable if player exists or not
             if player_first_name.strip('\'') in players.nameFirst.values and player_last_name.strip('\'') in players.nameLast.values:
                 player_exists = True
             else:
                 player_exists = False
+ 
             # Filter the players dataframe
             players_filtered = sqldf("SELECT playerid AS 'Player ID', nameFirst AS 'First Name', nameLast AS 'Last Name', position AS 'Position', college AS 'College', heightInches AS 'Height', weight AS 'Weight', dob AS 'DOB', homeCity AS 'City', homeState AS 'State', homeCountry AS 'Country' FROM players WHERE nameFirst = {} AND nameLast = {};".format(player_first_name, player_last_name), locals())
             df_dict = players_filtered.to_dict()
