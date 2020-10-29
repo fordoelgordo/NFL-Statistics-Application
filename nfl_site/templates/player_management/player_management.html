@@ -36,9 +36,9 @@
             <form method="POST">
                 <h5>Begin by searching for a player</h5> 
                 <label>Player first name:</label>
-                {{ form.player_first_name }}
+                {{ player_form.player_first_name }}
                 <label>Player last name:</label>
-                {{ form.player_last_name }}
+                {{ player_form.player_last_name }}
                 {% csrf_token %} <!--Enable users to enter info on the form-->
                 <input type="submit" class="btn btn-primary btn-sm" value="Submit">
             </form>
@@ -61,57 +61,65 @@
                     </tr>
                 {% endfor %}
             </table>
-            {% else %}
-            <p id="existstag"><i>Player does not exist!</i></p>
             {% endif %}
+            <p id="existstag"><i>{{does_not_exist}}</i></p>
         </div>
         <!-- div for action buttons -->
-        <div id="actionButtons">
-            {% if exists %}
-                <button type="button" class="btn btn-success btn-sm" disabled="disabled">Add Player</button>
-                <button type="button" class="btn btn-warning btn-sm">Edit Player</button>
-                <button type="button" class="btn btn-danger btn-sm">Delete Player</button>
-            {% else %}
-                <button type="button" class="btn btn-success btn-sm">Add Player</button>
-                <button type="button" class="btn btn-warning btn-sm" disabled="disabled">Edit Player</button>
-                <button type="button" class="btn btn-danger btn-sm" disabled="disabled">Delete Player</button>
-            {% endif %}
-        </div>
+        
         <!-- div for player attributes-->
+        {% if submit %}
         <div id="playerAttributes">
-            <h5><b>Enter player attributes to amend</b></h5>
-            <p>
-                <label>Position:</label>
-                {{ form.player_pos }}
-            </p>
-            <p>
-                <label>College:</label>
-                {{ form.player_college }}
-            </p>
-            <p id="datepicker">
-                <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-                    <label>DOB:</label>
-                    {{ form.player_dob }}
-                    <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+            <form method="POST">
+                <div id="actionButtons">
+                    {% if exists %}
+                        <input type="submit" class="btn btn-success btn-sm" disabled="disabled" name="Add Player" value="Add Player">
+                        <input type="submit" class="btn btn-warning btn-sm" name="Edit Player" value = "Edit Player">
+                        <input type="button" class="btn btn-danger btn-sm" name="Delete Player" value="Delete Player">
+        
+                    {% else %}
+                        <input type="button" class="btn btn-success btn-sm" name="Add Player" value="Add Player">
+                        <input type="button" class="btn btn-warning btn-sm" disabled="disabled" name="Edit Player" value = "Edit Player">
+                        <input type="button" class="btn btn-danger btn-sm" disabled="disabled" name="Delete Player" value="Delete Player">
+        
+                    {% endif %}
+                </div><br>
+                {% csrf_token %} <!--Enable users to enter info on the form-->
+                <h5><b>Enter player attributes to amend</b></h5>
+                <p>
+                    <label>Position:</label>
+                    {{ edit_form.player_pos }}
+                </p>
+                <p>
+                    <label>College:</label>
+                    {{ edit_form.player_college }}
+                </p>
+                <p id="datepicker">
+                    <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                        <label>DOB:</label>
+                        {{ edit_form.player_dob }}
+                        <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
                     </div>
-                  </div>
-                  
-                  <script>
-                    $(function () {
-                      $("#datetimepicker1").datetimepicker({
-                        format: 'MM/DD/YYYY',
-                      });
-                    });
-                  </script>
-            </p>
-           <p>
-                <label>Height:</label>
-                {{ form.player_height }}
-           </p>
-            <p>
-                <label>Weight:</label>
-                {{ form.player_weight }}
-            </p>
+                    
+                    <script>
+                        $(function () {
+                        $("#datetimepicker1").datetimepicker({
+                            format: 'MM/DD/YYYY',
+                        });
+                        });
+                    </script>
+                </p>
+                <p>
+                    <label>Height:</label>
+                    {{ edit_form.player_height }}
+                </p>
+                <p>
+                    <label>Weight:</label>
+                    {{ edit_form.player_weight }}
+                </p>
+        </form>
         </div>
+        {% endif %}
+        </body>
 </html>
