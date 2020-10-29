@@ -87,6 +87,7 @@ def player_management(request):
     if request.POST.get('Edit Player') == 'Edit Player':
         edit_form = forms.EditForm(request.POST)
         player_exists = True
+        submit = True
         if edit_form.is_valid():
             # ADD FIELD FOR PID IF > 1
             player_pos = edit_form.cleaned_data.get('player_pos')
