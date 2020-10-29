@@ -52,7 +52,6 @@ def player_management(request):
             player_dict.clear()
             player_first_name = player_form.cleaned_data.get('player_first_name').title()
             player_last_name = player_form.cleaned_data.get('player_last_name').title()
-        
             
             # Filter the players.csv for the entered info
             player_first_name = "\'" + player_first_name + "\'"
@@ -120,6 +119,8 @@ def player_management(request):
         tup = getIndexes(players,players_filtered['Player ID'].values[0])
         drop_me  = tup[0][0]
         players = players.drop(drop_me)
+        player_exists = False
+        print(players)
         #Need to figure out how to fix the player so that it doesn't show columns after delete
         
         
