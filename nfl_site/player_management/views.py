@@ -89,12 +89,13 @@ def player_management(request):
             
             # Add a new record to players.csv with playerID = max(playerID) + 1
             pid = max(players.playerId) + 1
+            
             # Create an empty player dictionary, add the appropriate values from the form
             new_player = {
                 'playerId': pid,
-                'nameFirst': player_first_name,
-                'nameLast': player_last_name,
-                'nameFull' : player_first_name + " " + player_last_name,
+                'nameFirst': player_first_name.strip('\''),
+                'nameLast': player_last_name.strip('\''),
+                'nameFull' : player_first_name.strip('\'') + " " + player_first_name.strip('\''),
                 'position' : None,
                 'collegeId': None,
                 'nflId': None,
@@ -113,16 +114,22 @@ def player_management(request):
                 'hsState': "CA",
                 'hsCountry': "USA"
             }
+
+            # Note that you need to reassign the dataframe when doing append.  Append does not edit the dataframe in place
+            players = players.append(new_player, ignore_index = True)
+            
             # Check the values entered, and update the dictionary appropriately
             if player_pos:
-                new_player['position'] = player_pos
+                players.loc[(players['playerId'].values == pid, 'position')] = player_pos
+            
             if player_dob:
-                new_player['dob'] = player_dob
+                players.loc[(players['playerId'].values == pid, 'dob')] = str(player_dob).split()[0]
+            
             if player_college:
                 # Check to ensure the college maps to an existing college by collegeId
                 if player_college in colleges.college.values:
-                    new_player['college'] = player_college
-                    new_player['collegeId'] = int(colleges[colleges['college'] == player_college].collegeId.values)
+                    players.loc[(players['playerId'].values == pid, 'college')] = player_college
+                    players.loc[(players['playerId'].values == pid, 'collegeId')] = int(colleges[colleges['college'] == player_college].collegeId.values)
                 else:
                     # Try and clean the college string, then remap
                     if len(player_college) == 3:
@@ -133,23 +140,33 @@ def player_management(request):
                         player_college = player_college.title()
 
                     if player_college in colleges.college.values:
-                        new_player['college'] = player_college
-                        new_player['collegeId'] = int(colleges[colleges['college'] == player_college].collegeId.values)
-            
+                        players.loc[(players['playerId'].values == pid, 'college')] = player_college
+                    players.loc[(players['playerId'].values == pid, 'collegeId')] = int(colleges[colleges['college'] == player_college].collegeId.values)
+                
             if player_height:
-                new_player['heightInches'] = player_height
+                players.loc[(players['playerId'].values == pid, 'heightInches')] = float(player_height)
+
             if player_weight:
-                new_player['weight'] = player_weight
-            
-            # Append the new player record to the players dataframe and return
-            players.append(new_player, ignore_index = True)
-            print(new_player)
-            
-            # See if we can find the record now
-            players[players['nameFirst'] == 'Ford'].head()
-            
-            # Filter and return the updated record
-            players_filtered = sqldf(f"SELECT playerid AS 'Player ID', nameFirst AS 'First Name', nameLast AS 'Last Name', position AS 'Position', college AS 'College', heightInches AS 'Height(in)', weight AS 'Weight(lbs)', dob AS 'DOB', homeCity AS 'City', homeState AS 'State', homeCountry AS 'Country' FROM players WHERE nameFirst = {player_first_name} AND nameLast = {player_last_name};", globals())
+                players.loc[(players['playerId'].values == pid, 'weight')] = float(player_weight)
+                
+            players_filtered = \
+                    players[
+                        (players['playerId'] == pid)  
+                    ][['playerId','nameFirst','nameLast','position','collegeId','college','heightInches','weight','dob','homeCity','homeState','homeCountry']]
+            players_filtered.columns = [
+                'Player ID',
+                'First Name',
+                'Last Name',
+                'Position',
+                'College ID',
+                'College',
+                'Height(in)',
+                'Weight(lbs)',
+                'DOB',
+                'City',
+                'State',
+                'Country'
+            ]
             df_dict = players_filtered.to_dict()
             df_rec = players_filtered.to_dict(orient='records')
 
