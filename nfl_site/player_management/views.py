@@ -60,9 +60,10 @@ def player_management(request):
             # Filter the players.csv for the entered info
             player_first_name = "\'" + player_first_name + "\'"
             player_last_name = "\'" + player_last_name + "\'"
- 
+
+            name_filter = players.loc[(players['nameFirst'] == player_first_name.strip('\'')) & (players['nameLast'] == player_last_name.strip('\''))]
             # Set variable if player exists or not
-            if player_first_name.strip('\'') in players.nameFirst.values and player_last_name.strip('\'') in players.nameLast.values:
+            if not name_filter.empty:
                 player_exists = True
             else:
                 player_exists = False
@@ -170,6 +171,7 @@ def player_management(request):
             df_dict = players_filtered.to_dict()
             df_rec = players_filtered.to_dict(orient='records')
 
+
     if request.POST.get('Edit Player') == 'Edit Player':
         edit_form = forms.EditForm(request.POST)
         player_exists = True
@@ -202,11 +204,11 @@ def player_management(request):
         df_dict = players_filtered.to_dict()
         df_rec = players_filtered.to_dict(orient='records')
 
+
     if request.POST.get('Delete Player') == 'Delete Player':
         tup = getIndexes(players,players_filtered['Player ID'].values[0])
         drop_me  = tup[0][0]
         players = players.drop(drop_me)
-        #Need to figure out how to fix the player so that it doesn't show columns after delete
         
         
     context = {'player_form': player_form, 'edit_form': edit_form, 'df_dict':df_dict, 'df_rec':df_rec, 'exists':player_exists, 'submit':submit}
