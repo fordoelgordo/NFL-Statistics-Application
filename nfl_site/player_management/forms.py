@@ -23,7 +23,7 @@ class EditForm(forms.Form):
     )
     player_dob = forms.DateTimeField(
         required=False,
-        input_formats=['%d/%m/%Y'],
+        input_formats=['%m/%d/%Y'],
         widget=forms.DateTimeInput(attrs = {
             'class':'form-control datetimepicker-input',
             'data-target':'#datetimepicker1'

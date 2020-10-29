@@ -17,6 +17,8 @@ output_path = 'static/saves/'
 
 players = pd.DataFrame()
 players_filtered = pd.DataFrame()
+player_first_name = ''
+player_last_name = ''
 
 if pathlib.Path('static/archive/').exists():
     #Read in combine.csv dataset
@@ -28,16 +30,13 @@ def player_management(request):
     edit_form = forms.EditForm()
     df_dict = []
     df_rec = []
-    global players
-    global players_filtered
+    global players, players_filtered, player_first_name, player_last_name 
 
     if players.empty:
         players = pd.read_csv(data_path + 'players.csv')
     
     # Set holding variables
     player_dict = {} # Store the player's ID and associated combine statistic
-    player_first_name = ''
-    player_last_name = ''
     player_pos = ''
     player_dob = ''
     player_college = ''
@@ -64,11 +63,14 @@ def player_management(request):
                 player_exists = True
             else:
                 player_exists = False
+                context = {'player_form': player_form, 'edit_form': edit_form, 'df_dict':df_dict, 'df_rec':df_rec, 'does_not_exist': 'Player does not exist!', 'submit':submit}
+                return render(request, 'player_management/player_management.html', context)
  
             # Filter the players dataframe
-            players_filtered = sqldf(f"SELECT playerid AS 'Player ID', nameFirst AS 'First Name', nameLast AS 'Last Name', position AS 'Position', college AS 'College', heightInches AS 'Height', weight AS 'Weight', dob AS 'DOB', homeCity AS 'City', homeState AS 'State', homeCountry AS 'Country' FROM players WHERE nameFirst = {player_first_name} AND nameLast = {player_last_name};", globals())
+            players_filtered = sqldf(f"SELECT playerid AS 'Player ID', nameFirst AS 'First Name', nameLast AS 'Last Name', position AS 'Position', college AS 'College', heightInches AS 'Height(in)', weight AS 'Weight(lbs)', dob AS 'DOB', homeCity AS 'City', homeState AS 'State', homeCountry AS 'Country' FROM players WHERE nameFirst = {player_first_name} AND nameLast = {player_last_name};", globals())
             df_dict = players_filtered.to_dict()
             df_rec = players_filtered.to_dict(orient='records')
+
 
     if request.POST.get('Add Player') == 'Add_Player':
         edit_form = forms.EditForm(request.POST)
@@ -84,6 +86,7 @@ def player_management(request):
 
     if request.POST.get('Edit Player') == 'Edit Player':
         edit_form = forms.EditForm(request.POST)
+        player_exists = True
         if edit_form.is_valid():
             # ADD FIELD FOR PID IF > 1
             player_pos = edit_form.cleaned_data.get('player_pos')
@@ -92,13 +95,11 @@ def player_management(request):
             player_height = edit_form.cleaned_data.get('player_height')
             player_weight = edit_form.cleaned_data.get('player_weight')
         
-        print(player_dob)
-
         if player_pos:
             players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'position')] = player_pos
         
         if player_dob:
-            players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'dob')] = player_dob
+            players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'dob')] = str(player_dob).split()[0]
         
         if player_college:
             players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'college')] = player_college
@@ -109,12 +110,15 @@ def player_management(request):
         if player_weight:
             players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'weight')] = float(player_weight)
 
+        # Filter the players dataframe
+        players_filtered = sqldf(f"SELECT playerid AS 'Player ID', nameFirst AS 'First Name', nameLast AS 'Last Name', position AS 'Position', college AS 'College', heightInches AS 'Height(in)', weight AS 'Weight(lbs)', dob AS 'DOB', homeCity AS 'City', homeState AS 'State', homeCountry AS 'Country' FROM players WHERE nameFirst = {player_first_name} AND nameLast = {player_last_name};", globals())
+        df_dict = players_filtered.to_dict()
+        df_rec = players_filtered.to_dict(orient='records')
+
     if request.POST.get('Delete Player') == 'Delete Player':
         print("3")
         #DROP ROW with player name
-            
-    
-
+        
+        
     context = {'player_form': player_form, 'edit_form': edit_form, 'df_dict':df_dict, 'df_rec':df_rec, 'exists':player_exists, 'submit':submit}
-
     return render(request, 'player_management/player_management.html', context)

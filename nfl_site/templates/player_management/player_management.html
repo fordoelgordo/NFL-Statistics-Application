@@ -61,9 +61,8 @@
                     </tr>
                 {% endfor %}
             </table>
-            {% else %}
-            <p id="existstag"><i>Player does not exist!</i></p>
             {% endif %}
+            <p id="existstag"><i>{{does_not_exist}}</i></p>
         </div>
         <!-- div for action buttons -->
         
@@ -122,4 +121,5 @@
         </form>
         </div>
         {% endif %}
+        </body>
 </html>
