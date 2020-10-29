@@ -30,6 +30,11 @@ _RENAME_COLS = {
     'passLength' : 'Pass Length'
     }
 
+pass_df = pd.DataFrame()
+players_df = pd.DataFrame()
+plays_df = pd.DataFrame()
+games_df = pd.DataFrame()
+
 if pathlib.Path('static/archive/').exists():
     # Read associated csv files
     pass_df = pd.read_csv(f'{_DATA_PATH}passer.csv')
@@ -40,6 +45,13 @@ if pathlib.Path('static/archive/').exists():
 # Create your views here.
 def pass_page(request):
     form = forms.PassingForm()
+    global pass_df, players_df, plays_df, games_df
+
+    if pass_df.empty or players_df.empty or plays_df.empty or games_df.empty:
+        pass_df = pd.read_csv(f'{_DATA_PATH}passer.csv')
+        players_df = pd.read_csv(f'{_DATA_PATH}players.csv', usecols=['playerId', 'nameFirst', 'nameLast'])
+        plays_df = pd.read_csv(f'{_DATA_PATH}plays.csv', usecols=['playId', 'gameId'])
+        games_df = pd.read_csv(f'{_DATA_PATH}games.csv', usecols=['gameId', 'season', 'week', 'gameDate'])
 
     # Set holding variables
     pass_dict = pd.DataFrame()
@@ -80,10 +92,21 @@ def pass_page(request):
                 #print(4)
                 pass_dict = pass_df.loc[(name_filter['playerId'].values[0] == pass_df['playerId'].values)]
 
+            elif player_name == "" and str(passing_year) != "None":
+                #print(5)
+                temp_df = pd.merge(pass_df, plays_df, on='playId')
+                temp_df = pd.merge(temp_df, games_df, on='gameId')
+                #print(games_df['season'].values)
+                #pass_dict = pass_df.loc[(games_df['season'].values == int(passing_year))]
+                pass_dict = temp_df
+    
             # If pass_dict has data
             if not pass_dict.empty:
-                pass_dict.insert(0, 'First Name', player_name.split()[0])
-                pass_dict.insert(1, 'Last Name', player_name.split()[1])
+                #if player_name:
+                    #pass_dict.insert(0, 'First Name', player_name.split()[0])
+                    #pass_dict.insert(1, 'Last Name', player_name.split()[1])
+                if passing_year:
+                    pass_dict.insert(4, 'Year', int(passing_year))
                 pass_dict = pass_dict.drop(columns=_DROP_FRAME)
                 pass_dict = pass_dict.rename(columns=_RENAME_COLS)
           

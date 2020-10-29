@@ -3,7 +3,9 @@
     <meta charset="utf-8">
     <title>Passing Statistics Page</title>
         <!--Add boostrap styling-->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
 </head>
 <body style="background-color:rgba(2, 27, 22, 0.808);margin-left:2.5em">
     <h1 style="color:rgb(255, 255, 255)">NFL Passing Statistics</h1>
@@ -19,22 +21,34 @@
 
     <br><br><hr><br>
     
-    <table class="table table-condensed table-bordered">
-        <tr>
-        {% for item in columns %}
-            <th width="1%" style="color:rgb(0, 192, 176)"><i>{{ item }}</th></i>
-        {% endfor %}
-        </tr>
-        <tr>
-        {% for key, value in pass.items %}
-        <td style="color:rgb(255, 255, 255)">
-            {% for i in value %}
-                {{ i }}<br>
+    <table id="passing_table" class="display" width="100%" cellspacing="0">
+        <thead>
+            <tr>
+            {% for item in columns %}
+                <th width="1%" style="color:rgb(0, 192, 176)"><i>{{ item }}</th></i>
             {% endfor %}
-        </td>
-        {% endfor %}
-        </tr>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for key, value in pass.items %}
+                <td >
+                    {% for i in value %}
+                        {{ i }}<br>
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+        </tbody>
     </table>
+
+    <script>
+        $(document).ready(function() {
+            $('#passing_table').DataTable( {
+                "pagingType": "full_numbers"
+            } );
+        } );
+    </script>
     <h2 style="color:rgb(255, 255, 255)">{{empty}}</h2>
 </body>
 </html>
