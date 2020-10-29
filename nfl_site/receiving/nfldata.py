@@ -54,3 +54,21 @@ def get_player_dict(firstname, lastname):
             temp_dict[player_id] = total_yards
 
         return temp_dict
+
+
+def top_n_players(num):
+    df_player_receiver = pd.merge(df_players, df_receiver, on='playerId')
+
+    name_filter \
+        = df_player_receiver.loc[(df_player_receiver['rec'] == 1) & (df_player_receiver['recPassInt'] == 0)
+                                 & (df_player_receiver['recNull'] == 0)]
+
+    result = name_filter[['playerId', 'nameFull', 'recYards']] \
+        .groupby(by=['playerId', 'nameFull']).sum().sort_values(by=['recYards'], ascending=False).head(num)
+
+    '''
+    result_dict = result.to_dict()['recYards']
+    for key, val in result_dict.items():
+        print(str(key[0]) + ' ' + key[1] + ' : ' + str(val))
+    '''
+    return result.to_dict()['recYards']
