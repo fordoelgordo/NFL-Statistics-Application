@@ -208,8 +208,6 @@ def player_management(request):
         tup = getIndexes(players,players_filtered['Player ID'].values[0])
         drop_me  = tup[0][0]
         players = players.drop(drop_me)
-        player_exists = False
-        #Need to figure out how to fix the player so that it doesn't show columns after delete
         
         
     context = {'player_form': player_form, 'edit_form': edit_form, 'df_dict':df_dict, 'df_rec':df_rec, 'exists':player_exists, 'submit':submit}
