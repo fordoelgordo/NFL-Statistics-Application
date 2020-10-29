@@ -1,6 +1,7 @@
 from django.shortcuts import render
 import pandas as pd
 import pathlib
+import numpy as np
 from pandasql import sqldf
 from player_management import forms
 from nfl_site.libraries import conv_height, getIndexes
@@ -139,9 +140,14 @@ def player_management(request):
                     else:
                         player_college = player_college.title()
 
+                    players.loc[(players['playerId'].values == pid, 'college')] = player_college
+
+                    # if college exists in dataframe already set it to the same collegeId, otherwise set it to NaN
                     if player_college in colleges.college.values:
-                        players.loc[(players['playerId'].values == pid, 'college')] = player_college
-                    players.loc[(players['playerId'].values == pid, 'collegeId')] = int(colleges[colleges['college'] == player_college].collegeId.values)
+                        players.loc[(players['playerId'].values == pid, 'collegeId')] = int(colleges[colleges['college'] == player_college].collegeId.values)
+                    else:
+                        players.loc[(players['playerId'].values == pid, 'collegeId')] = np.nan
+
                 
             if player_height:
                 players.loc[(players['playerId'].values == pid, 'heightInches')] = float(player_height)
@@ -183,20 +189,27 @@ def player_management(request):
             player_height = edit_form.cleaned_data.get('player_height')
             player_weight = edit_form.cleaned_data.get('player_weight')
         
+        pid = players_filtered['Player ID'].values[0]
+
         if player_pos:
-            players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'position')] = player_pos
+            players.loc[(players['playerId'].values == pid, 'position')] = player_pos
         
         if player_dob:
-            players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'dob')] = str(player_dob).split()[0]
+            players.loc[(players['playerId'].values == pid, 'dob')] = str(player_dob).split()[0]
         
         if player_college:
-            players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'college')] = player_college
+            players.loc[(players['playerId'].values == pid, 'college')] = player_college
+            # if college exists in dataframe already set it to the same collegeId, otherwise set it to NaN
+            if player_college in colleges.college.values:
+                players.loc[(players['playerId'].values == pid, 'collegeId')] = int(colleges[colleges['college'] == player_college].collegeId.values)
+            else:
+                players.loc[(players['playerId'].values == pid, 'collegeId')] = np.nan
 
         if player_height:
-            players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'heightInches')] = float(player_height)
+            players.loc[(players['playerId'].values == pid, 'heightInches')] = float(player_height)
 
         if player_weight:
-            players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'weight')] = float(player_weight)
+            players.loc[(players['playerId'].values == pid, 'weight')] = float(player_weight)
 
         # Filter the players dataframe
         players_filtered = sqldf(f"SELECT playerid AS 'Player ID', nameFirst AS 'First Name', nameLast AS 'Last Name', position AS 'Position', college AS 'College', heightInches AS 'Height(in)', weight AS 'Weight(lbs)', dob AS 'DOB', homeCity AS 'City', homeState AS 'State', homeCountry AS 'Country' FROM players WHERE nameFirst = {player_first_name} AND nameLast = {player_last_name};", globals())
