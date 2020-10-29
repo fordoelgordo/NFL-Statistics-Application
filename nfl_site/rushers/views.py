@@ -2,6 +2,12 @@ from django.shortcuts import render
 import pandas as pd
 from .forms import RushersForm
 
+#for getting image from .html
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import re
+
+
 
 # Create your views here.
 
@@ -12,6 +18,18 @@ def rusher_page(request):
     first_name = ''
     last_name = ''
     player_team = []
+    outputDataFrame = pd.DataFrame()
+    exists = None
+    player_img = ''
+
+    # load players csv from dataset
+    df_players = readPlayers()
+
+    # load rushers csv from dataset
+    df_rusher = readRushers()
+
+    #load teams csv from dataset
+    df_teams = readTeams()
 
     #check if form has been clicked or not
     form = RushersForm(request.POST or None)
@@ -20,61 +38,21 @@ def rusher_page(request):
         player_dict.clear()  # clear info from previous search
         first_name = form.cleaned_data.get("first_name")  # get player first name from form
         last_name = form.cleaned_data.get("last_name") # get player last name from form
-        #split_name = player_name.split()  # split input to get firstname and lastname
-
-        # load players csv from dataset
-        df_players = readPlayers()
-
-        # load rushers csv from dataset
-        df_rusher = readRushers()
-
-        #load teams csv from dataset
-        df_teams = readTeams()
-
         # filter out players based on the name entered
-        name_filter = readPlayerName(df_players,first_name,last_name)
-        
-        if len(name_filter) == 0:
-            # if player does not exist set tuple to false and empty string
-            temp_tup = False, []
+        outputDataFrame = get_player_dict(df_players,first_name,last_name,df_rusher)
+
+        # if dictionary is empty player does not exist in data frame
+        # prepare display message indicating so
+        if outputDataFrame.empty:
+            first_name = "Player Does Not Exist"
+            last_name = "In Data Set!"
+            exists = 0
         else:
-            # if player does exist return list of id's of all players with the same name
-            player_id_list = name_filter['playerId'].tolist()
-            temp_tup = True, player_id_list
+            player_img =  getImageLinks(first_name,last_name)
 
-        if not temp_tup[0]:
-            # if first value in the tuple is false the name entered does nott exist in data set
-            first_name = 'Does not exist'
-            last_name = ' in data set!'
-            player_dict = []
-        else:
-
-            # for each player id in the player id list (the second value in temp tup) find all occuences of the player
-            # id in the receiver csv
-            for player_id in temp_tup[1]:
-
-                # get all rusher yards for playerId as long as they exist and were not overturned
-                rushers_filter \
-                    = df_rusher.loc[(df_rusher['playerId'] == player_id) & (df_rusher['rushNull'] == 0)]
-
-
-                # Note players are added to a python dictionary with id as key and value bwing the total rusher yards
-                # i.e. player_dict[player_id] = Total rushing yards
-                if len(rushers_filter) == 0:
-                    # if no results found player has zero receiving yards
-                    player_dict[player_id] = 0
-                else:
-                    # sum the rushYards row of the data frame
-                    total_rush_yards = rushers_filter['rushYards'].sum()
-
-                    player_dict[player_id] = int(total_rush_yards)
-                    player_team_id = getPlayerTeam(player_id)
-                    player_team = getTeamName(player_team_id)
-                    # print(player_dict)
-
-
-    context = {'form': form, 'first_name': first_name, 'last_name':last_name, 'player_dict': player_dict, 'submit_button': submitbutton, 'player_team': player_team}
-
+    context = {'form': form, 'first_name': first_name, 'last_name':last_name, 'player_dict': player_dict, 
+    'submit_button': submitbutton, 'player_team': player_team, 'columns' : outputDataFrame.columns, 'output':outputDataFrame,
+    'exists':exists, 'player_img':player_img}
     return render(request, 'rushers/rusher.html', context)
 
 
@@ -85,8 +63,15 @@ def readRushers():
     return pd.read_csv("static/archive/rusher.csv")
 
 
-def readPlayerName(df_players,first_name,last_name):
-    return df_players.loc[(df_players['nameFirst'] == first_name) & (df_players['nameLast'] == last_name)]
+def get_Tuple(df_players,first_name,last_name):
+    name_filter = df_players.loc[(df_players['nameFirst'] == first_name) & (df_players['nameLast'] == last_name)]
+    if len(name_filter) == 0:
+        # if player does not exist set tuple to false and empty string
+        return False, []
+    else:
+        # if player does exist return list of id's of all players with the same name
+        player_id_list = name_filter['playerId'].tolist()
+        return True, player_id_list
 
 def readTeams():
     df = pd.read_csv("static/archive/draft.csv")
@@ -105,5 +90,51 @@ def getTeamName(team_id):
     for i in team_id:
         team_name = df[df['teamId'] == i]['draftTeam'].unique().tolist()
         team_names.append(team_name)
-    print(team_names)
     return team_names
+
+def get_player_dict(df_players, first_name, last_name, df_rusher):
+    player_dict = {} 
+    outputDataFrame = pd.DataFrame() 
+    player_tuple = get_Tuple(df_players,first_name, last_name)
+
+    if not player_tuple[0]:
+        # if first value in the tuple is false the name entered does not exist in data set
+        # return empty dict
+        return outputDataFrame
+    else:
+        # for each player id in the player id list (the second value in temp tup) find all occuences of the player
+        # id in the receiver csv
+        for player_id in player_tuple[1]:
+            print(player_id)
+            # get all rusher yards for playerId as long as they exist and were not overturned
+            rushers_filter \
+                = df_rusher.loc[(df_rusher['playerId'] == player_id) & (df_rusher['rushNull'] == 0)]
+            # sum the rushYards row of the data frame
+            total_rush_yards = rushers_filter['rushYards'].sum()
+
+            player_dict[player_id] = int(total_rush_yards)
+            player_team_id = getPlayerTeam(player_id)
+            player_team = getTeamName(player_team_id)
+            print(player_team)
+            outputDataFrame = outputDataFrame.append([[first_name,last_name,player_id,player_dict[player_id],player_team]])
+        
+        outputDataFrame.columns = ['First Name', 'Last Name', 'Player ID','Rush Yards','Team(s)']
+        return outputDataFrame
+
+def getImageLinks(first_name,last_name):
+    site ='https://www.nfl.com/players/'+str(first_name)+'-'+str(last_name)+'/'
+    substr = 'https://static.www.nfl.com/image/private/t_player_profile_landscape/'
+    html = urlopen(site)
+    bs = BeautifulSoup(html, 'html.parser')
+    full_name = str(first_name)+' '+str(last_name)
+    images = bs.find_all('img', {"alt": full_name })
+    pathToImage = ''
+    for image in images:
+        url = image['src']
+        if substr in url:
+            pathToImage = url.replace('t_lazy/','')
+            print(pathToImage)
+    return pathToImage
+
+
+

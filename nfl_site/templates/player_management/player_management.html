@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Player Management Site</title>
+         <!-- Bootstrap 4 -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <link rel="stylesheet" href="{% static "player_management/player_management.css" %}">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+        <!-- Font Awesome -->
+        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+        <!-- Moment.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js" integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>
+
+        <!-- Tempus Dominus Bootstrap 4 -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css" integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs=" crossorigin="anonymous" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js" integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script> <!-- Add custom css styling sheet-->
+            
+    </head>
+    <body>
+        <!-- Webpage header-->
+        <div id="header">
+            <div class = "jumbotron">
+                <h1>Edit the player database here</h1>
+                <input type="submit" class = "btn btn-primary btn-sm" onclick="window.location.href='/'" value="Back Home!">
+                <!-- <button onclick="window.location.href='/'">Back Home!</button> -->
+            </div>
+        </div>
+        <!-- div for player names-->
+        <div id="playerNames">
+            <form method="POST">
+                <h5>Begin by searching for a player</h5> 
+                <label>Player first name:</label>
+                {{ player_form.player_first_name }}
+                <label>Player last name:</label>
+                {{ player_form.player_last_name }}
+                {% csrf_token %} <!--Enable users to enter info on the form-->
+                <input type="submit" class="btn btn-primary btn-sm" value="Submit">
+            </form>
+        </div>
+        <div id="displayTable">
+            {% if exists %}
+            <table class="table table-condensed table-bordered">
+                <thead>
+                    <tr>
+                        {% for key, value in df_dict.items %}
+                            <th width="1%">{{ key }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                {% for rec in df_rec %}
+                    <tr>
+                        {% for i2, k2 in rec.items %}
+                            <td>{{ k2 }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+            <p id="existstag"><i>{{does_not_exist}}</i></p>
+        </div>
+        <!-- div for action buttons -->
+        
+        <!-- div for player attributes-->
+        {% if submit %}
+        <div id="playerAttributes">
+            <form method="POST">
+                <div id="actionButtons">
+                    {% if exists %}
+                        <input type="submit" class="btn btn-success btn-sm" disabled="disabled" name="Add Player" value="Add Player">
+                        <input type="submit" class="btn btn-warning btn-sm" name="Edit Player" value = "Edit Player">
+                        <input type="submit" class="btn btn-danger btn-sm" name="Delete Player" value="Delete Player">
+        
+                    {% else %}
+                        <input type="submit" class="btn btn-success btn-sm" name="Add Player" value="Add Player">
+                        <input type="submit" class="btn btn-warning btn-sm" disabled="disabled" name="Edit Player" value = "Edit Player">
+                        <input type="submit" class="btn btn-danger btn-sm" disabled="disabled" name="Delete Player" value="Delete Player">
+        
+                    {% endif %}
+                </div><br>
+                {% csrf_token %} <!--Enable users to enter info on the form-->
+                <h5><b>Enter player attributes to amend</b></h5>
+                <p>
+                    <label>Position:</label>
+                    {{ edit_form.player_pos }}
+                </p>
+                <p>
+                    <label>College:</label>
+                    {{ edit_form.player_college }}
+                </p>
+                <p id="datepicker">
+                    <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                        <label>DOB:</label>
+                        {{ edit_form.player_dob }}
+                        <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    
+                    <script>
+                        $(function () {
+                        $("#datetimepicker1").datetimepicker({
+                            format: 'MM/DD/YYYY',
+                        });
+                        });
+                    </script>
+                </p>
+                <p>
+                    <label>Height:</label>
+                    {{ edit_form.player_height }}
+                </p>
+                <p>
+                    <label>Weight:</label>
+                    {{ edit_form.player_weight }}
+                </p>
+        </form>
+        </div>
+        {% endif %}
+        </body>
+</html>

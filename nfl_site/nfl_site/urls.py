@@ -28,5 +28,6 @@ urlpatterns = [
     path('',include('combine.urls')),
     path('',include('passing.urls')),
     path('',include('rushers.urls')),
-    path('', include('receiving.urls'))
+    path('', include('receiving.urls')),
+    path('', include('player_management.urls')),
 ]

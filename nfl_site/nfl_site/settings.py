@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'passing', # Adding the passing app
     'rushers', # Adding the rushers app
     'receiving',
+    'player_management', # Add, Amend, Delete players
 ]
 
 MIDDLEWARE = [
@@ -83,7 +84,7 @@ WSGI_APPLICATION = 'nfl_site.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': str(BASE_DIR / 'db.sqlite3'), # Needed to make this change to remove errors on Windows, since we're not using the db feature, shouldn't matter
     }
 }
 
