@@ -235,6 +235,7 @@ def player_management(request):
 
     
     if data_edited and request.POST.get('Save Changes') == 'Save Changes':
+        data_edited = False
         if not pathlib.Path(save_path).exists():
             save_dir = pathlib.Path(save_path)
             save_dir.mkdir(parents=True)
