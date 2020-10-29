@@ -72,7 +72,7 @@ def player_management(request):
             df_rec = players_filtered.to_dict(orient='records')
 
 
-    if request.POST.get('Add Player') == 'Add_Player':
+    if request.POST.get('Add Player') == 'Add Player':
         edit_form = forms.EditForm(request.POST)
         if edit_form.is_valid():
             # ADD FIELD FOR PID IF > 1
@@ -82,7 +82,7 @@ def player_management(request):
             player_height = edit_form.cleaned_data.get('player_height')
             player_weight = edit_form.cleaned_data.get('player_weight')
 
-        #check PID
+        print('HI')
 
     if request.POST.get('Edit Player') == 'Edit Player':
         edit_form = forms.EditForm(request.POST)
