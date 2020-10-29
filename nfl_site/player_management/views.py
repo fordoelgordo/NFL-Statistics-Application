@@ -23,6 +23,9 @@ player_last_name = ''
 if pathlib.Path('static/archive/').exists():
     #Read in combine.csv dataset
     players = pd.read_csv(data_path + 'players.csv')
+    # Get collegeId to college mapping
+    colleges = players[['collegeId','college']]
+    colleges = colleges.drop_duplicates()
 
 # response/combine page rendering
 def player_management(request):
@@ -74,15 +77,81 @@ def player_management(request):
 
     if request.POST.get('Add Player') == 'Add Player':
         edit_form = forms.EditForm(request.POST)
+        player_exists = True
+        submit = True
         if edit_form.is_valid():
-            # ADD FIELD FOR PID IF > 1
+            # Grab the data entered on the form
             player_pos = edit_form.cleaned_data.get('player_pos')
             player_dob = edit_form.cleaned_data.get('player_dob')
             player_college = edit_form.cleaned_data.get('player_college')
             player_height = edit_form.cleaned_data.get('player_height')
             player_weight = edit_form.cleaned_data.get('player_weight')
+            
+            # Add a new record to players.csv with playerID = max(playerID) + 1
+            pid = max(players.playerId) + 1
+            # Create an empty player dictionary, add the appropriate values from the form
+            new_player = {
+                'playerId': pid,
+                'nameFirst': player_first_name,
+                'nameLast': player_last_name,
+                'nameFull' : player_first_name + " " + player_last_name,
+                'position' : None,
+                'collegeId': None,
+                'nflId': None,
+                'combineId': None,
+                'college': None,
+                'heightInches': None,
+                'weight': None,
+                'dob': None,
+                'ageAtDraft': None,
+                'playerProfileUrl': 'https://www.ucr.edu/',
+                'homeCity': "Riverside",
+                'homeState': "CA",
+                'homeCountry': "USA",
+                'highSchool': "Riverside Prep",
+                'hsCity': "Riverside",
+                'hsState': "CA",
+                'hsCountry': "USA"
+            }
+            # Check the values entered, and update the dictionary appropriately
+            if player_pos:
+                new_player['position'] = player_pos
+            if player_dob:
+                new_player['dob'] = player_dob
+            if player_college:
+                # Check to ensure the college maps to an existing college by collegeId
+                if player_college in colleges.college.values:
+                    new_player['college'] = player_college
+                    new_player['collegeId'] = int(colleges[colleges['college'] == player_college].collegeId.values)
+                else:
+                    # Try and clean the college string, then remap
+                    if len(player_college) == 3:
+                        player_college = player_college.upper()
+                    elif len(player_college) == 4 and player_college[0].upper() == 'U':
+                        player_college = player_college.upper()
+                    else:
+                        player_college = player_college.title()
 
-        print('HI')
+                    if player_college in colleges.college.values:
+                        new_player['college'] = player_college
+                        new_player['collegeId'] = int(colleges[colleges['college'] == player_college].collegeId.values)
+            
+            if player_height:
+                new_player['heightInches'] = player_height
+            if player_weight:
+                new_player['weight'] = player_weight
+            
+            # Append the new player record to the players dataframe and return
+            players.append(new_player, ignore_index = True)
+            print(new_player)
+            
+            # See if we can find the record now
+            players[players['nameFirst'] == 'Ford'].head()
+            
+            # Filter and return the updated record
+            players_filtered = sqldf(f"SELECT playerid AS 'Player ID', nameFirst AS 'First Name', nameLast AS 'Last Name', position AS 'Position', college AS 'College', heightInches AS 'Height(in)', weight AS 'Weight(lbs)', dob AS 'DOB', homeCity AS 'City', homeState AS 'State', homeCountry AS 'Country' FROM players WHERE nameFirst = {player_first_name} AND nameLast = {player_last_name};", globals())
+            df_dict = players_filtered.to_dict()
+            df_rec = players_filtered.to_dict(orient='records')
 
     if request.POST.get('Edit Player') == 'Edit Player':
         edit_form = forms.EditForm(request.POST)
