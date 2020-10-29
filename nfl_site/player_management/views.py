@@ -5,6 +5,7 @@ import numpy as np
 from pandasql import sqldf
 from player_management import forms
 from nfl_site.libraries import conv_height, getIndexes
+from datetime import date, datetime
 
 # Create your views here.
 '''
@@ -14,19 +15,26 @@ Code Comments: adding relative path variable to point to the directory location 
 '''
 # NFL Data relative path
 data_path = 'static/archive/'
-output_path = 'static/saves/'
+save_path = 'static/saves/'
 
+# Global Variables
 players = pd.DataFrame()
 players_filtered = pd.DataFrame()
 player_first_name = ''
 player_last_name = ''
+data_edited = False
 
-if pathlib.Path('static/archive/').exists():
+# Check if the csv path exists
+if pathlib.Path(data_path).exists():
     #Read in combine.csv dataset
     players = pd.read_csv(data_path + 'players.csv')
     # Get collegeId to college mapping
     colleges = players[['collegeId','college']]
     colleges = colleges.drop_duplicates()
+
+# Check if saves exist
+if pathlib.Path(save_path).exists():
+    saves_list = []
 
 # response/combine page rendering
 def player_management(request):
@@ -34,7 +42,7 @@ def player_management(request):
     edit_form = forms.EditForm()
     df_dict = []
     df_rec = []
-    global players, players_filtered, player_first_name, player_last_name 
+    global players, players_filtered, player_first_name, player_last_name, data_edited 
 
     if players.empty:
         players = pd.read_csv(data_path + 'players.csv')
@@ -80,6 +88,7 @@ def player_management(request):
         edit_form = forms.EditForm(request.POST)
         player_exists = True
         submit = True
+        data_edited = True
         if edit_form.is_valid():
             # Grab the data entered on the form
             player_pos = edit_form.cleaned_data.get('player_pos')
@@ -96,7 +105,7 @@ def player_management(request):
                 'playerId': pid,
                 'nameFirst': player_first_name.strip('\''),
                 'nameLast': player_last_name.strip('\''),
-                'nameFull' : player_first_name.strip('\'') + " " + player_first_name.strip('\''),
+                'nameFull' : player_first_name.strip('\'') + " " + player_last_name.strip('\''),
                 'position' : None,
                 'collegeId': None,
                 'nflId': None,
@@ -181,6 +190,7 @@ def player_management(request):
         edit_form = forms.EditForm(request.POST)
         player_exists = True
         submit = True
+        data_edited = True
         if edit_form.is_valid():
             # ADD FIELD FOR PID IF > 1
             player_pos = edit_form.cleaned_data.get('player_pos')
@@ -218,10 +228,24 @@ def player_management(request):
 
 
     if request.POST.get('Delete Player') == 'Delete Player':
+        data_edited = True
         tup = getIndexes(players,players_filtered['Player ID'].values[0])
         drop_me  = tup[0][0]
         players = players.drop(drop_me)
+
+    
+    if data_edited and request.POST.get('Save Changes') == 'Save Changes':
+        if not pathlib.Path(save_path).exists():
+            save_dir = pathlib.Path(save_path)
+            save_dir.mkdir(parents=True)
+
+        today = date.today()
+        date_time = datetime.now()
+        t_date = today.strftime("%m%d%y")
+        t_time = date_time.strftime("%H%M%S")
+
+        players.to_csv(f'{save_path}players_{t_date}_{t_time}.csv')
         
         
-    context = {'player_form': player_form, 'edit_form': edit_form, 'df_dict':df_dict, 'df_rec':df_rec, 'exists':player_exists, 'submit':submit}
+    context = {'player_form': player_form, 'edit_form': edit_form, 'df_dict':df_dict, 'df_rec':df_rec, 'exists':player_exists, 'submit':submit, 'data_edited': data_edited}
     return render(request, 'player_management/player_management.html', context)

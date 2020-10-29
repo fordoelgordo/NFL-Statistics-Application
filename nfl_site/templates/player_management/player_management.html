@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <!-- {% load static %} -->
-{% load staticfiles %}
 <html>
     <head>
         <meta charset="utf-8">
@@ -126,7 +125,11 @@
             <form method="POST">
                 {% csrf_token %}
                 <p>Would you like to save your changes? Press below</p>
-                <input type="submit" class="btn btn-primary btn-sm" value="Save Changes">
+                {% if data_edited %}
+                    <input type="submit" class="btn btn-primary btn-sm" name="Save Changes" value="Save Changes">
+                {% else %}
+                    <input type="submit" class="btn btn-primary btn-sm" disabled="disabled" name="Save Changes" value="Save Changes">
+                {% endif %}
             </form>
         </div>
         {% endif %}
