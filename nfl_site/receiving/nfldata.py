@@ -1,8 +1,8 @@
 # import pandas as pd
 import pathlib
 
-# from nfl_site.nfl_site.libraries import csv_to_dict
-import receiving.ninjas as nj
+
+from static.team42libraries.csvtodict import csv_to_dict
 from operator import itemgetter
 
 
@@ -177,6 +177,6 @@ if pathlib.Path('static/archive/').exists():
     # load receiver csv from dataset
     # df_receiver = pd.read_csv("static/archive/receiver.csv")
 
-    player_dict = nj.csv_to_dict("static/archive/players.csv")
-    receiver_dict = nj.csv_to_dict("static/archive/receiver.csv")
+    player_dict = csv_to_dict("static/archive/players.csv")
+    receiver_dict = csv_to_dict("static/archive/receiver.csv")
     player_id_name_lookup = create_id_name_lookup()
