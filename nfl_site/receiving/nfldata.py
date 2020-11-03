@@ -76,7 +76,6 @@ def get_rec_yards_dict(firstname, lastname):
             tup_key = (pid, firstname + ' ' + lastname)
 
             if tup_key in prp.keys():
-                print(prp[tup_key])
 
                 temp_dict[pid] = (total_yards, float(total_yards)/float(prp[tup_key]), prp[tup_key])
             else:
