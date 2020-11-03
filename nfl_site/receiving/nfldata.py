@@ -80,6 +80,7 @@ def top_n_rec_yards(num):
 
     pid_list = receiver_dict['playerId']
     total_rec_dict = {}
+    total_avg_rec_dict = {}
 
     for i in range(len(pid_list)):
         if receiver_dict['rec'][i] == '1' and receiver_dict['recPassInt'][i] == '0' \
@@ -102,7 +103,36 @@ def top_n_rec_yards(num):
     # get the top n records from list and cast into a dictionary
     n_records = dict(rec_yards_desc[:num])
 
-    return n_records
+    prp = player_rec_plays()  # get dictionary containing players and their total receiving plays
+
+    # create dictionary containing keys (player id, player name)
+    # and values (receiving yards, avg receiving yards per play, and total plays)
+    for key, val in n_records.items():
+        if key in prp.keys():
+            total_avg_rec_dict[key] = (val, float(val) / float(prp[key]), prp[key])
+        else:
+            total_avg_rec_dict[key] = (val, 0.0, 0.0)
+
+    return total_avg_rec_dict
+
+
+# get total receiving plays for players in receiver.csv
+def player_rec_plays():
+    pid_list = receiver_dict['playerId']
+    rec_plays_dict = {}
+
+    for i in range(len(pid_list)):
+
+        if pid_list[i] in player_id_name_lookup.keys():
+            tup_key = (pid_list[i], player_id_name_lookup[pid_list[i]])
+            # if tuple key containing player id and full name does not exist in dictionary create a new
+            # entry else add to the rec plays
+            if tup_key not in rec_plays_dict:
+                rec_plays_dict[tup_key] = 1
+            else:
+                rec_plays_dict[tup_key] += 1
+
+    return rec_plays_dict
 
 
 if pathlib.Path('static/archive/').exists():

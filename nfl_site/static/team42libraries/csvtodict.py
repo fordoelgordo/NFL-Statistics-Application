@@ -40,6 +40,6 @@ def csv_to_dict(file_name):
             # increment counter to indicate that a line could not be added to csv dictionary
             misses += 1
 
-    print('missed rows:', misses)
+    print('missed rows (' + file_name + '): ', misses)
 
     return csv_dict

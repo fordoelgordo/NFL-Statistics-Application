@@ -39,7 +39,8 @@ def top_receiving_page(request):
     form = TopReceiveForm(request.POST or None)
 
     top_player_dict = {}
-    column_names = ['Player ID', 'Full Name', 'Total Receiving Yards']
+    column_names = ['Player ID', 'Full Name', 'Total Receiving Yards',
+                    'Avg. Rec. Yards per Rec. Play', 'Total Receiving Plays']
 
     if form.is_valid():
         player_num = form.cleaned_data.get('player_num')
