@@ -79,6 +79,5 @@ class CombineForm(forms.Form):
     '''
 
 class CombineStats(forms.Form):
-    
-    statistic = forms.CharField(label = "Select Statistic", required = False, widget = forms.Select(choices=[('aa','Above Average'),('ba','Below Average'),('o','Outlier'),('t','Top'),('b','Bottom')]))
+    statistic = forms.CharField(label = "Select Statistic", required = False, widget = forms.Select(choices=[('',''),('aa','Above Average'),('ba','Below Average'),('o','Outlier'),('t','Top'),('b','Bottom')]))
     num_players = forms.IntegerField(label = "Number of players", max_value=100, min_value=1, required = False)

@@ -12,6 +12,11 @@
     color: red !important;
 }
 
+/* Style the statistics output container */
+#stats p{
+    margin-left: 15px;
+}
+
 /* Format the player display table */
 #existstag {
     margin-left: 30px;
