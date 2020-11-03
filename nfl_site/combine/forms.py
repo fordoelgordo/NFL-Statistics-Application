@@ -1,5 +1,6 @@
 from django import forms
 from django.core import validators
+from enum import Enum
 
 # Custom validator - an example of how you can create your own function to validate form entries
 ''' Example code, commented out
@@ -76,3 +77,8 @@ class CombineForm(forms.Form):
         if email != vmail:
             raise forms.ValidationError("Make sure emails match")   
     '''
+
+class CombineStats(forms.Form):
+    
+    statistic = forms.CharField(label = "Select Statistic", required = False, widget = forms.Select(choices=[('aa','Above Average'),('ba','Below Average'),('o','Outlier'),('t','Top'),('b','Bottom')]))
+    num_players = forms.IntegerField(label = "Number of players", max_value=100, min_value=1, required = False)
