@@ -177,3 +177,34 @@ def csv_to_dict(file_name, to_df = 0):
         return pd.DataFrame(csv_dict)
     else:
         return csv_dict
+
+'''
+Author: FSt.J
+Comments: custom "average" calculation that takes in a Pandas DataFrame and a named column, and computes the average from scratch
+'''
+import math # to access isnan function
+import numpy as np
+def mean(df, column):
+    ret = 0
+    counter = 0
+    for x in df[column]:
+        if not math.isnan(x):
+            counter += 1
+            ret = ret + x
+    if counter > 0:
+        return ret / counter
+    else:
+        return math.nan # If can't compute avg, return NaN
+
+'''
+Author: FSt.J
+Comments: custom "standard deviation" calculation that takes in a Pandas DataFrame and named column, and computes the std. dev. from scratch
+'''
+def stddev(df, column):
+    avg = mean(df, column)
+    if sum(1 if not np.isnan(x) else 0 for x in df[column]):
+        variance = sum([(x - avg)**2 for x in df[column] if not np.isnan(x)]) / sum(1 if not np.isnan(x) else 0 for x in df[column])
+    else:
+        return math.nan
+    return math.sqrt(variance)
+
