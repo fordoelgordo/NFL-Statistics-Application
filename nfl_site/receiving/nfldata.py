@@ -71,7 +71,16 @@ def get_rec_yards_dict(firstname, lastname):
         # if list returned by get_player_id is not empty get total rec yards for each id
         for pid in player_ids:
             total_yards = get_receiving_yards(pid)
-            temp_dict[pid] = total_yards
+
+            # create key to get rec plays from prp dictionary
+            tup_key = (pid, firstname + ' ' + lastname)
+
+            if tup_key in prp.keys():
+                print(prp[tup_key])
+
+                temp_dict[pid] = (total_yards, float(total_yards)/float(prp[tup_key]), prp[tup_key])
+            else:
+                temp_dict[pid] = (total_yards, 0.0, 0)
 
         return temp_dict
 
@@ -102,8 +111,6 @@ def top_n_rec_yards(num):
     rec_yards_desc = sorted(total_rec_dict.items(), key=itemgetter(1), reverse=True)
     # get the top n records from list and cast into a dictionary
     n_records = dict(rec_yards_desc[:num])
-
-    prp = player_rec_plays()  # get dictionary containing players and their total receiving plays
 
     # create dictionary containing keys (player id, player name)
     # and values (receiving yards, avg receiving yards per play, and total plays)
@@ -139,4 +146,5 @@ if pathlib.Path('static/archive/').exists():
 
     player_dict = csv_to_dict("static/archive/players.csv")
     receiver_dict = csv_to_dict("static/archive/receiver.csv")
-    player_id_name_lookup = create_id_name_lookup()
+    player_id_name_lookup = create_id_name_lookup()  # dictionary that can get player name given id
+    prp = player_rec_plays()  # get dictionary containing players and their total receiving plays

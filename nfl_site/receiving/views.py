@@ -1,6 +1,5 @@
 from django.shortcuts import get_object_or_404, render
 
-# from .nfldata import get_player_dict, top_n_players
 from .nfldata import get_rec_yards_dict, top_n_rec_yards
 from .forms import ReceiveForm, TopReceiveForm
 
@@ -11,7 +10,8 @@ def receiving_page(request):
     player_dict = {}  # store players id and receiving yards
     full_name = ''
     error_message = ''
-    column_names = ['Player ID', 'Full Name', 'Total Receiving Yards']
+    column_names = ['Player ID', 'Full Name', 'Total Receiving Yards',
+                    'Avg. Rec. Yards per Rec. Play', 'Total Receiving Plays']
 
     form = ReceiveForm(request.POST or None)
     if form.is_valid():
