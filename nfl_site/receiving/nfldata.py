@@ -1,9 +1,9 @@
 import pathlib
 
 
-from static.team42libraries.csvtodict import csv_to_dict
-from operator import itemgetter
 
+from operator import itemgetter
+from nfl_site.libraries import csv_to_dict
 
 # create Dictionary to quickly look up player names
 def create_id_name_lookup():
