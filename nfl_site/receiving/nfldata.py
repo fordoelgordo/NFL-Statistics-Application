@@ -1,7 +1,6 @@
 import pathlib
 
 
-
 from operator import itemgetter
 from nfl_site.libraries import csv_to_dict
 
