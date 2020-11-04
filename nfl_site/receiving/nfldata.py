@@ -4,6 +4,7 @@ import pathlib
 from operator import itemgetter
 from nfl_site.libraries import csv_to_dict
 
+
 # create Dictionary to quickly look up player names
 def create_id_name_lookup():
     pid_list = player_dict['playerId']
@@ -16,6 +17,7 @@ def create_id_name_lookup():
     return lookup_dict
 
 
+# returns a list of ids associated with a name in the players.csv
 def get_player_id(firstname, lastname):
     # get columns of values
     list1 = player_dict['nameFirst']
@@ -42,6 +44,7 @@ def get_player_id(firstname, lastname):
         return None
 
 
+# returns count of total receiving yards of a given player id in the receiver.csv
 def get_receiving_yards(player_id):
     pid_list = receiver_dict['playerId']
     total_rec_yards = 0
@@ -58,6 +61,9 @@ def get_receiving_yards(player_id):
     return total_rec_yards
 
 
+# gets receiving yard for players of a given name
+# returns a dictionary of key(player id, player name)
+# and value (total rec yards, avg rec yards per play, total rec plays)
 def get_rec_yards_dict(firstname, lastname):
     player_ids = get_player_id(firstname, lastname)  # this is a list of player ids that match name
 
@@ -83,6 +89,9 @@ def get_rec_yards_dict(firstname, lastname):
         return temp_dict
 
 
+# gets the top n players by receiving dictionary
+# returns a dictionary with key(player id, player name)
+# and value (total rec yards, avg rec yards per play, total rec plays)
 def top_n_rec_yards(num):
 
     pid_list = receiver_dict['playerId']
@@ -122,6 +131,7 @@ def top_n_rec_yards(num):
 
 
 # get total receiving plays for players in receiver.csv
+# returns a dictionary of key(player id, player name) and value total receiving plays
 def player_rec_plays():
     pid_list = receiver_dict['playerId']
     rec_plays_dict = {}
@@ -140,6 +150,8 @@ def player_rec_plays():
     return rec_plays_dict
 
 
+# dictionaries that need to be loaded prior to running above functions
+# these should remain at the end of the file
 if pathlib.Path('static/archive/').exists():
 
     player_dict = csv_to_dict("static/archive/players.csv")
