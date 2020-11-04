@@ -1,37 +1,85 @@
 <!DOCTYPE html>
+{% load staticfiles %}
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Combine Statistics Page</title>
-        <!--Add boostrap styling-->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <title>Combine player statistics</title>
+        
+         <!-- Bootstrap 4 -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <!-- <link rel="stylesheet" href="{% static "player_management/player_management.css" %}"> -->
+        <link rel="stylesheet" href="{% static "css/combine/combine.css" %}"/>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+        <!-- Font Awesome -->
+        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+        <!-- Moment.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js" integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>
+
+        <!-- Tempus Dominus Bootstrap 4 -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css" integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs=" crossorigin="anonymous" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js" integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script> <!-- Add custom css styling sheet-->
+            
     </head>
     <body>
-        <h1>NFL Combine Statistics</h1>
-    <button onclick="window.location.href='/'">Back Home!</button>
-    <div class="container">
-        <form method="POST">
-            {{form.as_p}}
-            {% csrf_token %} <!--Enable users to enter info on the form-->
-            <input type="submit" class="btn btn-primary" value="Submit">
-        </form>
-    </div>
-    <div class="container">
-        <table class="table table-condensed table-bordered">
-            <thead>
-                <tr>
-                    {% for key, value in df_dict.items %}
-                        <th width="1%">{{ key }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            {% for rec in df_rec %}
-                <tr>
-                    {% for i2, k2 in rec.items %}
-                        <td>{{ k2 }}</td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
+        <!-- Webpage header-->
+        <div id="header">
+            <div class = "jumbotron">
+                <h1>NFL Player Combine Statistics Site</h1>
+                <input type="submit" class = "btn btn-primary btn-sm" onclick="window.location.href='/'" value="Back Home!">
+            </div>
+        </div>
+        <!-- div for player names-->
+        <div id="playerSearch">
+            <form method="POST">
+                <h5>Search for statistics</h5> 
+                <label>Player first name:</label>
+                {{ form.player_first_name }}
+                <label>Player last name:</label>
+                {{ form.player_last_name }}
+                <p>
+                    <label>Combine Year:</label>
+                    {{ form.combine_year }}
+                    <label>Combine Position:</label>
+                    {{ form.combine_pos }}
+                    <label>Combine Measurement:</label>
+                    {{ form.combine_event }}
+                </p>
+                <p>
+                    <label>Statistic</label>
+                    {{ statistics.statistic }}
+                    <label>Show N Players</label>
+                    {{ statistics.num_players }}
+                </p>
+                {% csrf_token %} <!--Enable users to enter info on the form-->
+                <input type="submit" class="btn btn-primary btn-sm" value="Submit">
+            </form>
+        </div>
+        <div id="stats">
+            {% if stat != '' %}
+            <p>Average: <b>{{ avg }}</b><br>Standard Deviation: <b>{{ std }}</b><br>Outlier if >= <b>{{ out_high}}</b> or <= <b>{{ out_low }}</b></p>
+            {% endif %}
+        </div>
+        <div id="displayTable">
+            <table class="table table-condensed table-bordered">
+                <thead>
+                    <tr>
+                        {% for key, value in df_dict.items %}
+                            <th width="1%">{{ key }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                {% for rec in df_rec %}
+                    <tr>
+                        {% for i2, k2 in rec.items %}
+                            <td>{{ k2 }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </body>
 </html>
