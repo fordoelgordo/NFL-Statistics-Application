@@ -1,25 +1,59 @@
 <html>
 <body>
-<h1>WE ARE AT THE Receiving SITE!!!!!!</h1>
-<!-- the `/` just points back to the home directory -->
-<button onclick="window.location.href='/'">Back Home!</button>
-
-<form action="" method="Post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="Submit" name="submit" value="Submit"/>
-</form>
+    <head>
+        <meta charset="utf-8">
+        <title>Receiving Statistics</title>
+            <!--Add boostrap styling-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
 
 
-{% if submit_button == "Submit" %}
-    <h1>Name: {{ first_name }} {{ last_name }}</h1>
-    {% for key, value in player_dict.items %}
-        <!-- <li>ID: {{ key }} Total receiving yards: {{ value }}</li> -->
-        <h4>{{ first_name }} {{ last_name }} ({{ key }}) </h4>
-        <p>Total receiving yards: {{ value }}</p>
-    {% endfor %}
-{% endif %}
+    <div class="container">
+        <h1>Receiving Statistics</h1>
+    </div>
 
+    <!-- the `/` just points back to the home directory -->
+    <button onclick="window.location.href='/'">Back Home!</button>
+    <button onclick="window.location.href='/receivingpage/topreceivingpage/'">Top Receivers</button>
+
+    <div class="container text-center">
+        <div class="container">
+            <h3>Enter Player Information</h3>
+        </div>
+        <form action="" method="Post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="Submit" class="btn btn-primary" name="submit" value="Submit"/>
+        </form>
+    </div>
+
+    {% if submit_button == "Submit" %}
+        <div class="container" style="padding-top: 25px">
+            <!-- only shows if player not in data set -->
+            <h3>{{ error_msg }}</h3>
+
+            <table class="table table-condensed table-bordered">
+                <thead>
+                    <tr>
+                        {% for item in column_names %}
+                            <th>{{ item }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in player_dict.items %}
+                        <tr>
+                            <td>{{ key }}</td>
+                            <td>{{ full_name }}</td>
+                            <td> {{ value.0 }}</td>
+                            <td> {{ value.1 }}</td>
+                            <td> {{ value.2 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
 
 </body>
 </html>

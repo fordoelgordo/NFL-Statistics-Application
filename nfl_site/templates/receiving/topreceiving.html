@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Top Receiving Yards</title>
+    <!--Add boostrap styling-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Top Receiving Yards</h1>
+    </div>
+
+    <!-- the `/` just points back to the home directory -->
+    <button onclick="window.location.href='/'">Back Home!</button>
+    <button onclick="window.location.href='/receivingpage/'">Receiving Statistics</button>
+
+    <div class="container text-center">
+        <div class="container">
+            <h3>Enter Player Information</h3>
+        </div>
+        <form action="" method="Post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="Submit" class="btn btn-primary" name="submit" value="Submit"/>
+        </form>
+    </div>
+
+    {% if submit_button == "Submit" %}
+        <div class="container" style="padding-top: 25px">
+        <table class="table table-condensed table-bordered">
+            <thead>
+                <tr>
+                    {%  for item in column_names %}
+                        <th>{{ item }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in top_player_dict.items %}
+                    <tr>
+                        <td>{{ key.0 }}</td>
+                        <td>{{ key.1 }}</td>
+                        <td>{{ value.0 }}</td>
+                        <td>{{ value.1 }}</td>
+                        <td>{{ value.2 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    {% endif %}
+
+</body>
+</html>

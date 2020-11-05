@@ -1,8 +1,14 @@
 import re
+<<<<<<< HEAD
 import pandas as pd
 
 
 def csv_to_dict(file_name, ret_df = 0):
+=======
+
+
+def csv_to_dict(file_name):
+>>>>>>> main
     # regex to get data from each line of the csv file
     row_regex = re.compile(r'(?:,|\n|^)("(?:(?:"")*[^"]*)*"|[^",\n]*|(?:\n|$))')
 
@@ -43,6 +49,9 @@ def csv_to_dict(file_name, ret_df = 0):
 
     print('missed rows (' + file_name + '): ', misses)
 
+<<<<<<< HEAD
     if ret_df:
         return pd.DataFrame(csv_dict)
+=======
+>>>>>>> main
     return csv_dict

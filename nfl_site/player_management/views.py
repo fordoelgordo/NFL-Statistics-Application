@@ -1,9 +1,11 @@
 from django.shortcuts import render
 import pandas as pd
 import pathlib
+import numpy as np
 from pandasql import sqldf
 from player_management import forms
-from nfl_site.libraries import conv_height
+from nfl_site.libraries import conv_height, getIndexes
+from datetime import date, datetime
 
 # Create your views here.
 '''
@@ -13,19 +15,26 @@ Code Comments: adding relative path variable to point to the directory location 
 '''
 # NFL Data relative path
 data_path = 'static/archive/'
-output_path = 'static/saves/'
+save_path = 'static/saves/'
 
+# Global Variables
 players = pd.DataFrame()
 players_filtered = pd.DataFrame()
 player_first_name = ''
 player_last_name = ''
+data_edited = False
 
-if pathlib.Path('static/archive/').exists():
+# Check if the csv path exists
+if pathlib.Path(data_path).exists():
     #Read in combine.csv dataset
     players = pd.read_csv(data_path + 'players.csv')
     # Get collegeId to college mapping
     colleges = players[['collegeId','college']]
     colleges = colleges.drop_duplicates()
+
+# Check if saves exist
+if pathlib.Path(save_path).exists():
+    saves_list = []
 
 # response/combine page rendering
 def player_management(request):
@@ -33,7 +42,7 @@ def player_management(request):
     edit_form = forms.EditForm()
     df_dict = []
     df_rec = []
-    global players, players_filtered, player_first_name, player_last_name 
+    global players, players_filtered, player_first_name, player_last_name, data_edited 
 
     if players.empty:
         players = pd.read_csv(data_path + 'players.csv')
@@ -55,14 +64,14 @@ def player_management(request):
             player_dict.clear()
             player_first_name = player_form.cleaned_data.get('player_first_name').title()
             player_last_name = player_form.cleaned_data.get('player_last_name').title()
-        
             
             # Filter the players.csv for the entered info
             player_first_name = "\'" + player_first_name + "\'"
             player_last_name = "\'" + player_last_name + "\'"
- 
+
+            name_filter = players.loc[(players['nameFirst'] == player_first_name.strip('\'')) & (players['nameLast'] == player_last_name.strip('\''))]
             # Set variable if player exists or not
-            if player_first_name.strip('\'') in players.nameFirst.values and player_last_name.strip('\'') in players.nameLast.values:
+            if not name_filter.empty:
                 player_exists = True
             else:
                 player_exists = False
@@ -79,6 +88,7 @@ def player_management(request):
         edit_form = forms.EditForm(request.POST)
         player_exists = True
         submit = True
+        data_edited = True
         if edit_form.is_valid():
             # Grab the data entered on the form
             player_pos = edit_form.cleaned_data.get('player_pos')
@@ -89,12 +99,13 @@ def player_management(request):
             
             # Add a new record to players.csv with playerID = max(playerID) + 1
             pid = max(players.playerId) + 1
+            
             # Create an empty player dictionary, add the appropriate values from the form
             new_player = {
                 'playerId': pid,
-                'nameFirst': player_first_name,
-                'nameLast': player_last_name,
-                'nameFull' : player_first_name + " " + player_last_name,
+                'nameFirst': player_first_name.strip('\''),
+                'nameLast': player_last_name.strip('\''),
+                'nameFull' : player_first_name.strip('\'') + " " + player_last_name.strip('\''),
                 'position' : None,
                 'collegeId': None,
                 'nflId': None,
@@ -113,16 +124,22 @@ def player_management(request):
                 'hsState': "CA",
                 'hsCountry': "USA"
             }
+
+            # Note that you need to reassign the dataframe when doing append.  Append does not edit the dataframe in place
+            players = players.append(new_player, ignore_index = True)
+            
             # Check the values entered, and update the dictionary appropriately
             if player_pos:
-                new_player['position'] = player_pos
+                players.loc[(players['playerId'].values == pid, 'position')] = player_pos
+            
             if player_dob:
-                new_player['dob'] = player_dob
+                players.loc[(players['playerId'].values == pid, 'dob')] = str(player_dob).split()[0]
+            
             if player_college:
                 # Check to ensure the college maps to an existing college by collegeId
                 if player_college in colleges.college.values:
-                    new_player['college'] = player_college
-                    new_player['collegeId'] = int(colleges[colleges['college'] == player_college].collegeId.values)
+                    players.loc[(players['playerId'].values == pid, 'college')] = player_college
+                    players.loc[(players['playerId'].values == pid, 'collegeId')] = int(colleges[colleges['college'] == player_college].collegeId.values)
                 else:
                     # Try and clean the college string, then remap
                     if len(player_college) == 3:
@@ -132,31 +149,48 @@ def player_management(request):
                     else:
                         player_college = player_college.title()
 
+                    players.loc[(players['playerId'].values == pid, 'college')] = player_college
+
+                    # if college exists in dataframe already set it to the same collegeId, otherwise set it to NaN
                     if player_college in colleges.college.values:
-                        new_player['college'] = player_college
-                        new_player['collegeId'] = int(colleges[colleges['college'] == player_college].collegeId.values)
-            
+                        players.loc[(players['playerId'].values == pid, 'collegeId')] = int(colleges[colleges['college'] == player_college].collegeId.values)
+                    else:
+                        players.loc[(players['playerId'].values == pid, 'collegeId')] = np.nan
+
+                
             if player_height:
-                new_player['heightInches'] = player_height
+                players.loc[(players['playerId'].values == pid, 'heightInches')] = float(player_height)
+
             if player_weight:
-                new_player['weight'] = player_weight
-            
-            # Append the new player record to the players dataframe and return
-            players.append(new_player, ignore_index = True)
-            print(new_player)
-            
-            # See if we can find the record now
-            players[players['nameFirst'] == 'Ford'].head()
-            
-            # Filter and return the updated record
-            players_filtered = sqldf(f"SELECT playerid AS 'Player ID', nameFirst AS 'First Name', nameLast AS 'Last Name', position AS 'Position', college AS 'College', heightInches AS 'Height(in)', weight AS 'Weight(lbs)', dob AS 'DOB', homeCity AS 'City', homeState AS 'State', homeCountry AS 'Country' FROM players WHERE nameFirst = {player_first_name} AND nameLast = {player_last_name};", globals())
+                players.loc[(players['playerId'].values == pid, 'weight')] = float(player_weight)
+                
+            players_filtered = \
+                    players[
+                        (players['playerId'] == pid)  
+                    ][['playerId','nameFirst','nameLast','position','collegeId','college','heightInches','weight','dob','homeCity','homeState','homeCountry']]
+            players_filtered.columns = [
+                'Player ID',
+                'First Name',
+                'Last Name',
+                'Position',
+                'College ID',
+                'College',
+                'Height(in)',
+                'Weight(lbs)',
+                'DOB',
+                'City',
+                'State',
+                'Country'
+            ]
             df_dict = players_filtered.to_dict()
             df_rec = players_filtered.to_dict(orient='records')
+
 
     if request.POST.get('Edit Player') == 'Edit Player':
         edit_form = forms.EditForm(request.POST)
         player_exists = True
         submit = True
+        data_edited = True
         if edit_form.is_valid():
             # ADD FIELD FOR PID IF > 1
             player_pos = edit_form.cleaned_data.get('player_pos')
@@ -165,49 +199,54 @@ def player_management(request):
             player_height = edit_form.cleaned_data.get('player_height')
             player_weight = edit_form.cleaned_data.get('player_weight')
         
+        pid = players_filtered['Player ID'].values[0]
+
         if player_pos:
-            players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'position')] = player_pos
+            players.loc[(players['playerId'].values == pid, 'position')] = player_pos
         
         if player_dob:
-            players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'dob')] = str(player_dob).split()[0]
+            players.loc[(players['playerId'].values == pid, 'dob')] = str(player_dob).split()[0]
         
         if player_college:
-            players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'college')] = player_college
+            players.loc[(players['playerId'].values == pid, 'college')] = player_college
+            # if college exists in dataframe already set it to the same collegeId, otherwise set it to NaN
+            if player_college in colleges.college.values:
+                players.loc[(players['playerId'].values == pid, 'collegeId')] = int(colleges[colleges['college'] == player_college].collegeId.values)
+            else:
+                players.loc[(players['playerId'].values == pid, 'collegeId')] = np.nan
 
         if player_height:
-            players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'heightInches')] = float(player_height)
+            players.loc[(players['playerId'].values == pid, 'heightInches')] = float(player_height)
 
         if player_weight:
-            players.loc[(players['playerId'].values == players_filtered['Player ID'].values[0], 'weight')] = float(player_weight)
+            players.loc[(players['playerId'].values == pid, 'weight')] = float(player_weight)
 
         # Filter the players dataframe
         players_filtered = sqldf(f"SELECT playerid AS 'Player ID', nameFirst AS 'First Name', nameLast AS 'Last Name', position AS 'Position', college AS 'College', heightInches AS 'Height(in)', weight AS 'Weight(lbs)', dob AS 'DOB', homeCity AS 'City', homeState AS 'State', homeCountry AS 'Country' FROM players WHERE nameFirst = {player_first_name} AND nameLast = {player_last_name};", globals())
         df_dict = players_filtered.to_dict()
         df_rec = players_filtered.to_dict(orient='records')
 
+
     if request.POST.get('Delete Player') == 'Delete Player':
+        data_edited = True
         tup = getIndexes(players,players_filtered['Player ID'].values[0])
         drop_me  = tup[0][0]
         players = players.drop(drop_me)
-        #Need to figure out how to fix the player so that it doesn't show columns after delete
+
+    
+    if data_edited and request.POST.get('Save Changes') == 'Save Changes':
+        data_edited = False
+        if not pathlib.Path(save_path).exists():
+            save_dir = pathlib.Path(save_path)
+            save_dir.mkdir(parents=True)
+
+        today = date.today()
+        date_time = datetime.now()
+        t_date = today.strftime("%m%d%y")
+        t_time = date_time.strftime("%H%M%S")
+
+        players.to_csv(f'{save_path}players_{t_date}_{t_time}.csv')
         
         
-    context = {'player_form': player_form, 'edit_form': edit_form, 'df_dict':df_dict, 'df_rec':df_rec, 'exists':player_exists, 'submit':submit}
+    context = {'player_form': player_form, 'edit_form': edit_form, 'df_dict':df_dict, 'df_rec':df_rec, 'exists':player_exists, 'submit':submit, 'data_edited': data_edited}
     return render(request, 'player_management/player_management.html', context)
-
-
-def getIndexes(dfObj, value):
-    ''' Get index positions of value in dataframe i.e. dfObj.'''
-    listOfPos = list()
-    # Get bool dataframe with True at positions where the given value exists
-    result = dfObj.isin([value])
-    # Get list of columns that contains the value
-    seriesObj = result.any()
-    columnNames = list(seriesObj[seriesObj == True].index)
-    # Iterate over list of columns and fetch the rows indexes where value exists
-    for col in columnNames:
-        rows = list(result[col][result[col] == True].index)
-        for row in rows:
-            listOfPos.append((row, col))
-    # Return a list of tuples indicating the positions of value in the dataframe
-    return listOfPos

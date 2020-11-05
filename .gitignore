@@ -18,3 +18,5 @@ nfl_site/static/__MACOSX/
 nfl_site/static/data.zip
 nfl_site/player_management/__pycache__/
 nfl_site/player_management/migrations/__pycache__/
+static/saves/
+nfl_site/static/team42libraries/__pycache__/
