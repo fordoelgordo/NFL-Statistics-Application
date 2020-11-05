@@ -1,12 +1,13 @@
 from django.shortcuts import render
 import pandas as pd
-from .forms import RushersForm
+from .forms import RushersForm , TeamPickForm
 from nfl_site.libraries import readRushers,readTeams,getImageLinks,readPlayers, get_player_dict
 
 # Create your views here.
 
 def rusher_page(request):
     submitbutton = request.POST.get("submit")
+
     # store players id and rushing yards
     player_dict = {}  
     first_name = ''
@@ -25,8 +26,11 @@ def rusher_page(request):
     #load teams csv from dataset
     df_teams = readTeams()
 
-    #check if form has been clicked or not
+    #check if name form has been clicked or not
     form = RushersForm(request.POST or None)
+
+    #check if team name form has been clicked or not
+    team_form = TeamPickForm(request.POST or None)
 
     if form.is_valid():
         player_dict.clear()  # clear info from previous search
@@ -43,8 +47,12 @@ def rusher_page(request):
             exists = 0
         else:
             player_img =  getImageLinks(first_name,last_name)
+    
+    if team_form.is_valid():
+        print('team form has been pressed yessir')
+    
 
-    context = {'form': form, 'first_name': first_name, 'last_name':last_name, 'player_dict': player_dict, 
+    context = {'form': form, 'team_form': team_form,'first_name': first_name, 'last_name':last_name, 'player_dict': player_dict, 
     'submit_button': submitbutton, 'player_team': player_team, 'columns' : outputDataFrame.columns, 'output':outputDataFrame,
     'exists':exists, 'player_img':player_img}
     return render(request, 'rushers/rusher.html', context)
