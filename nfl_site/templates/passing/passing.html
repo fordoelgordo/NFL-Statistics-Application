@@ -13,14 +13,26 @@
 
     <hr><br>
     
-    <form style="color:rgb(0, 0, 0);background-color:rgb(255, 255, 255);height:145px; width:500px" method="POST">
-        {{form.as_p}}
-        {% csrf_token %} <!--Enable users to enter info on the form-->
-        <input type="submit" class="btn btn-primary" value="Submit">
-    </form>
-
-    <br><br><hr><br>
+    <div>
+        <div>
+            <form style="color:rgb(0, 0, 0);background-color:rgb(255, 255, 255);height:197px; width:500px; float:left;" method="POST">
+                <h3>Search</h3>
+                {{form.as_p}}
+                {% csrf_token %} <!--Enable users to enter info on the form-->
+                <input type="submit" class="btn btn-primary" value="Submit">
+            </form>
+        </div>
+        <div>
+            <form style="color:rgb(0, 0, 0);background-color:rgb(255, 255, 255);height:197px; width:500px; float:right;" method="POST">
+                <h3>Analytics</h3>
+                {{analytics.as_p}}
+                {% csrf_token %} <!--Enable users to enter info on the form-->
+                <input type="submit" class="btn btn-primary" value="Submit">
+            </form>
+        </div>
+    </div><hr>
     
+<<<<<<< Updated upstream
     <table id="passing_table" class="display" width="100%" cellspacing="0">
         <thead>
             <tr>
@@ -49,6 +61,33 @@
             } );
         } );
     </script>
+=======
+    {% if pass %}
+    <div style="color:rgb(0, 0, 0);background-color:rgb(255, 255, 255)"><br>
+        <table id="passing_table" class="table table-bordered" width="100%" cellspacing="0">
+            <thead>
+                <tr>
+                {% for item in columns %}
+                    <th width="1%" style="color:rgba(2, 27, 22, 0.808)"><i>{{ item }}</th></i>
+                {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for key, value in pass.items %}
+                    <td >
+                        {% for i in value %}
+                            {{ i }}<br>
+                        {% endfor %}
+                    </td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+  
+>>>>>>> Stashed changes
     <h2 style="color:rgb(255, 255, 255)">{{empty}}</h2>
 </body>
 </html>
