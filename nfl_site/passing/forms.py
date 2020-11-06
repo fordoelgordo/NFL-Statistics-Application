@@ -14,15 +14,11 @@ PASSING_OUTCOME = [
     ]
 
 class PassingForm(forms.Form):
-    player_name = forms.CharField(label = 'Player\'s Name', required = False)
+    player_name = forms.CharField(label = 'Player\'s Name', required = True)
     passing_year = forms.IntegerField(label = 'Year', required = False, widget = forms.Select(choices=PASSING_YEARS))
     passing_outcome = forms.CharField(label = 'Passing Outcome', required = False, widget = forms.Select(choices=PASSING_OUTCOME))
     passing_length = forms.IntegerField(label = 'Passing Length (Yards)', required = False)
 
 
 class PassingAnalytics(forms.Form):
-    top_player_count = forms.IntegerField(label = 'How Many?')
-    passing_outcome = forms.CharField(label = 'Passing Outcome', required = False, widget = forms.Select(choices=PASSING_OUTCOME))
-    passing_length = forms.IntegerField(label = 'Passing Length (Yards)', required = False)
-    passing_year = forms.IntegerField(label = 'Year', required = False, widget = forms.Select(choices=PASSING_YEARS))
-
+    top_player_count = forms.IntegerField(label = 'How Many?', required = True)
