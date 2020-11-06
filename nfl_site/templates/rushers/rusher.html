@@ -19,8 +19,14 @@
 
       <div id="PlayerNames">
          <form action="" method="Post">
-            {% csrf_token %}
-            {{ form.as_p }}
+            <p>
+               <label>First Name:</label>
+               {% csrf_token %}
+               {{ form.first_name }}
+               <label>Last Name:</label>
+               {{form.last_name}}
+         </p>
+
             <input type="Submit" class="btn btn-primary" name="submit" value="Submit" />
          </form>
       </div>
@@ -46,27 +52,40 @@
          margin-right: auto;
          border: 5px solid #874444;
       }
+      table, th, td {
+         border: 1px solid black;
+      }
+      th, td {
+        padding: 5px;
+      }
+      th {
+        text-align: left;
+      }
    </style>
 
-   {% if submit_button == "Submit" %}
+   {% if submit_button == "Submit" or team_submit == "Team Picker"%}
 
    {% if exists == 0 %}
    <h2>Error: {{first_name}} {{last_name}}</h2>
+   {% elif exists == 1%}
+   <h2>Displaying the Top 20 Rushers!</h2>
    {% else %}
    <img src="{{player_img}}" alt="image">
    {% endif %}
 
 
-   <table class="table table-condensed table-bordered">
+
+   <div id = "Table">
+   <table style="width:100%">
       <tr>
          {% for item in columns %}
-         <th width="1%" style="color:darkslategray"><i>{{ item }}</th>
+         <th style="color:darkslategray"><i>{{ item }}</th>
          </i>
          {% endfor %}
       </tr>
       <tr>
          {% for key, value in output.items %}
-         <td style="color:dodgerblue(255, 255, 255)">
+         <td>
             {% for i in value %}
             {{ i }}<br>
             {% endfor %}
@@ -74,7 +93,8 @@
          {% endfor %}
       </tr>
    </table>
-   {% endif %}
+   </div>
+   {% endif %} 
 </body>
 
 </html>
