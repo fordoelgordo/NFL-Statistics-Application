@@ -23,6 +23,7 @@ COMBINE_DICT = {
 }
 
 # Read in the combine.csv data using Rob's CSV reader function
+combine = ""
 if Path(data_path).exists():
     combine = csv_to_dict(data_path + 'combine.csv', to_df = 1)
     combine['combineHeightConv'] = combine['combineHeight'].apply(lambda x: conv_height(float(x)))
