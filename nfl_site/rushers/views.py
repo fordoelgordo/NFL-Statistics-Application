@@ -1,20 +1,11 @@
 from django.shortcuts import render
 import pandas as pd
 from .forms import RushersForm , TeamPickForm
-from nfl_site.libraries import readRushers,readTeams,getImageLinks,readPlayers, get_player_dict,get_rushers_yards,get_name, get_rusher_yards_dic,get_top_rushers_df, create_ALL_TIME_context
-# Create your views here.
+from .nfldata import get_player_dict,get_rusher_yards_dic,get_top_rushers_df,create_ALL_TIME_context, getImageLinks
 
-# load players csv from dataset
-df_players = readPlayers()
-
-# load rushers csv from dataset
-df_rusher = readRushers()
-
-#load teams csv from dataset
-df_teams = readTeams()
 
 def rusher_page(request):
-
+    
     # store players id and rushing yards
     player_dict = {}  
     context = {}
@@ -42,7 +33,7 @@ def rusher_page(request):
         first_name = form.cleaned_data.get("first_name")  # get player first name from form
         last_name = form.cleaned_data.get("last_name") # get player last name from form
         # filter out players based on the name entered
-        outputDataFrame = get_player_dict(df_players,first_name,last_name,df_rusher)
+        outputDataFrame = get_player_dict(first_name,last_name)
 
         # if dictionary is empty player does not exist in data frame
         # prepare display message indicating so
@@ -56,12 +47,12 @@ def rusher_page(request):
     if team_form.is_valid() and not(form.is_valid()):
         
         #dictionary of player id to their yards
-        rusher_dic = get_rusher_yards_dic(df_rusher) 
+        rusher_dic = get_rusher_yards_dic() 
         
         #getting the top 20 rushers [player id] = [total rush yards] 
         #Reverse ordered because we want top players first
         top_rushers = dict(sorted(rusher_dic.items(), key = lambda kv:(kv[1], kv[0]),reverse=True)[:20])
-        outputDataFrame = get_top_rushers_df(df_players,top_rushers)
+        outputDataFrame = get_top_rushers_df(top_rushers)
         exists = 1
         context = create_ALL_TIME_context(form,team_form,team_submit,outputDataFrame,exists)
 
