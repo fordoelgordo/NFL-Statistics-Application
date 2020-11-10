@@ -15,31 +15,29 @@
    <hr>
    <br>
 
-   <div id="wrapper">
+   <div id = "wrapper" class="row" style="width: 100%; display: flex; padding: 30px;">
 
-      <div id="PlayerNames">
-         <form action="" method="Post">
+      <div id="PlayerNames" class="names" style="width: 50%; float: left; flex: 1; padding-left: 15px; padding-top: 1px;">
+         <form method="Post">
+            <h3>Search Player</h3>
             <p>
-               <label>First Name:</label>
                {% csrf_token %}
-               {{ form.first_name }}
-               <label>Last Name:</label>
-               {{form.last_name}}
-         </p>
+               {{ form.as_p }}
+            </p>
 
             <input type="Submit" class="btn btn-primary" name="submit" value="Submit" />
          </form>
       </div>
 
 
-      <div id="TeamPicker">
+      <div id="TeamPicker" class="teams" style="width: 50%; float: right; flex: 1; padding-left: 15px; padding-top: 1px;" >
          <form method="Post">
+            <h3>Search Top Rushers</h3>
             <p>
-               <label>Team Name:</label>
                {% csrf_token %}
-               {{ team_form.team_name }}
+               {{ team_form.as_p }}
             </p>
-            <input type="submit" class="btn btn-info btn-sm" name="Team Picker" value="Team Picker">
+            <input type="submit" class="btn btn-primary" name="Team Picker" value="Team Picker">
          </form>
       </div>
 
