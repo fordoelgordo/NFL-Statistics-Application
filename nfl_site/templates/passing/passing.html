@@ -3,7 +3,7 @@
     <meta charset="utf-8">
     <title>Passing Statistics Page</title>
         <!--Add boostrap styling-->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 <body style="background-color:rgba(2, 27, 22, 0.808);margin-left:2.5em">
     <h1 style="color:rgb(255, 255, 255)">NFL Passing Statistics</h1>
@@ -11,30 +11,56 @@
 
     <hr><br>
     
-    <form style="color:rgb(0, 0, 0);background-color:rgb(255, 255, 255);height:145px; width:500px" method="POST">
-        {{form.as_p}}
-        {% csrf_token %} <!--Enable users to enter info on the form-->
-        <input type="submit" class="btn btn-primary" value="Submit">
-    </form>
-
-    <br><br><hr><br>
+    <div class="row" style="width: 100%; display: flex; padding: 30px;">
+        <div class="search" style="color:rgb(0, 0, 0);background-color:rgb(255, 255, 255); width: 50%; float: left; flex: 1; padding: 15px; border-style: solid; border-color: teal;">
+            <form method="POST">
+                <h3>Search</h3>
+                {{form.as_p}}
+                {% csrf_token %} <!--Enable users to enter info on the form-->
+                <input type="submit" class="btn btn-primary" value="Search" name="Search">
+            </form>
+        </div>
+        <div class="analytics" style="color:rgb(0, 0, 0);background-color:rgb(255, 255, 255); width: 50%; float:right; flex: 1; padding: 15px; border-style: solid; border-color: teal;">
+            <form  method="POST">
+                <h3>Analytics (Top Players by Total Passing Yards)</h3>
+                {{analytics.as_p}}
+                {% csrf_token %} <!--Enable users to enter info on the form-->
+                <input type="submit" class="btn btn-primary" value="Show Table" name="Show Table">
+                <input type="submit" class="btn btn-primary" value="Show Graph" name="Show Graph">
+                <input type="submit" class="btn btn-primary" value="Show Scatter Plot" name="Show Scatter Plot">
+            </form>
+        </div>
+    </div><hr>
     
-    <table class="table table-condensed table-bordered">
-        <tr>
-        {% for item in columns %}
-            <th width="1%" style="color:rgb(0, 192, 176)"><i>{{ item }}</th></i>
-        {% endfor %}
-        </tr>
-        <tr>
-        {% for key, value in pass.items %}
-        <td style="color:rgb(255, 255, 255)">
-            {% for i in value %}
-                {{ i }}<br>
-            {% endfor %}
-        </td>
-        {% endfor %}
-        </tr>
-    </table>
+    {% if not results.empty %}
+    <div style="color:rgb(0, 0, 0); padding: 30px;"><br>
+        <table id="passing_table" class="table table-bordered" width="100%" cellspacing="0">
+            <thead>
+                <tr>
+                {% for item in columns %}
+                    <th width="1%" style="color:rgba(0, 223, 178, 0.973)"><i>{{ item }}</th></i>
+                {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for key, value in results.items %}
+                    <td style="color:rgb(255, 255, 255)">
+                        {% for i in value %}
+                            {{ i }}<br>
+                        {% endfor %}
+                    </td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+  
     <h2 style="color:rgb(255, 255, 255)">{{empty}}</h2>
+
+    <br><div class="container" style="width: 85%; padding: 30px;">
+        {{ graph_div|safe }}
+    </div>
 </body>
 </html>

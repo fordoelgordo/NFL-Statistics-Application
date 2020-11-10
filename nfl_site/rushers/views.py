@@ -1,14 +1,23 @@
 from django.shortcuts import render
 import pandas as pd
-from .forms import RushersForm
-from nfl_site.libraries import readRushers,readTeams,getImageLinks,readPlayers, get_player_dict
-
+from .forms import RushersForm , TeamPickForm
+from nfl_site.libraries import readRushers,readTeams,getImageLinks,readPlayers, get_player_dict,get_rushers_yards,get_name, get_rusher_yards_dic,get_top_rushers_df, create_ALL_TIME_context
 # Create your views here.
 
+# load players csv from dataset
+df_players = readPlayers()
+
+# load rushers csv from dataset
+df_rusher = readRushers()
+
+#load teams csv from dataset
+df_teams = readTeams()
+
 def rusher_page(request):
-    submitbutton = request.POST.get("submit")
+
     # store players id and rushing yards
     player_dict = {}  
+    context = {}
     first_name = ''
     last_name = ''
     player_team = []
@@ -16,17 +25,17 @@ def rusher_page(request):
     exists = None
     player_img = ''
 
-    # load players csv from dataset
-    df_players = readPlayers()
+    team_img = ''
+    team_name = ''
 
-    # load rushers csv from dataset
-    df_rusher = readRushers()
+    submitbutton = request.POST.get("submit")
+    team_submit = request.POST.get("Team Picker")
 
-    #load teams csv from dataset
-    df_teams = readTeams()
-
-    #check if form has been clicked or not
+    #check if name form has been clicked or not
     form = RushersForm(request.POST or None)
+
+    #check if team name form has been clicked or not
+    team_form = TeamPickForm(request.POST or None)
 
     if form.is_valid():
         player_dict.clear()  # clear info from previous search
@@ -43,12 +52,23 @@ def rusher_page(request):
             exists = 0
         else:
             player_img =  getImageLinks(first_name,last_name)
+    
+    if team_form.is_valid() and not(form.is_valid()):
+        
+        #dictionary of player id to their yards
+        rusher_dic = get_rusher_yards_dic(df_rusher) 
+        
+        #getting the top 20 rushers [player id] = [total rush yards] 
+        #Reverse ordered because we want top players first
+        top_rushers = dict(sorted(rusher_dic.items(), key = lambda kv:(kv[1], kv[0]),reverse=True)[:20])
+        outputDataFrame = get_top_rushers_df(df_players,top_rushers)
+        exists = 1
+        context = create_ALL_TIME_context(form,team_form,team_submit,outputDataFrame,exists)
 
-    context = {'form': form, 'first_name': first_name, 'last_name':last_name, 'player_dict': player_dict, 
-    'submit_button': submitbutton, 'player_team': player_team, 'columns' : outputDataFrame.columns, 'output':outputDataFrame,
-    'exists':exists, 'player_img':player_img}
+
+    if not context:
+        context = {'form': form, 'team_form': team_form,'first_name': first_name, 'last_name':last_name, 'player_dict': player_dict, 
+        'submit_button': submitbutton, 'player_team': player_team, 'columns' : outputDataFrame.columns, 'output':outputDataFrame,
+        'exists':exists, 'player_img':player_img}
+
     return render(request, 'rushers/rusher.html', context)
-
-
-
-

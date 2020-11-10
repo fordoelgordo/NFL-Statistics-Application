@@ -1,57 +1,100 @@
+{% load static %}
 <html>
-   <head>
-      <meta charset="utf-8">
-      <title>Rushing Statistics Page</title>
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-   </head>
 
-   <body style="background-color:darksalmon; margin-left:2.5em; margin-right: 2.5em; ">
-      <h1>Rushing Statistics</h1>
-      <button onclick="window.location.href='/' ">Back Home!</button>
-      <hr>
-      <br>
+<head>
+   <meta charset="utf-8">
+   <title>Rushing Statistics Page</title>
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+   <link rel="stylesheet" href="{% static "css/rushers/rushers.css" %}" />
+</head>
 
-      <form action="" method="Post">
-         {% csrf_token %}
-         {{ form.as_p }}
-         <input type="Submit" name="submit" value="Submit"/>
-      </form>
-      
-      <style>
-         img {
-           display: block;
-           margin-left: auto;
-           margin-right: auto;
-           border: 5px solid #874444;
-         }
-      </style>
+<body style="background-color:darksalmon; margin-left:2.5em; margin-right: 2.5em; ">
+   <h1>Rushing Statistics</h1>
+   <button onclick="window.location.href='/' ">Back Home!</button>
+   <hr>
+   <br>
 
-      {% if submit_button == "Submit" %}
+   <div id="wrapper">
 
-         {% if exists == 0 %}
-            <h2>Error: {{first_name}} {{last_name}}</h2>
-         {% else %}
-            <img src= "{{player_img}}" alt="image" >
-         {% endif %} 
-          
+      <div id="PlayerNames">
+         <form action="" method="Post">
+            <p>
+               <label>First Name:</label>
+               {% csrf_token %}
+               {{ form.first_name }}
+               <label>Last Name:</label>
+               {{form.last_name}}
+         </p>
 
-      <table class="table table-condensed table-bordered">
-         <tr>
-            {% for item in columns %}
-            <th width="1%" style="color:darkslategray"><i>{{ item }}</th>
-            </i>
+            <input type="Submit" class="btn btn-primary" name="submit" value="Submit" />
+         </form>
+      </div>
+
+
+      <div id="TeamPicker">
+         <form method="Post">
+            <p>
+               <label>Team Name:</label>
+               {% csrf_token %}
+               {{ team_form.team_name }}
+            </p>
+            <input type="submit" class="btn btn-info btn-sm" name="Team Picker" value="Team Picker">
+         </form>
+      </div>
+
+   </div>
+
+   <style>
+      img {
+         display: block;
+         margin-left: auto;
+         margin-right: auto;
+         border: 5px solid #874444;
+      }
+      table, th, td {
+         border: 1px solid black;
+      }
+      th, td {
+        padding: 5px;
+      }
+      th {
+        text-align: left;
+      }
+   </style>
+
+   {% if submit_button == "Submit" or team_submit == "Team Picker"%}
+
+   {% if exists == 0 %}
+   <h2>Error: {{first_name}} {{last_name}}</h2>
+   {% elif exists == 1%}
+   <h2>Displaying the Top 20 Rushers!</h2>
+   {% else %}
+   <img src="{{player_img}}" alt="image">
+   {% endif %}
+
+
+
+   <div id = "Table">
+   <table style="width:100%">
+      <tr>
+         {% for item in columns %}
+         <th style="color:darkslategray"><i>{{ item }}</th>
+         </i>
+         {% endfor %}
+      </tr>
+      <tr>
+         {% for key, value in output.items %}
+         <td>
+            {% for i in value %}
+            {{ i }}<br>
             {% endfor %}
-         </tr>
-         <tr>
-            {% for key, value in output.items %}
-            <td style="color:dodgerblue(255, 255, 255)">
-               {% for i in value %}
-               {{ i }}<br>
-               {% endfor %}
-            </td>
-            {% endfor %} 
-         </tr>
-      </table>
-      {% endif %}
-   </body>
+         </td>
+         {% endfor %}
+      </tr>
+   </table>
+   </div>
+   {% endif %} 
+</body>
+
 </html>
