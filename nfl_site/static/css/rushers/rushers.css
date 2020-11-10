@@ -9,22 +9,22 @@
 }
 
 #PlayerNames {
-    display: inline-block;
+    /* display: inline-block;
     width:200px;
     height:200px;
-    margin-left: 5px;
+    margin-left: 5px; */
     border: 3px solid red;
-    vertical-align:middle;
+    /* vertical-align:middle; */
 
 }
 
 #TeamPicker {
-    display: inline-block;
+    /* display: inline-block;
     margin-left: 55%;
     width:200px;
     height:200px;
-    margin-top: 0;
+    margin-top: 0; */
     border: 3px solid green;
-    vertical-align:middle;
+    /* vertical-align:middle; */
 
 }

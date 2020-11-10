@@ -4,6 +4,8 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import re
 import pathlib
+import datetime
+
 
 
 # ================== Below are functions that are used by the Rushers site ==================
@@ -23,6 +25,7 @@ if pathlib.Path('static/archive/').exists():
     df_rusher = readRushers()
     df_teams = readTeams()
     df_players = readPlayers()
+    all_rushers = df_rusher[["playerId","rushYards","rushNull"]]
 
 
 
@@ -124,14 +127,17 @@ def get_name(player_id):
 # function to get rushers dictionary {player id} = {total yards they have}
 def get_rusher_yards_dic():
     total_rusher_dic = {}
-    all_rushers = df_rusher[["playerId","rushYards","rushNull"]]
     player_id = all_rushers[["playerId"]].drop_duplicates().values.tolist()
 
-    for id in player_id:
-        rushers_filter = all_rushers.loc[(all_rushers['playerId'] == id[0]) & (all_rushers['rushNull'] == 0)]
-        total_yards = rushers_filter['rushYards'].sum()
-        total_rusher_dic.update({id[0]:total_yards})
 
+    #TODO: Less Expensive, figure out how to reduce costs of lookup or move into own function
+    a = datetime.datetime.now()
+    for id in player_id:
+        total_yards = all_rushers.loc[(all_rushers['playerId'] == id[0],'rushYards')].sum()
+        total_rusher_dic.update({id[0]:total_yards})
+    b = datetime.datetime.now()
+    c = b - a
+    print(c)
     return total_rusher_dic
 
 def get_top_rushers_df(top_rushers):
