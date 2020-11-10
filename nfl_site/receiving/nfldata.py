@@ -1,8 +1,9 @@
 import pathlib
-
-
+import pandas as pd
+import plotly
+import plotly.express as px
 from operator import itemgetter
-from nfl_site.libraries import csv_to_dict
+from nfl_site.libraries import csv_to_dict, mean
 
 
 # create Dictionary to quickly look up player names
@@ -148,6 +149,37 @@ def player_rec_plays():
                 rec_plays_dict[tup_key] += 1
 
     return rec_plays_dict
+
+
+# returns plotly div object given dictionary styled in same manner as out put of receiving functions
+def avg_rec_yard_scatter(data_dict):
+    df_dict = {'player_id': [], 'player_name': [], 'rec_plays': [], 'rec_yards_avg': []}
+
+    # convert dictionary into a dictionary that is formatted for better conversion into pandas data frame
+    for key, val in data_dict.items():
+        df_dict['player_id'].append(key[0])
+        df_dict['player_name'].append(key[1])
+        df_dict['rec_plays'].append(val[2])
+        df_dict['rec_yards_avg'].append(val[1])
+
+    data_df = pd.DataFrame.from_dict(df_dict)
+
+    # mean function is function created by Team member Ford.
+    # DOES NOT USE PANDAS BUILT IN FUNCTION!!!
+    df_mean = mean(data_df, 'rec_yards_avg')
+
+    # Create and return plotly div object
+    fig = px.scatter(data_df, x='rec_yards_avg', y='rec_plays', hover_name='player_name',
+                     labels={
+                         'rec_yards_avg': 'Average Receiving Yards Per Play (ARYPP)',
+                         'rec_plays': 'Total Receiving Plays'
+                     },
+                     title='Total Receiving Plays vs Average Receiving Yards Per Play (ARYPP)')
+    fig.add_vline(df_mean, line_dash='dash', annotation_text="Overall ARYPP: " + str(df_mean),
+                  annotation_position="top right", line_color='green')
+    graph_div = plotly.offline.plot(fig, output_type="div")
+
+    return graph_div
 
 
 # dictionaries that need to be loaded prior to running above functions

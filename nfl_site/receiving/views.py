@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 
-from .nfldata import get_rec_yards_dict, top_n_rec_yards
+from .nfldata import get_rec_yards_dict, top_n_rec_yards, avg_rec_yard_scatter
 from .forms import ReceiveForm, TopReceiveForm
 
 
@@ -37,8 +37,8 @@ def top_receiving_page(request):
     submit_button = request.POST.get("submit")
 
     form = TopReceiveForm(request.POST or None)
-
     top_player_dict = {}
+    graph_div = ''
     column_names = ['Player ID', 'Full Name', 'Total Receiving Yards',
                     'Avg. Rec. Yards per Rec. Play', 'Total Receiving Plays']
 
@@ -48,7 +48,10 @@ def top_receiving_page(request):
         # get dictionary containing top players
         top_player_dict = top_n_rec_yards(player_num)
 
-    context = {'form': form, 'column_names': column_names,
+        if top_player_dict:
+            graph_div = avg_rec_yard_scatter(top_player_dict)
+
+    context = {'form': form, 'column_names': column_names, 'graph_div': graph_div,
                'top_player_dict': top_player_dict, 'submit_button': submit_button}
 
     return render(request, 'receiving/topreceiving.html', context)
