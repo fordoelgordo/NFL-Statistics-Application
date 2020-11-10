@@ -169,7 +169,7 @@ def avg_rec_yard_scatter(data_dict):
     df_mean = mean(data_df, 'rec_yards_avg')
 
     # Create and return plotly div object
-    fig = px.scatter(data_df, x='rec_yards_avg', y='rec_plays',
+    fig = px.scatter(data_df, x='rec_yards_avg', y='rec_plays', hover_name='player_name',
                      labels={
                          'rec_yards_avg': 'Average Receiving Yards Per Play (ARYPP)',
                          'rec_plays': 'Total Receiving Plays'
