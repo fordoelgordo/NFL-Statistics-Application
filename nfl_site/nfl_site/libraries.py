@@ -46,17 +46,21 @@ def getIndexes(dfObj, value):
 
 
 # ================== Below are functions that are used by the Rushers site ==================
-
-
-
+import pathlib
 
 def readPlayers():
+    if not pathlib.Path('static/archive/').exists():
+        return
     return pd.read_csv("static/archive/players.csv")
 
 def readRushers():
+    if not pathlib.Path('static/archive/').exists():
+        return
     return pd.read_csv("static/archive/rusher.csv")
 
 def readTeams():
+    if not pathlib.Path('static/archive/').exists():
+        return
     df = pd.read_csv("static/archive/draft.csv")
     team_df = df[['teamId','draftTeam']].drop_duplicates()
     return team_df

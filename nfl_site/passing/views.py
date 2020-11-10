@@ -5,6 +5,9 @@ from operator import itemgetter
 
 import pandas as pd
 import pathlib
+import plotly
+import plotly.graph_objs as go
+import plotly.express as px
 
 _DATA_PATH = 'static/archive/'
 _DROP_FRAME = [ 
@@ -68,13 +71,38 @@ def pass_page(request):
             context = parse_form_entries(form)
             context['analytics'] = analytics
 
-    if request.POST.get('Retrieve') == 'Retrieve':
+    if request.POST.get('Show Table') == 'Show Table' or request.POST.get('Show Graph') == 'Show Graph' or request.POST.get('Show Scatter Plot') == 'Show Scatter Plot':
         analytics = forms.PassingAnalytics(request.POST)
         if analytics.is_valid():
             context = passing_analytics(analytics) 
             context['form'] = form
 
-    return render(request,'passing/passing.html', context)
+        if request.POST.get('Show Graph') == 'Show Graph':
+            results = context['results']
+            top_player_count = context['n_count']
+            context['results'] = pd.DataFrame()
+
+            fig = go.Figure(data=[
+                go.Bar(name='Total Passing Length (Yards)', x=results['Player Name'], y=results['Total Passing Length (Yards)']),
+                go.Bar(name='Total Times Passed (from csv)', x=results['Player Name'], y=results['Total Times Passed (from csv)'])
+                ], 
+                layout_title_text=f'Top {top_player_count} Players (Total Passing Yards)' )
+
+            fig.update_layout(barmode='group')
+            graph_div = plotly.offline.plot(fig, output_type="div")
+            context['graph_div'] = graph_div
+
+        if request.POST.get('Show Scatter Plot') == 'Show Scatter Plot':
+            results = context['results']
+            top_player_count = context['n_count']
+            context['results'] = pd.DataFrame()
+
+            fig = px.scatter(results, x="Total Passing Length (Yards)", y="Total Times Passed (from csv)", title="Total Passing Length vs Total Times Passed")
+            graph_div = plotly.offline.plot(fig, output_type="div")
+            context['graph_div'] = graph_div
+    
+    
+    return render(request,'passing/passing.html', context) 
 
 
 def parse_form_entries(form):
@@ -84,7 +112,7 @@ def parse_form_entries(form):
     player_name = form.cleaned_data.get('player_name').title()
     passing_year = form.cleaned_data.get('passing_year')
     passing_outcome = form.cleaned_data.get('passing_outcome')
-    passing_length = form.cleaned_data.get('passing_length')
+    passing_length = str(form.cleaned_data.get('passing_length'))
 
     if player_name:
         player_name = player_name.split()
@@ -123,7 +151,7 @@ def parse_form_entries(form):
         results = results.drop(columns=_DROP_FRAME)
         results = results.rename(columns=_RENAME_COLS)
 
-    return {'form': form, 'pass': results, 'columns' : results.columns}
+    return {'form': form, 'results': results, 'columns' : results.columns}
 
 
 def passing_analytics(analytics):
@@ -139,30 +167,38 @@ def passing_analytics(analytics):
     for key, value in top_player_dict.items():
         r_dict = {
             'Player Name' : get_player_name(key),
-            'Total Passing Length (Yards)': value
+            'Total Passing Length (Yards)': value[0],
+            'Total Times Passed (from csv)': value[1],
+            'Average Passing Length (Yards)': value[2],
         }
         temp_df = pd.DataFrame(r_dict, index=[0])
         results = results.append(temp_df, ignore_index=True)
 
-    return {'analytics': analytics, 'pass': results, 'columns' : results.columns}
+    return {'analytics': analytics, 'results': results, 'columns' : results.columns, 'n_count' : top_player_count}
 
 # Analytics are done not using Pandas
 def top_n_passing_yards(tp_count):
     total_passing_dict = {}
+
     for i in range(len(pass_dict['playerId'])):
         cell_val = pass_dict['passLength'][i]
         player_id = pass_dict['playerId'][i]
         if cell_val:
-
+            list_key = [int(cell_val), 1, 0]
             if player_id in total_passing_dict:
-                total_passing_dict[player_id] += int(cell_val)
+                total_passing_dict[player_id][0] += list_key[0]
+                total_passing_dict[player_id][1] += list_key[1]
             else:
-                total_passing_dict[player_id] = int(cell_val)
+                total_passing_dict[player_id] = list_key
 
 
     passing_yards_desc = sorted(total_passing_dict.items(), key=itemgetter(1), reverse=True)
     # get the top n records from list and cast into a dictionary
     n_records = dict(passing_yards_desc[:tp_count])
+
+    # Calculate average passing yards
+    for key, value in n_records.items():
+        value[2] = round(value[0]/value[1], 3)
 
     return n_records
 

@@ -25,12 +25,14 @@
                 <h3>Analytics (Top Players by Total Passing Yards)</h3>
                 {{analytics.as_p}}
                 {% csrf_token %} <!--Enable users to enter info on the form-->
-                <input type="submit" class="btn btn-primary" value="Retrieve" name="Retrieve">
+                <input type="submit" class="btn btn-primary" value="Show Table" name="Show Table">
+                <input type="submit" class="btn btn-primary" value="Show Graph" name="Show Graph">
+                <input type="submit" class="btn btn-primary" value="Show Scatter Plot" name="Show Scatter Plot">
             </form>
         </div>
     </div><hr>
     
-    {% if not pass.empty %}
+    {% if not results.empty %}
     <div style="color:rgb(0, 0, 0); padding: 30px;"><br>
         <table id="passing_table" class="table table-bordered" width="100%" cellspacing="0">
             <thead>
@@ -42,7 +44,7 @@
             </thead>
             <tbody>
                 <tr>
-                    {% for key, value in pass.items %}
+                    {% for key, value in results.items %}
                     <td style="color:rgb(255, 255, 255)">
                         {% for i in value %}
                             {{ i }}<br>
@@ -56,5 +58,9 @@
     {% endif %}
   
     <h2 style="color:rgb(255, 255, 255)">{{empty}}</h2>
+
+    <br><div class="container" style="width: 85%; padding: 30px;">
+        {{ graph_div|safe }}
+    </div>
 </body>
 </html>
