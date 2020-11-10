@@ -7,4 +7,4 @@ class RushersForm(forms.Form):
     last_name = forms.CharField(label = 'Last Name', max_length=100,required=True)
 
 class TeamPickForm(forms.Form):
-    team_name = forms.CharField(label = 'Top Rushers',required = False, widget=forms.Select(choices=TEAM_CHOICES) )
+    team_name = forms.CharField(label = 'Top Rushers',required = True, widget=forms.Select(choices=TEAM_CHOICES) )

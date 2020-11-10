@@ -25,7 +25,7 @@
                {{ form.as_p }}
             </p>
 
-            <input type="Submit" class="btn btn-primary" name="submit" value="Submit" />
+            <input type="Submit" class="btn btn-primary" name="Search" value="Search" />
          </form>
       </div>
 
@@ -62,7 +62,7 @@
       }
    </style>
 
-   {% if submit_button == "Submit" or team_submit == "Team Picker"%}
+   {% if submit_button == "Search" or team_submit == "Team Picker"%}
 
    {% if exists == 0 %}
    <h2>Error: {{first_name}} {{last_name}}</h2>
