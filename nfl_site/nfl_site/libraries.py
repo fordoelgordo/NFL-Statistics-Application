@@ -17,9 +17,6 @@ from bs4 import BeautifulSoup
 import re
 
 
-
-
-
 def conv_height(h):
     ft = int(divmod(h,12)[0])
     inch = round(int(divmod(h,12)[1]),0)

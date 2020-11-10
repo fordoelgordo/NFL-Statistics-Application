@@ -25,6 +25,9 @@ df_rusher = readRushers()
 df_teams = readTeams()
 df_players = readPlayers()
 
+dataTeam = 'https://gist.githubusercontent.com/cnizzardini/13d0a072adb35a0d5817/raw/dbda01dcd8c86101e68cbc9fbe05e0aa6ca0305b/nfl_teams.csv'
+team_df = pd.read_csv(dataTeam,error_bad_lines=False)
+print(team_df)
 
 # For getting the record number or index of a certain record in a data frame
 # params: ( dataframe, value of row to take out) e.g: (players, playerID)
@@ -67,6 +70,10 @@ def getTeamName(team_id):
         team_name = df_teams[df_teams['teamId'] == i]['draftTeam'].unique().tolist()
         team_names.append(team_name)
     return team_names
+
+# def get_all_teams_dic():
+#     all_teams = df_teams[['teamId']['draftTeam']].unique().tolist()
+#     print(all_teams)
 
 def get_player_dict(first_name, last_name):
     player_dict = {} 
