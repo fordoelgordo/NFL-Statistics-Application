@@ -62,8 +62,6 @@ def rusher_page(request):
             context = create_ALL_TIME_context(form,team_form,team_submit,outputDataFrame,exists)
 
     if not context:
-        context = {'form': form, 'team_form': team_form,'first_name': first_name, 'last_name':last_name, 'player_dict': player_dict, 
-        'submit_button': submitbutton, 'player_team': player_team, 'columns' : outputDataFrame.columns, 'output':outputDataFrame,
-        'exists':exists, 'player_img':player_img}
+        context = {'form': form, 'team_form': team_form}
 
     return render(request, 'rushers/rusher.html', context)
