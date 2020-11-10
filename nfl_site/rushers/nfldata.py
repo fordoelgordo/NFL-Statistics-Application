@@ -3,12 +3,10 @@ import pandas as pd
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import re
+import pathlib
 
 
 # ================== Below are functions that are used by the Rushers site ==================
-
-
-
 
 def readPlayers():
     return pd.read_csv("static/archive/players.csv")
@@ -21,13 +19,16 @@ def readTeams():
     team_df = df[['teamId','draftTeam']].drop_duplicates()
     return team_df
 
-df_rusher = readRushers()
-df_teams = readTeams()
-df_players = readPlayers()
+if pathlib.Path('static/archive/').exists():
+    df_rusher = readRushers()
+    df_teams = readTeams()
+    df_players = readPlayers()
 
-dataTeam = 'https://gist.githubusercontent.com/cnizzardini/13d0a072adb35a0d5817/raw/dbda01dcd8c86101e68cbc9fbe05e0aa6ca0305b/nfl_teams.csv'
-team_df = pd.read_csv(dataTeam,error_bad_lines=False)
-print(team_df)
+
+
+# dataTeam = 'https://gist.githubusercontent.com/cnizzardini/13d0a072adb35a0d5817/raw/dbda01dcd8c86101e68cbc9fbe05e0aa6ca0305b/nfl_teams.csv'
+# team_df = pd.read_csv(dataTeam,error_bad_lines=False)
+# print(team_df)
 
 # For getting the record number or index of a certain record in a data frame
 # params: ( dataframe, value of row to take out) e.g: (players, playerID)
