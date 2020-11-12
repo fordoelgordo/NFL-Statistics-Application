@@ -13,17 +13,17 @@ from nfl_site.libraries import csv_to_dict
 def readPlayers():
     if not pathlib.Path('static/archive/').exists():
         return
-    return csv_to_dict("static/archive/players.csv",1)
+    return pd.read_csv("static/archive/players.csv")
 
 def readRushers():
     if not pathlib.Path('static/archive/').exists():
         return
-    return csv_to_dict("static/archive/rusher.csv",1)
+    return pd.read_csv("static/archive/rusher.csv")
 
 def readTeams():
     if not pathlib.Path('static/archive/').exists():
         return
-    df = csv_to_dict("static/archive/draft.csv", 1)
+    df = pd.read_csv("static/archive/draft.csv")
     team_df = df[['teamId','draftTeam']].drop_duplicates()
     return team_df
 
@@ -32,8 +32,6 @@ if pathlib.Path('static/archive/').exists():
     df_teams = readTeams()
     df_players = readPlayers()
     all_rushers = df_rusher[["playerId","rushYards","rushNull"]]
-    #  Cast rushing yards as integer
-    all_rushers['rushYards'] = all_rushers['rushYards'].apply(lambda x: int(x))
     
 
 
