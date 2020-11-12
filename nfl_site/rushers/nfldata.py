@@ -79,7 +79,11 @@ def getTeamName(team_id):
 #     all_teams = df_teams[['teamId']['draftTeam']].unique().tolist()
 #     print(all_teams)
 
-def get_player_dict(first_name, last_name):
+def get_total_yards_for_player(player_id):
+    player_rush_yards = int(all_rushers.loc[(all_rushers['playerId'] == player_id,'rushYards')].sum())
+    return player_rush_yards
+
+def get_player_df(first_name, last_name):
     player_dict = {} 
     outputDataFrame = pd.DataFrame() 
     player_tuple = get_Tuple(df_players,first_name, last_name)
@@ -93,13 +97,8 @@ def get_player_dict(first_name, last_name):
         # id in the receiver csv
         for player_id in player_tuple[1]:
             print(player_id)
-            # get all rusher yards for playerId as long as they exist and were not overturned
-            rushers_filter \
-                = df_rusher.loc[(df_rusher['playerId'] == player_id) & (df_rusher['rushNull'] == 0)]
-            # sum the rushYards row of the data frame
-            total_rush_yards = rushers_filter['rushYards'].sum()
-
-            player_dict[player_id] = int(total_rush_yards)
+            # get all rusher yards for playerId as long as they exist
+            player_dict[player_id] = get_total_yards_for_player(player_id)
             player_team_id = getPlayerTeam(player_id) #list of teams player 
             player_team = getTeamName(player_team_id) 
             print(player_team)
@@ -133,13 +132,22 @@ def get_rusher_yards_dic():
     #TODO: Less Expensive, figure out how to reduce costs of lookup or move into own function
     a = datetime.datetime.now()
     for id in player_id:
-        total_yards = all_rushers.loc[(all_rushers['playerId'] == id[0],'rushYards')].sum()
+        # total_yards = all_rushers.loc[(all_rushers['playerId'] == id[0],'rushYards')].sum()
+        total_yards = get_total_yards_for_player(id[0])
         total_rusher_dic.update({id[0]:total_yards})
     b = datetime.datetime.now()
     c = b - a
-    print(c)
+    # print(c)
     return total_rusher_dic
 
+
+def get_total_plays(id):
+   play_count = all_rushers.loc[(all_rushers['playerId'] == id)].count() 
+   total_plays_for_player = int(play_count['playerId'])
+   return total_plays_for_player
+
+
+# creating the output dataframe of top rushers
 def get_top_rushers_df(top_rushers):
     outputDataFrame = pd.DataFrame()
     rank = 0
@@ -149,20 +157,24 @@ def get_top_rushers_df(top_rushers):
         first_name = full_name[0]
         last_name = full_name[1]
         rusher_total_yds = int(get_rushers_yards(top_rushers,id))
+        rusher_total_plays = get_total_plays(id)
+        rusher_avg_yds = round(rusher_total_yds/rusher_total_plays,3)
         player_team_id = getPlayerTeam(id)
         player_team = getTeamName(player_team_id) 
         rank = rank + 1
-        outputDataFrame = outputDataFrame.append([[rank,first_name,last_name,id,rusher_total_yds,player_team]])
+        outputDataFrame = outputDataFrame.append([[rank,first_name,last_name,id,rusher_total_yds,rusher_avg_yds,rusher_total_plays,player_team]])
     
-    outputDataFrame.columns = ['Rank','First Name', 'Last Name', 'Player ID','Rush Yards','Team(s)']
+    outputDataFrame.columns = ['Rank','First Name', 'Last Name', 'Player ID','Rush Yards','Avg Yards(per play)','Total Plays','Team(s)']
     return outputDataFrame
 
+# create context for Top Rushers
 def create_ALL_TIME_context(form,team_form,team_submit,outputDataFrame,exists):
     context = {'form': form, 'team_form': team_form,'team_submit': team_submit,'columns' : outputDataFrame.columns, 'output':outputDataFrame,
     'exists':exists}
     return context
 
 
+# get path to image for player 
 def getImageLinks(first_name,last_name):
     site ='https://www.nfl.com/players/'+str(first_name)+'-'+str(last_name)+'/'
     substr = 'https://static.www.nfl.com/image/private/t_player_profile_landscape/'

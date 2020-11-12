@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import pandas as pd
 from .forms import RushersForm , TeamPickForm
-from .nfldata import get_player_dict,get_rusher_yards_dic,get_top_rushers_df,create_ALL_TIME_context, getImageLinks
+from .nfldata import get_player_df,get_rusher_yards_dic,get_top_rushers_df,create_ALL_TIME_context, getImageLinks
 
 
 def rusher_page(request):
@@ -11,13 +11,9 @@ def rusher_page(request):
     context = {}
     first_name = ''
     last_name = ''
-    player_team = []
     outputDataFrame = pd.DataFrame()
     exists = None
     player_img = ''
-
-    team_img = ''
-    team_name = ''
 
     submitbutton = request.POST.get("Search")
     team_submit = request.POST.get("Team Picker")
@@ -34,7 +30,7 @@ def rusher_page(request):
             first_name = form.cleaned_data.get("first_name")  # get player first name from form
             last_name = form.cleaned_data.get("last_name") # get player last name from form
             # filter out players based on the name entered
-            outputDataFrame = get_player_dict(first_name,last_name)
+            outputDataFrame = get_player_df(first_name,last_name)
 
             # if dictionary is empty player does not exist in data frame
             # prepare display message indicating so
