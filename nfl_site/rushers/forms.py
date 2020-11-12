@@ -1,7 +1,10 @@
 from django import forms
 from .nfldata import readTeams
 
-team_names = sorted(readTeams()['draftTeam'].to_list())
+get_teams = readTeams()
+team_names =""
+if get_teams is not None:
+    team_names = sorted(get_teams['draftTeam'].to_list())
 
 TEAM_CHOICES= [('all time','All Time'),]
 team_num = 1

@@ -5,19 +5,25 @@ from bs4 import BeautifulSoup
 import re
 import pathlib
 import datetime
-
+from nfl_site.libraries import csv_to_dict
 
 
 # ================== Below are functions that are used by the Rushers site ==================
 
 def readPlayers():
-    return pd.read_csv("static/archive/players.csv")
+    if not pathlib.Path('static/archive/').exists():
+        return
+    return csv_to_dict("static/archive/players.csv",1)
 
 def readRushers():
-    return pd.read_csv("static/archive/rusher.csv")
+    if not pathlib.Path('static/archive/').exists():
+        return
+    return csv_to_dict("static/archive/rusher.csv",1)
 
 def readTeams():
-    df = pd.read_csv("static/archive/draft.csv")
+    if not pathlib.Path('static/archive/').exists():
+        return
+    df = csv_to_dict("static/archive/draft.csv", 1)
     team_df = df[['teamId','draftTeam']].drop_duplicates()
     return team_df
 
@@ -26,6 +32,9 @@ if pathlib.Path('static/archive/').exists():
     df_teams = readTeams()
     df_players = readPlayers()
     all_rushers = df_rusher[["playerId","rushYards","rushNull"]]
+    #  Cast rushing yards as integer
+    all_rushers['rushYards'] = all_rushers['rushYards'].apply(lambda x: int(x))
+    
 
 
 
@@ -82,7 +91,7 @@ def getTeamName(team_id):
 def get_total_yards_for_player(player_id):
     player_rush_yards = int(all_rushers.loc[(all_rushers['playerId'] == player_id,'rushYards')].sum())
     return player_rush_yards
-
+    
 def get_player_df(first_name, last_name):
     player_dict = {} 
     outputDataFrame = pd.DataFrame() 
