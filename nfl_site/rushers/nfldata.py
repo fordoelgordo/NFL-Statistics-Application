@@ -168,8 +168,8 @@ def get_top_rushers_df(top_rushers):
     return outputDataFrame
 
 # create context for Top Rushers
-def create_ALL_TIME_context(form,team_form,team_submit,outputDataFrame,exists):
-    context = {'form': form, 'team_form': team_form,'team_submit': team_submit,'columns' : outputDataFrame.columns, 'output':outputDataFrame,
+def create_ALL_TIME_context(form,team_form,team_submit,show_graph_button,outputDataFrame,exists):
+    context = {'form': form, 'team_form': team_form,'team_submit': team_submit,'show_graph_button':show_graph_button,'columns' : outputDataFrame.columns, 'output':outputDataFrame,
     'exists':exists}
     return context
 

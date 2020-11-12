@@ -63,7 +63,7 @@
       }
    </style>
 
-   {% if submit_button == "Search" or team_submit == "Team Picker"%}
+   {% if submit_button == "Search" or team_submit == "Team Picker" or show_graph_button == "Show Graph"%}
 
    {% if exists == 0 %}
    <h2>Error: {{first_name}} {{last_name}}</h2>
@@ -95,6 +95,13 @@
    </table>
    </div>
    {% endif %} 
+   
+   {% if show_graph_button == "Show Graph"%}
+   <br><div class="container" style="width: 85%; padding: 30px;">
+      {{ graph_div|safe }}
+   </div>
+   {% endif %}
+
 </body>
 
 </html>

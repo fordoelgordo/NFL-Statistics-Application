@@ -3,6 +3,9 @@ import pandas as pd
 from .forms import RushersForm , TeamPickForm
 from .nfldata import get_player_df,get_rusher_yards_dic,get_top_rushers_df,create_ALL_TIME_context, getImageLinks
 
+import plotly
+import plotly.graph_objs as go
+import plotly.express as px 
 
 def rusher_page(request):
     
@@ -17,6 +20,7 @@ def rusher_page(request):
 
     submitbutton = request.POST.get("Search")
     team_submit = request.POST.get("Team Picker")
+    show_graph_button = request.POST.get("Show Graph")
 
     #check if name form has been clicked or not
     form = RushersForm()
@@ -44,7 +48,7 @@ def rusher_page(request):
             'submit_button': submitbutton,  'columns' : outputDataFrame.columns, 'output':outputDataFrame,
             'exists':exists, 'player_img':player_img}       
     
-    if (team_submit == 'Team Picker'):
+    if (team_submit == 'Team Picker' or show_graph_button == 'Show Graph'):
         team_form = TeamPickForm(request.POST)
         if team_form.is_valid():
             #dictionary of player id to their yards
@@ -55,7 +59,12 @@ def rusher_page(request):
             top_rushers = dict(sorted(rusher_dic.items(), key = lambda kv:(kv[1], kv[0]),reverse=True)[:20])
             outputDataFrame = get_top_rushers_df(top_rushers)
             exists = 1
-            context = create_ALL_TIME_context(form,team_form,team_submit,outputDataFrame,exists)
+            context = create_ALL_TIME_context(form,team_form,team_submit,show_graph_button, outputDataFrame,exists)
+            if(show_graph_button == 'Show Graph'):
+                results = outputDataFrame[['Rush Yards','Total Plays']]
+                fig = px.scatter(results, x="Rush Yards", y="Total Plays", title="Total Rushing Yards per Play")
+                graph_div = plotly.offline.plot(fig, output_type="div")
+                context['graph_div'] = graph_div
 
     if not context:
         context = {'form': form, 'team_form': team_form}
