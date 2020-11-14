@@ -209,6 +209,19 @@ def add_receiver_data(player_id, position, rec_yards):
         rec_plays_count_dict[player_id] = 1
 
 
+# add a receiving play to the receiver_dict data store, checks for player existence
+# player exists returns true, if player dose not exist returns false
+def add_existing_receiver_data(player_id, position, rec_yards):
+
+    if player_id in player_dict['playerId']:
+
+        add_receiver_data(player_id, position, rec_yards)
+
+        return True
+
+    return False
+
+
 # dictionaries that need to be loaded prior to running above functions
 # these should remain at the end of the file
 if pathlib.Path('static/archive/').exists():

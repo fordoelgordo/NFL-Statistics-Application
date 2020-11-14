@@ -45,7 +45,7 @@
         </div>
     </div>
 
-    {% if button_click == "Clicked" %}
+    {% if button_click == "Clicked" or player_dict_loaded == "true" %}
         <div class="container" style="padding-top: 25px">
             <!-- only shows if player not in data set -->
             <h3>{{ error_msg }}</h3>

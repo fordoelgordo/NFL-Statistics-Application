@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 
-from .nfldata import get_rec_yards_dict, top_n_rec_yards, avg_rec_yard_scatter, add_receiver_data
+from .nfldata import get_rec_yards_dict, top_n_rec_yards, avg_rec_yard_scatter, add_receiver_data, add_existing_receiver_data
 from .forms import ReceiveForm, TopReceiveForm, AddReceivingPlayForm
 
 # player_dict: key is players id. value is the following
@@ -12,10 +12,14 @@ def receiving_page(request):
 
     global player_dict
     button_click = ''
-    full_name = ''
     error_message = ''
+    player_dict_loaded = ''
     column_names = ['Player ID', 'Full Name', 'Total Receiving Yards',
                     'Avg. Rec. Yards per Rec. Play', 'Total Receiving Plays']
+
+    # if player_dict still contains data set flag to show it when user returns to receiving statistics page
+    if player_dict:
+        player_dict_loaded = 'true'
 
     form = ReceiveForm(request.POST or None)
     add_rec_play_form = AddReceivingPlayForm(request.POST or None)
@@ -23,9 +27,10 @@ def receiving_page(request):
     if request.POST.get('Search') == 'Search':
         if form.is_valid():
             button_click = 'Clicked'
+
             first_name = form.cleaned_data.get("first_name")  # get first name from form
             last_name = form.cleaned_data.get("last_name")
-            full_name = first_name + " " + last_name
+
             # get player dictionary containing receiving yards info
             player_dict = get_rec_yards_dict(first_name, last_name)
 
@@ -47,10 +52,19 @@ def receiving_page(request):
                 # calculation does not need to be computed again
                 update_existing_player_dict(player_id, rec_yards, position)
             else:
-                error_message = 'Temp Place Holder (still need to handle case)'
 
-    context = {'form': form, 'add_rec_play_form': add_rec_play_form, 'full_name': full_name, 'error_msg': error_message,
-               'column_names': column_names, 'player_dict': player_dict, 'button_click': button_click}
+                data_add = add_existing_receiver_data(player_id, position, str(rec_yards))
+
+                if not data_add:
+                    error_message = "Receiving data could not be added. Player with ID: " \
+                                    + player_id + " does not exist."
+                else:
+                    # this not an error it is message that receiving data was added
+                    error_message = "receiving data successfully added for player with Id: " + player_id
+
+    context = {'form': form, 'add_rec_play_form': add_rec_play_form, 'error_msg': error_message,
+               'column_names': column_names, 'player_dict': player_dict,
+               'player_dict_loaded' : player_dict_loaded, 'button_click': button_click}
 
     return render(request, 'receiving/receiver.html', context)
 
