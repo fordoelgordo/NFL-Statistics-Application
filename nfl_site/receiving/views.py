@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 
 from .nfldata import get_rec_yards_dict, top_n_rec_yards, avg_rec_yard_scatter
-from .forms import ReceiveForm, TopReceiveForm
+from .forms import ReceiveForm, TopReceiveForm, AddReceivingPlayForm
 
 
 def receiving_page(request):
@@ -14,6 +14,8 @@ def receiving_page(request):
                     'Avg. Rec. Yards per Rec. Play', 'Total Receiving Plays']
 
     form = ReceiveForm(request.POST or None)
+    add_rec_play_form = AddReceivingPlayForm(request.POST or None)
+
     if form.is_valid():
 
         first_name = form.cleaned_data.get("first_name")  # get first name from form
@@ -27,7 +29,7 @@ def receiving_page(request):
         if not player_dict:
             error_message = "Error: Does Not Exist in data set!!!"
 
-    context = {'form': form, 'full_name': full_name, 'error_msg': error_message,
+    context = {'form': form, 'add_rec_play_form': add_rec_play_form, 'full_name': full_name, 'error_msg': error_message,
                'column_names': column_names, 'player_dict': player_dict, 'submit_button': submitbutton}
 
     return render(request, 'receiving/receiver.html', context)

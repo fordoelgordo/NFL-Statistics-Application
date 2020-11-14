@@ -16,17 +16,34 @@
     <button onclick="window.location.href='/'">Back Home!</button>
     <button onclick="window.location.href='/receivingpage/topreceivingpage/'">Top Receivers</button>
 
-    <div class="container text-center">
-        <div class="container">
-            <h3>Enter Player Information</h3>
-        </div>
-        <form action="" method="Post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="Submit" class="btn btn-primary" name="submit" value="Submit"/>
-        </form>
-    </div>
+    <div style="margin: auto; max-width: 900px;">
+        <div class="row" style="width: 100%; display: flex; padding: 30px;">
 
+            <div style="width: 50%; float: left; flex: 1; padding-left: 15px; padding-top: 1px;">
+
+                <h3>Enter Player Information</h3>
+
+                <form method="Post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="Submit" class="btn btn-primary" name="submit" value="Submit"/>
+                </form>
+
+            </div>
+
+            <div style="width: 50%; float: right; flex: 1; padding-left: 15px; padding-top: 1px;">
+                <h3>Add Player</h3>
+
+                <form method="Post">
+                    {% csrf_token %}
+                    {{ add_rec_play_form.as_p }}
+                    <input type="Submit" class="btn btn-primary" name="add" value="Add"/>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
     {% if submit_button == "Submit" %}
         <div class="container" style="padding-top: 25px">
             <!-- only shows if player not in data set -->
