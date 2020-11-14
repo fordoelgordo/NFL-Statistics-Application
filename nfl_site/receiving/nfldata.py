@@ -67,7 +67,7 @@ def get_receiving_yards(player_id):
 # and value (total rec yards, avg rec yards per play, total rec plays)
 def get_rec_yards_dict(firstname, lastname):
     player_ids = get_player_id(firstname, lastname)  # this is a list of player ids that match name
-
+    full_name = firstname + ' ' + lastname
     if not player_ids:
         # if list returned by get_player_id is empty name does not exist in dataset
         # return empty dictionary
@@ -83,9 +83,10 @@ def get_rec_yards_dict(firstname, lastname):
 
             if tup_key in prp.keys():
 
-                temp_dict[pid] = (total_yards, float(total_yards)/float(prp[tup_key]), prp[tup_key])
+                temp_dict[pid] = [full_name, str(total_yards), str(float(total_yards)/float(prp[tup_key])),
+                                  str(prp[tup_key])]
             else:
-                temp_dict[pid] = (total_yards, 0.0, 0)
+                temp_dict[pid] = [full_name, str(total_yards), '0.0', '0']
 
         return temp_dict
 

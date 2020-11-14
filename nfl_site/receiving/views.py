@@ -3,11 +3,13 @@ from django.shortcuts import get_object_or_404, render
 from .nfldata import get_rec_yards_dict, top_n_rec_yards, avg_rec_yard_scatter
 from .forms import ReceiveForm, TopReceiveForm, AddReceivingPlayForm
 
+player_dict = {}  # store players id and receiving yards
+
 
 def receiving_page(request):
-    submitbutton = request.POST.get("Search")
 
-    player_dict = {}  # store players id and receiving yards
+    global player_dict
+    button_click = ''
     full_name = ''
     error_message = ''
     column_names = ['Player ID', 'Full Name', 'Total Receiving Yards',
@@ -18,7 +20,7 @@ def receiving_page(request):
 
     if request.POST.get('Search') == 'Search':
         if form.is_valid():
-
+            button_click = 'Clicked'
             first_name = form.cleaned_data.get("first_name")  # get first name from form
             last_name = form.cleaned_data.get("last_name")
             full_name = first_name + " " + last_name
@@ -32,10 +34,12 @@ def receiving_page(request):
 
     if request.POST.get('Add') == 'Add':
         if add_rec_play_form.is_valid():
+            button_click = 'Clicked'
             print("###################### Hello There ######################")
+            print(player_dict)
 
     context = {'form': form, 'add_rec_play_form': add_rec_play_form, 'full_name': full_name, 'error_msg': error_message,
-               'column_names': column_names, 'player_dict': player_dict, 'submit_button': submitbutton}
+               'column_names': column_names, 'player_dict': player_dict, 'button_click': button_click}
 
     return render(request, 'receiving/receiver.html', context)
 
