@@ -35,8 +35,16 @@ def receiving_page(request):
     if request.POST.get('Add') == 'Add':
         if add_rec_play_form.is_valid():
             button_click = 'Clicked'
-            print("###################### Hello There ######################")
-            print(player_dict)
+
+            player_id = add_rec_play_form.cleaned_data.get('player_id')
+            rec_yards = add_rec_play_form.cleaned_data.get('rec_yards')
+            position = add_rec_play_form.cleaned_data.get('rec_position')
+
+            if player_dict and str(player_id) in player_dict.keys():
+                error_message = 'TODO: Add data to data store (currently not persistent)'
+                update_existing_player_dict(str(player_id), rec_yards)
+            else:
+                error_message = 'Temp Place Holder (still need to handle case)'
 
     context = {'form': form, 'add_rec_play_form': add_rec_play_form, 'full_name': full_name, 'error_msg': error_message,
                'column_names': column_names, 'player_dict': player_dict, 'button_click': button_click}
@@ -66,3 +74,12 @@ def top_receiving_page(request):
                'top_player_dict': top_player_dict, 'submit_button': submit_button}
 
     return render(request, 'receiving/topreceiving.html', context)
+
+
+def update_existing_player_dict(player_id, rec_yards):
+    global player_dict
+
+    if player_id in player_dict.keys():
+        player_dict[player_id][1] = str(int(player_dict[player_id][1]) + rec_yards)
+        player_dict[player_id][3] = str(int(player_dict[player_id][3]) + 1)
+        player_dict[player_id][2] = str(float(player_dict[player_id][1])/float(player_dict[player_id][3]))
