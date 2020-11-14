@@ -187,6 +187,7 @@ def avg_rec_yard_scatter(data_dict):
     return graph_div
 
 
+# add a receiving play to the receiver_dict data store
 def add_receiver_data(player_id, position, rec_yards):
 
     global rec_plays_count_dict
