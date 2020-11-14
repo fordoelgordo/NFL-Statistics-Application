@@ -5,7 +5,7 @@ from .forms import ReceiveForm, TopReceiveForm, AddReceivingPlayForm
 
 
 def receiving_page(request):
-    submitbutton = request.POST.get("submit")
+    submitbutton = request.POST.get("Search")
 
     player_dict = {}  # store players id and receiving yards
     full_name = ''
@@ -16,18 +16,23 @@ def receiving_page(request):
     form = ReceiveForm(request.POST or None)
     add_rec_play_form = AddReceivingPlayForm(request.POST or None)
 
-    if form.is_valid():
+    if request.POST.get('Search') == 'Search':
+        if form.is_valid():
 
-        first_name = form.cleaned_data.get("first_name")  # get first name from form
-        last_name = form.cleaned_data.get("last_name")
-        full_name = first_name + " " + last_name
-        # get player dictionary containing receiving yards info
-        player_dict = get_rec_yards_dict(first_name, last_name)
+            first_name = form.cleaned_data.get("first_name")  # get first name from form
+            last_name = form.cleaned_data.get("last_name")
+            full_name = first_name + " " + last_name
+            # get player dictionary containing receiving yards info
+            player_dict = get_rec_yards_dict(first_name, last_name)
 
-        # if dictionary is empty player does not exist in data frame
-        # prepare display message indicating so
-        if not player_dict:
-            error_message = "Error: Does Not Exist in data set!!!"
+            # if dictionary is empty player does not exist in data frame
+            # prepare display message indicating so
+            if not player_dict:
+                error_message = "Error: Does Not Exist in data set!!!"
+
+    if request.POST.get('Add') == 'Add':
+        if add_rec_play_form.is_valid():
+            print("###################### Hello There ######################")
 
     context = {'form': form, 'add_rec_play_form': add_rec_play_form, 'full_name': full_name, 'error_msg': error_message,
                'column_names': column_names, 'player_dict': player_dict, 'submit_button': submitbutton}

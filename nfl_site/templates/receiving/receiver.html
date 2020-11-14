@@ -21,30 +21,31 @@
 
             <div style="width: 50%; float: left; flex: 1; padding-left: 15px; padding-top: 1px;">
 
-                <h3>Enter Player Information</h3>
+                <h3>Search Player</h3>
 
                 <form method="Post">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <input type="Submit" class="btn btn-primary" name="submit" value="Submit"/>
+                    <input type="Submit" class="btn btn-primary" name="Search" value="Search"/>
                 </form>
 
             </div>
 
             <div style="width: 50%; float: right; flex: 1; padding-left: 15px; padding-top: 1px;">
-                <h3>Add Player</h3>
+                <h3>Add Receiving Play</h3>
 
                 <form method="Post">
                     {% csrf_token %}
                     {{ add_rec_play_form.as_p }}
-                    <input type="Submit" class="btn btn-primary" name="add" value="Add"/>
+                    <input type="Submit" class="btn btn-primary" name="Add" value="Add"/>
                 </form>
 
             </div>
 
         </div>
     </div>
-    {% if submit_button == "Submit" %}
+
+    {% if submit_button == "Search" %}
         <div class="container" style="padding-top: 25px">
             <!-- only shows if player not in data set -->
             <h3>{{ error_msg }}</h3>
