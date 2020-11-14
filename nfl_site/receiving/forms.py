@@ -35,7 +35,7 @@ class ReceiveForm(forms.Form):
 
 
 class AddReceivingPlayForm(forms.Form):
-    player_id = forms.IntegerField(label="Player ID", required=False)
+    player_id = forms.CharField(label="Player Id", max_length=8)
     rec_yards = forms.IntegerField(label="Receiving Yards", required=False)
     rec_position = forms.CharField(label="Position", required=False, widget=forms.Select(choices=POSITIONS))
 

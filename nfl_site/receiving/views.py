@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 
-from .nfldata import get_rec_yards_dict, top_n_rec_yards, avg_rec_yard_scatter
+from .nfldata import get_rec_yards_dict, top_n_rec_yards, avg_rec_yard_scatter, add_receiver_data
 from .forms import ReceiveForm, TopReceiveForm, AddReceivingPlayForm
 
 player_dict = {}  # store players id and receiving yards
@@ -26,7 +26,7 @@ def receiving_page(request):
             full_name = first_name + " " + last_name
             # get player dictionary containing receiving yards info
             player_dict = get_rec_yards_dict(first_name, last_name)
-
+            print(player_dict)
             # if dictionary is empty player does not exist in data frame
             # prepare display message indicating so
             if not player_dict:
@@ -40,9 +40,9 @@ def receiving_page(request):
             rec_yards = add_rec_play_form.cleaned_data.get('rec_yards')
             position = add_rec_play_form.cleaned_data.get('rec_position')
 
-            if player_dict and str(player_id) in player_dict.keys():
+            if player_dict and player_id in player_dict.keys():
                 error_message = 'TODO: Add data to data store (currently not persistent)'
-                update_existing_player_dict(str(player_id), rec_yards)
+                update_existing_player_dict(player_id, rec_yards, position)
             else:
                 error_message = 'Temp Place Holder (still need to handle case)'
 
@@ -76,10 +76,12 @@ def top_receiving_page(request):
     return render(request, 'receiving/topreceiving.html', context)
 
 
-def update_existing_player_dict(player_id, rec_yards):
+def update_existing_player_dict(player_id, rec_yards, position):
     global player_dict
 
     if player_id in player_dict.keys():
         player_dict[player_id][1] = str(int(player_dict[player_id][1]) + rec_yards)
         player_dict[player_id][3] = str(int(player_dict[player_id][3]) + 1)
         player_dict[player_id][2] = str(float(player_dict[player_id][1])/float(player_dict[player_id][3]))
+
+        add_receiver_data(player_id, position, str(rec_yards))

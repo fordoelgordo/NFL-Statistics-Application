@@ -79,14 +79,15 @@ def get_rec_yards_dict(firstname, lastname):
             total_yards = get_receiving_yards(pid)
 
             # create key to get rec plays from prp dictionary
-            tup_key = (pid, firstname + ' ' + lastname)
+            # tup_key = (pid, firstname + ' ' + lastname)
 
-            if tup_key in prp.keys():
+            if pid in rec_plays_count_dict.keys():
 
-                temp_dict[pid] = [full_name, str(total_yards), str(float(total_yards)/float(prp[tup_key])),
-                                  str(prp[tup_key])]
+                temp_dict[pid] = [full_name, str(total_yards),
+                                  str(float(total_yards) / float(rec_plays_count_dict[pid])),
+                                  rec_plays_count_dict[pid]]
             else:
-                temp_dict[pid] = [full_name, str(total_yards), '0.0', '0']
+                temp_dict[pid] = [full_name, str(total_yards), '0.0', 0]
 
         return temp_dict
 
@@ -124,8 +125,11 @@ def top_n_rec_yards(num):
     # create dictionary containing keys (player id, player name)
     # and values (receiving yards, avg receiving yards per play, and total plays)
     for key, val in n_records.items():
-        if key in prp.keys():
-            total_avg_rec_dict[key] = (val, float(val) / float(prp[key]), prp[key])
+
+        pid = key[0]
+
+        if pid in rec_plays_count_dict.keys():
+            total_avg_rec_dict[key] = (val, float(val) / float(rec_plays_count_dict[pid]), rec_plays_count_dict[pid])
         else:
             total_avg_rec_dict[key] = (val, 0.0, 0.0)
 
@@ -141,13 +145,13 @@ def player_rec_plays():
     for i in range(len(pid_list)):
 
         if pid_list[i] in player_id_name_lookup.keys():
-            tup_key = (pid_list[i], player_id_name_lookup[pid_list[i]])
+            dict_key = pid_list[i]
             # if tuple key containing player id and full name does not exist in dictionary create a new
             # entry else add to the rec plays
-            if tup_key not in rec_plays_dict:
-                rec_plays_dict[tup_key] = 1
+            if dict_key not in rec_plays_dict:
+                rec_plays_dict[dict_key] = 1
             else:
-                rec_plays_dict[tup_key] += 1
+                rec_plays_dict[dict_key] += 1
 
     return rec_plays_dict
 
@@ -183,6 +187,27 @@ def avg_rec_yard_scatter(data_dict):
     return graph_div
 
 
+def add_receiver_data(player_id, position, rec_yards):
+
+    global rec_plays_count_dict
+
+    data_dict = {'receiverId': '99999999', 'playId': '99999999', 'teamId': '99999999',
+                 'playerId': player_id, 'recPosition': position, 'recYards': rec_yards,
+                 'rec': '1', 'recYac': '0', 'rec1down': '0', 'recFumble': '0',
+                 'recPassDef': '0', 'recPassInt': '0', 'recEnd': '0', 'recNull': '0'}
+
+    # inserting data
+    for key in receiver_dict.keys():
+        receiver_dict[key].append(data_dict[key])
+
+    # increment the receiving plays count of the player who had a receiving play record added
+    # of player not in count dictionary add them
+    if player_id in rec_plays_count_dict:
+        rec_plays_count_dict[player_id] += 1
+    else:
+        rec_plays_count_dict[player_id] = 1
+
+
 # dictionaries that need to be loaded prior to running above functions
 # these should remain at the end of the file
 if pathlib.Path('static/archive/').exists():
@@ -190,4 +215,4 @@ if pathlib.Path('static/archive/').exists():
     player_dict = csv_to_dict("static/archive/players.csv")
     receiver_dict = csv_to_dict("static/archive/receiver.csv")
     player_id_name_lookup = create_id_name_lookup()  # dictionary that can get player name given id
-    prp = player_rec_plays()  # get dictionary containing players and their total receiving plays
+    rec_plays_count_dict = player_rec_plays()  # get dictionary containing players and their total receiving plays
