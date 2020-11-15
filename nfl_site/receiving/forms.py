@@ -42,3 +42,9 @@ class AddReceivingPlayForm(forms.Form):
 
 class TopReceiveForm(forms.Form):
     player_num = forms.IntegerField(label='Number of players', max_value=100, min_value=1)
+
+
+class AddReceivingPlayerForm(forms.Form):
+    first_name = forms.CharField(label='First Name', max_length=100)
+    last_name = forms.CharField(label='First Name', max_length=100)
+    rec_position = forms.CharField(label="Position", required=False, widget=forms.Select(choices=POSITIONS))

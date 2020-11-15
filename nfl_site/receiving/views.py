@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 
 from .nfldata import get_rec_yards_dict, top_n_rec_yards, avg_rec_yard_scatter, add_receiver_data, add_existing_receiver_data
-from .forms import ReceiveForm, TopReceiveForm, AddReceivingPlayForm
+from .forms import ReceiveForm, TopReceiveForm, AddReceivingPlayForm, AddReceivingPlayerForm
 
 # player_dict: key is players id. value is the following
 # array [player name, total receiving yards. avg rec yards per play, total receiving plays]
@@ -91,6 +91,26 @@ def top_receiving_page(request):
                'top_player_dict': top_player_dict, 'submit_button': submit_button}
 
     return render(request, 'receiving/topreceiving.html', context)
+
+
+def add_receiver_page(request):
+    submit_button = request.POST.get("submit")
+    # form = ReceiveForm(request.POST or None)
+    message = ''
+
+    form = AddReceivingPlayerForm(request.POST or None)
+
+    if form.is_valid():
+
+        firstname = form.cleaned_data.get('first_name')
+        lastname = form.cleaned_data.get('last_name')
+        rec_position = form.cleaned_data.get('rec_position')
+        print(firstname, lastname, rec_position)
+        message = 'Hello There'
+
+    context = {'form': form, 'message': message, 'submit_button': submit_button}
+
+    return render(request, 'receiving/addreceiver.html', context)
 
 
 # update data for a player that is currently being displayed to the user
