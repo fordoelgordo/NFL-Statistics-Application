@@ -254,7 +254,7 @@ def add_player(firstname, lastname, position):
     for key in player_dict.keys():
         player_dict[key].append(data_dict[key])
 
-    # add new player to the id name look up dictionaru
+    # add new player to the id name look up dictionary
     player_id_name_lookup[new_pid] = full_name
 
     return new_pid

@@ -111,7 +111,7 @@ def add_receiver_page(request):
 
         add_msg = add_player(firstname, lastname, rec_position)
 
-        message = add_msg
+        message = 'Added ' + firstname + ' ' + lastname + ' with Player Id: ' + add_msg
 
     context = {'form': form, 'message': message, 'submit_button': submit_button}
 
