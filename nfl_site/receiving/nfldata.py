@@ -222,6 +222,38 @@ def add_existing_receiver_data(player_id, position, rec_yards):
     return False
 
 
+# returns the max player id value in data set
+def get_max_player_id():
+
+    pid_list_string = player_dict['playerId']
+
+    # convert player id's from strings to ints
+    pid_list = [int(i) for i in pid_list_string]
+
+    max_val = max(pid_list)  # get max id value
+
+    return max_val
+
+
+# add a new player and return their newly generated player id
+def add_player(firstname, lastname, position):
+
+    new_pid = str(get_max_player_id() + 1)  # get a new player id for new player
+
+    data_dict = {'playerId': new_pid, 'nameFirst': firstname, 'nameLast': lastname,
+                 'nameFull': firstname + ' ' + lastname, 'position': position, 'collegeId': '555555',
+                 'nflId': '555555', 'combineId': '555555', 'college': 'UC', 'heightInches': '74',
+                 'weight': '246', 'dob': '2020-14-11', 'ageAtDraft': '20', 'playerProfileUrl': 'https://www.nfl.com/',
+                 'homeCity': 'Earth', 'homeState': 'Earth', 'homeCountry': 'Earth', 'highSchool': 'HS',
+                 'hsCity': 'Earth', 'hsState': 'Earth', 'hsCountry': 'Earth'}
+
+    # inserting new player data
+    for key in player_dict.keys():
+        player_dict[key].append(data_dict[key])
+
+    return new_pid
+
+
 # dictionaries that need to be loaded prior to running above functions
 # these should remain at the end of the file
 if pathlib.Path('static/archive/').exists():

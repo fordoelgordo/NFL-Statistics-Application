@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 
-from .nfldata import get_rec_yards_dict, top_n_rec_yards, avg_rec_yard_scatter, add_receiver_data, add_existing_receiver_data
+from .nfldata import get_rec_yards_dict, top_n_rec_yards, avg_rec_yard_scatter, \
+    add_receiver_data, add_existing_receiver_data, add_player
 from .forms import ReceiveForm, TopReceiveForm, AddReceivingPlayForm, AddReceivingPlayerForm
 
 # player_dict: key is players id. value is the following
@@ -105,8 +106,12 @@ def add_receiver_page(request):
         firstname = form.cleaned_data.get('first_name')
         lastname = form.cleaned_data.get('last_name')
         rec_position = form.cleaned_data.get('rec_position')
+
         print(firstname, lastname, rec_position)
-        message = 'Hello There'
+
+        add_msg = add_player(firstname, lastname, rec_position)
+
+        message = add_msg
 
     context = {'form': form, 'message': message, 'submit_button': submit_button}
 

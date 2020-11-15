@@ -46,5 +46,5 @@ class TopReceiveForm(forms.Form):
 
 class AddReceivingPlayerForm(forms.Form):
     first_name = forms.CharField(label='First Name', max_length=100)
-    last_name = forms.CharField(label='First Name', max_length=100)
+    last_name = forms.CharField(label='Last Name', max_length=100)
     rec_position = forms.CharField(label="Position", required=False, widget=forms.Select(choices=POSITIONS))
