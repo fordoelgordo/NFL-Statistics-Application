@@ -238,10 +238,13 @@ def get_max_player_id():
 # add a new player and return their newly generated player id
 def add_player(firstname, lastname, position):
 
+    global player_id_name_lookup
+
     new_pid = str(get_max_player_id() + 1)  # get a new player id for new player
+    full_name = firstname + ' ' + lastname
 
     data_dict = {'playerId': new_pid, 'nameFirst': firstname, 'nameLast': lastname,
-                 'nameFull': firstname + ' ' + lastname, 'position': position, 'collegeId': '555555',
+                 'nameFull': full_name, 'position': position, 'collegeId': '555555',
                  'nflId': '555555', 'combineId': '555555', 'college': 'UC', 'heightInches': '74',
                  'weight': '246', 'dob': '2020-14-11', 'ageAtDraft': '20', 'playerProfileUrl': 'https://www.nfl.com/',
                  'homeCity': 'Earth', 'homeState': 'Earth', 'homeCountry': 'Earth', 'highSchool': 'HS',
@@ -250,6 +253,9 @@ def add_player(firstname, lastname, position):
     # inserting new player data
     for key in player_dict.keys():
         player_dict[key].append(data_dict[key])
+
+    # add new player to the id name look up dictionaru
+    player_id_name_lookup[new_pid] = full_name
 
     return new_pid
 
