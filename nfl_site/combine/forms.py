@@ -81,3 +81,12 @@ class CombineForm(forms.Form):
 class CombineStats(forms.Form):
     statistic = forms.CharField(label = "Select Statistic", required = False, widget = forms.Select(choices=[('',''),('aa','Above Average'),('ba','Below Average'),('o','Outlier'),('t','Top'),('b','Bottom')]))
     num_players = forms.IntegerField(label = "Number of players", max_value=100, min_value=1, required = False)
+
+class NewStats(forms.Form):
+    dash_stat = forms.FloatField(label = "40-yard Dash", required = False)
+    vert_stat = forms.FloatField(label = "Vertical Jump", required = False)
+    bench_stat = forms.IntegerField(label = "Bench Press", required = False)
+    shuttle_stat = forms.FloatField(label = "Shuttle Drill", required = False)
+    broad_stat = forms.FloatField(label = "Broad Jump", required = False)
+    cone_stat = forms.FloatField(label = "3-Cone Drill", required = False)
+    shuttle_60_stat = forms.FloatField(label = "60-yard Shuttle", required = False)

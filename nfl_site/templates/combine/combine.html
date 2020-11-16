@@ -62,7 +62,7 @@
                         <!-- div for player names-->
                         <div id="playerSearch">
                             <form method="POST">
-                                <h3>Search for statistics</h3> 
+                                <h3>Search for statistics, or add player info and delete player info</h3> 
                                 <label>Player first name:</label>
                                 {{ form.player_first_name }}
                                 <label>Player last name:</label>
@@ -81,7 +81,16 @@
                                     <label>Show N Players</label>
                                     {{ statistics.num_players }}
                                 </p>
+                                <h6>Enter new combine statistics below</h6>
+                                <p>{{ new_stats }}</p>
                                 <input type="submit" class="btn btn-primary btn-sm" value="Submit">
+                                {% if player_exists %}
+                                <input type="submit" class="btn btn-success btn-sm"  disabled="disabled" name="Add Player" value="Add Player">
+                                <input type="submit" class="btn btn-danger btn-sm" name="Delete Player" value="Delete Player">
+                                {% else %}
+                                <input type="submit" class="btn btn-success btn-sm"  name="Add Player" value="Add Player">
+                                <input type="submit" class="btn btn-danger btn-sm" disabled="disabled"  name="Delete Player" value="Delete Player">
+                                {% endif %}
                                 {% csrf_token %} <!--Enable users to enter info on the form-->
                             </form>
                         </div>
