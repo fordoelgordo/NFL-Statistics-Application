@@ -52,14 +52,15 @@ def rusher_page(request):
         team_form = TeamPickForm(request.POST)
         if team_form.is_valid():
             #dictionary of player id to their yards
-            rusher_dic = get_rusher_yards_dic() 
+            team_name  = team_form.cleaned_data.get('team_name')
+            rusher_dic = get_rusher_yards_dic(team_name) 
             
             #getting the top 20 rushers [player id] = [total rush yards] 
             #Reverse ordered because we want top players first
             top_rushers = dict(sorted(rusher_dic.items(), key = lambda kv:(kv[1], kv[0]),reverse=True)[:20])
             outputDataFrame = get_top_rushers_df(top_rushers)
             exists = 1
-            context = create_ALL_TIME_context(form,team_form,team_submit,show_graph_button, outputDataFrame,exists)
+            context = create_ALL_TIME_context(form,team_form,team_submit,show_graph_button, outputDataFrame,exists,team_name)
             if(show_graph_button == 'Show Graph'):
                 results = outputDataFrame[['Rush Yards','Total Plays']]
                 fig = px.scatter(results, x="Rush Yards", y="Total Plays", title="Total Rushing Yards per Play")
