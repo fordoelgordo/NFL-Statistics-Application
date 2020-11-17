@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404, render
 
 from .nfldata import get_rec_yards_dict, top_n_rec_yards, avg_rec_yard_scatter, \
-    add_receiver_data, add_existing_receiver_data, add_player
-from .forms import ReceiveForm, TopReceiveForm, AddReceivingPlayForm, AddReceivingPlayerForm
+    add_receiver_data, add_existing_receiver_data, add_player, delete_player
+from .forms import ReceiveForm, TopReceiveForm, AddReceivingPlayForm, AddReceivingPlayerForm, DelReceivingPlayerForm
 
 # player_dict: key is players id. value is the following
 # array [player name, total receiving yards. avg rec yards per play, total receiving plays]
@@ -95,25 +95,40 @@ def top_receiving_page(request):
 
 
 def add_receiver_page(request):
-    submit_button = request.POST.get("submit")
-    # form = ReceiveForm(request.POST or None)
     message = ''
+    add_button = ''
+    del_button = ''
 
     form = AddReceivingPlayerForm(request.POST or None)
+    del_player_form = DelReceivingPlayerForm(request.POST or None)
 
-    if form.is_valid():
+    if request.POST.get('Add') == 'Add':
+        if form.is_valid():
+            add_button = "Add"
 
-        firstname = form.cleaned_data.get('first_name')
-        lastname = form.cleaned_data.get('last_name')
-        rec_position = form.cleaned_data.get('rec_position')
+            firstname = form.cleaned_data.get('first_name')
+            lastname = form.cleaned_data.get('last_name')
+            rec_position = form.cleaned_data.get('rec_position')
 
-        print(firstname, lastname, rec_position)
+            add_msg = add_player(firstname, lastname, rec_position)
 
-        add_msg = add_player(firstname, lastname, rec_position)
+            message = 'Added ' + firstname + ' ' + lastname + ' with Player Id: ' + add_msg
 
-        message = 'Added ' + firstname + ' ' + lastname + ' with Player Id: ' + add_msg
+    if request.POST.get('Delete') == 'Delete':
+        if del_player_form.is_valid():
+            del_button = 'Delete'
 
-    context = {'form': form, 'message': message, 'submit_button': submit_button}
+            player_id = del_player_form.cleaned_data.get('player_id')
+
+            del_outcome = delete_player(player_id)
+
+            if del_outcome:
+                message = "player delete successful"
+            else:
+                message = "player delete Failed"
+
+    context = {'form': form, 'del_player_form': del_player_form, 'message': message,
+               'add_button': add_button, 'del_button': del_button}
 
     return render(request, 'receiving/addreceiver.html', context)
 

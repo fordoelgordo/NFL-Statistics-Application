@@ -260,6 +260,16 @@ def add_player(firstname, lastname, position):
     return new_pid
 
 
+def delete_player(player_id):
+
+    player_id_list = player_dict['playerId']
+
+    if player_id not in player_id_list:
+        return False
+    else:
+        return True
+
+
 # dictionaries that need to be loaded prior to running above functions
 # these should remain at the end of the file
 if pathlib.Path('static/archive/').exists():

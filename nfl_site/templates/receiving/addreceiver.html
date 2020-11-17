@@ -19,21 +19,49 @@
     <button onclick="window.location.href='/receivingpage/topreceivingpage/'">Top Receivers</button>
     <button onclick="window.location.href='/receivingpage/addreceiverpage/'">Add Receiver</button>
 
-    <div class="container text-center">
-        <div class="container">
-            <h3>Enter Player Information</h3>
+   <div class="container text-center" style="margin: auto; max-width: 900px;">
+        <div class="row" style="width: 100%; display: flex; padding-top: 30px;">
+
+            <div style="width: 50%; float: left; flex: 1;">
+
+                <h3>Add Player</h3>
+
+                <form action="" method="Post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="Submit" class="btn btn-primary" name="Add" value="Add"/>
+                </form>
+
+            </div>
+
+            <div style="width: 50%; float: right; flex: 1;">
+
+                <h3>Delete Player</h3>
+
+                <form method="Post">
+                    {% csrf_token %}
+                    {{ del_player_form.as_p }}
+                    <input type="Submit" class="btn btn-primary" name="Delete" value="Delete"/>
+                </form>
+
+            </div>
+
         </div>
-        <form action="" method="Post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="Submit" class="btn btn-primary" name="submit" value="Submit"/>
-        </form>
     </div>
 
-    {% if submit_button == "Submit" %}
+    {% if add_button == "Add" %}
 
         <div class="container" style="padding-top: 25px">
             <!--shows add player message -->
+            <h3>{{ message }}</h3>
+        </div>
+
+    {% endif %}
+
+    {% if del_button == "Delete" %}
+
+        <div class="container" style="padding-top: 25px">
+            <!--shows delete player message -->
             <h3>{{ message }}</h3>
         </div>
 
