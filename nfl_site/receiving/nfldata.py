@@ -260,13 +260,64 @@ def add_player(firstname, lastname, position):
     return new_pid
 
 
+# function returns list of all indices a value is found at in a list
+def find_index(value, val_list):
+    index_list = []
+
+    for i, j in enumerate(val_list):
+        if j == value:
+            index_list.append(i)
+
+    return index_list
+
+
+# remove player from players.csv data
+def remove_from_player_csv(index_list):
+
+    # delete all occurrences of player in players.csv data
+    for i in index_list:
+        for key in player_dict.keys():
+            player_dict[key].pop(i)
+
+
+# remove player from receiver.csv data
+def remove_from_receiver_csv(index_list):
+    # sort the list to delete indices from largest to smallest
+    index_list = sorted(index_list, reverse=True)
+
+    # delete all occurrences of player in receiver.csv data
+    for i in index_list:
+        for key in receiver_dict.keys():
+            receiver_dict[key].pop(i)
+
+
 def delete_player(player_id):
+    global player_id_name_lookup
+    global rec_plays_count_dict
 
-    player_id_list = player_dict['playerId']
+    player_csv_pd_list = player_dict['playerId']  # list of player ids in player.csv
+    receiver_csv_pid_list = receiver_dict['playerId']  # list of player ids in receiver.csv
 
-    if player_id not in player_id_list:
+    if player_id not in player_csv_pd_list:
+        # if player does not exist there is nothing to delete
         return False
     else:
+
+        # get indices of all player occurrences in the players.csv and receiver.csv data
+        player_index_list = find_index(player_id, player_csv_pd_list)
+        receiver_index_list = find_index(player_id, receiver_csv_pid_list)
+
+        # remove player from players.csv and receiver.csv data
+        remove_from_player_csv(player_index_list)
+        remove_from_receiver_csv(receiver_index_list)
+
+        # delete player from id name look up table and receiving plays count dictionary
+        if player_id in player_id_name_lookup.keys():
+            player_id_name_lookup.pop(player_id)
+
+        if player_id in rec_plays_count_dict.keys():
+            rec_plays_count_dict.pop(player_id)
+
         return True
 
 
