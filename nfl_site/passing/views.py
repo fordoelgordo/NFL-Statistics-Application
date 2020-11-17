@@ -8,6 +8,7 @@ import pathlib
 import plotly
 import plotly.graph_objs as go
 import plotly.express as px
+import numpy as np
 
 _DATA_PATH = 'static/archive/'
 _DROP_FRAME = [ 
@@ -37,28 +38,21 @@ _RENAME_COLS = {
 
 pass_df = pd.DataFrame()
 players_df = pd.DataFrame()
-#lays_df = pd.DataFrame()
-#games_df = pd.DataFrame()
+
 
 if pathlib.Path('static/archive/').exists():
     # Read associated csv files
     pass_df = csv_to_dict(f'{_DATA_PATH}passer.csv', 1)
     players_df = csv_to_dict(f'{_DATA_PATH}players.csv', 1)
-    #plays_df = csv_to_dict(f'{_DATA_PATH}plays.csv', 1)
-    #games_df = csv_to_dict(f'{_DATA_PATH}games.csv', 1)
-
-    pass_dict = pass_df.to_dict()
 
 
 # Create your views here.
 def pass_page(request):
-    global pass_df, players_df #games_df, #plays_df
+    global pass_df, players_df  #games_df, #plays_df
 
-    if pass_df.empty or players_df.empty:
+    if pass_df.empty or players_df.empty or request.POST.get('Refresh Data') == 'Refresh Data':
         pass_df = csv_to_dict(f'{_DATA_PATH}passer.csv', 1)
         players_df = csv_to_dict(f'{_DATA_PATH}players.csv', 1)
-        #plays_df = csv_to_dict(f'{_DATA_PATH}plays.csv', 1)
-        #games_df = csv_to_dict(f'{_DATA_PATH}games.csv', 1)
 
     # Set holding variables
     form = forms.PassingForm()
@@ -76,6 +70,7 @@ def pass_page(request):
         if analytics.is_valid():
             context = passing_analytics(analytics) 
             context['form'] = form
+            context['exists'] = True
 
         if request.POST.get('Show Graph') == 'Show Graph':
             results = context['results']
@@ -100,18 +95,24 @@ def pass_page(request):
             fig = px.scatter(results, x="Total Passing Length (Yards)", y="Total Times Passed (from csv)", title="Total Passing Length vs Total Times Passed")
             graph_div = plotly.offline.plot(fig, output_type="div")
             context['graph_div'] = graph_div
-    
+
+    if request.POST.get('Add') == 'Add':
+        form = forms.PassingForm(request.POST)
+        if form.is_valid():
+            add_player(form)
     
     return render(request,'passing/passing.html', context) 
 
 
 def parse_form_entries(form):
+    global pass_df, players_df
     results = pd.DataFrame()
 
     # Get values from form
     player_name = form.cleaned_data.get('player_name').title()
-    passing_year = form.cleaned_data.get('passing_year')
     passing_outcome = form.cleaned_data.get('passing_outcome')
+    passing_direction = form.cleaned_data.get('passing_direction')
+    passing_depth = form.cleaned_data.get('passing_depth')
     passing_length = str(form.cleaned_data.get('passing_length'))
 
     if player_name:
@@ -128,28 +129,31 @@ def parse_form_entries(form):
             return {'form': form, 'empty': 'Player Does Not Exist!'}
 
       
-    if player_name != "" and str(passing_year) == "None" and passing_outcome != "" and str(passing_length) != 'None':
+    if passing_outcome != ""  and passing_direction != '' and passing_depth != '' and str(passing_length) != 'None':
         results = pass_df.loc[(name_filter['playerId'].values[0] == pass_df['playerId'].values) & 
                                 (pass_df['passOutcomes'].values == passing_outcome) & 
-                                (pass_df['passLength'].values == passing_length)]
+                                (pass_df['passLength'].values == passing_length) &
+                                (pass_df['passDirection'].values == passing_direction) &
+                                (pass_df['passDepth'].values == passing_depth)]
 
-    elif player_name != "" and str(passing_year) == "None" and passing_outcome == "" and str(passing_length) != 'None': 
+    elif passing_outcome == "" and str(passing_length) != 'None': 
         results = pass_df.loc[(name_filter['playerId'].values[0] == pass_df['playerId'].values) & 
                                 (pass_df['passLength'].values == passing_length)]
 
-    elif player_name != "" and str(passing_year) == "None" and passing_outcome != '': 
+    elif passing_outcome != '': 
         results = pass_df.loc[(name_filter['playerId'].values[0] == pass_df['playerId'].values) & 
                                 (pass_df['passOutcomes'].values == passing_outcome)]
 
-    elif player_name != "" and str(passing_year) == "None":
+    else:
         results = pass_df.loc[(name_filter['playerId'].values[0] == pass_df['playerId'].values)]
 
     # If results has data
     if not results.empty:
-        results.insert(0, 'First Name', first_name)
-        results.insert(1, 'Last Name', last_name)
+        results.insert(0, 'Player Name', f'{first_name} {last_name}')
         results = results.drop(columns=_DROP_FRAME)
         results = results.rename(columns=_RENAME_COLS)
+        results.insert(loc=0, column='#', value=np.arange(start=1, stop=len(results)+1))
+
 
     return {'form': form, 'results': results, 'columns' : results.columns}
 
@@ -174,11 +178,15 @@ def passing_analytics(analytics):
         temp_df = pd.DataFrame(r_dict, index=[0])
         results = results.append(temp_df, ignore_index=True)
 
+    results.insert(loc=0, column='#', value=np.arange(start=1, stop=len(results)+1))
+
     return {'analytics': analytics, 'results': results, 'columns' : results.columns, 'n_count' : top_player_count}
 
 # Analytics are done not using Pandas
 def top_n_passing_yards(tp_count):
+    global pass_df
     total_passing_dict = {}
+    pass_dict = pass_df.to_dict()
 
     for i in range(len(pass_dict['playerId'])):
         cell_val = pass_dict['passLength'][i]
@@ -204,4 +212,64 @@ def top_n_passing_yards(tp_count):
 
 
 def get_player_name(player_id):
+    global players_df
     return players_df.loc[(players_df['playerId'] == player_id)]['nameFull'].values[0]
+
+def add_player(form):
+    global pass_df, players_df
+
+    max_pass_id = int(pass_df['passId'].max())
+    max_player_id = int(players_df['playerId'].max())
+
+    # Get values from form
+    player_name = form.cleaned_data.get('player_name').title()
+    passing_outcome = form.cleaned_data.get('passing_outcome')
+    passing_direction = form.cleaned_data.get('passing_direction')
+    passing_depth = form.cleaned_data.get('passing_depth')
+    passing_length = str(form.cleaned_data.get('passing_length'))
+
+    player_name = player_name.split()
+    first_name = player_name[0]
+    last_name = player_name[1]
+
+    name_filter = players_df.loc[(players_df['nameFirst'] == first_name) & (players_df['nameLast'] == last_name)]
+
+    if len(name_filter) == 0:
+        player_id = str(max_player_id+1)
+        new_player = pd.DataFrame({'playerId' : player_id, 
+                                   'nameFirst' : first_name, 
+                                   'nameLast' : last_name, 
+                                   'nameFull' : f'{first_name} {last_name}', 
+                                   'position': 'QB'
+                                   },
+                                   index=[0]
+                                   )
+
+        players_df = players_df.append(new_player, ignore_index=True)
+    else:
+        player_id = name_filter['playerId'].values[0]
+
+    if not passing_outcome:
+        passing_outcome = 'None'
+
+    if not passing_direction:
+        passing_direction = 'None'
+
+    if not passing_depth:
+        passing_depth = 'None'
+
+    if not passing_length:
+        passing_length = '0'
+
+    new_pass = pd.DataFrame({'passId': str(max_pass_id+1),
+                               'playerId': player_id,
+                               'passPosition': 'QB',
+                               'passOutcomes': passing_outcome,
+                               'passDirection': passing_direction,
+                               'passDepth': passing_depth,
+                               'passLength': passing_length
+                               },
+                               index=[0]
+                               )
+
+    pass_df = pass_df.append(new_pass, ignore_index=True)
