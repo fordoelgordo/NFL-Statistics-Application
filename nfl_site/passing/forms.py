@@ -2,9 +2,6 @@ from django import forms
 from django.core import validators
 
 
-PASSING_YEARS = [tuple([x,x]) for x in range(1987, 2020)]
-PASSING_YEARS.insert(0, ('', ''))
-
 PASSING_OUTCOME = [
     ('',''),
     ('complete', 'Complete'), 
@@ -13,10 +10,24 @@ PASSING_OUTCOME = [
     ('sack', 'Sack')
     ]
 
+PASSING_DIRECTION = [
+    ('',''),
+    ('left', 'Left'), 
+    ('middle', 'Middle'), 
+    ('right', 'Right')
+    ]
+
+PASSING_DEPTH = [
+    ('',''),
+    ('short', 'Short'), 
+    ('deep', 'Deep')
+    ]
+
 class PassingForm(forms.Form):
     player_name = forms.CharField(label = 'Player\'s Name', required = True)
-    passing_year = forms.IntegerField(label = 'Year', required = False, widget = forms.Select(choices=PASSING_YEARS))
     passing_outcome = forms.CharField(label = 'Passing Outcome', required = False, widget = forms.Select(choices=PASSING_OUTCOME))
+    passing_direction = forms.CharField(label = 'Passing Direction', required = False, widget = forms.Select(choices=PASSING_DIRECTION))
+    passing_depth = forms.CharField(label = 'Passing Depth', required = False, widget = forms.Select(choices=PASSING_DEPTH))
     passing_length = forms.IntegerField(label = 'Passing Length (Yards)', required = False)
 
 
