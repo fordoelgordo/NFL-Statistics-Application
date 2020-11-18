@@ -291,16 +291,19 @@ def remove_from_receiver_csv(index_list):
             receiver_dict[key].pop(i)
 
 
+# function deletes player form data store, returns tuple with success boolean and name of deleted player
 def delete_player(player_id):
     global player_id_name_lookup
     global rec_plays_count_dict
+
+    name_deleted = ''
 
     player_csv_pd_list = player_dict['playerId']  # list of player ids in player.csv
     receiver_csv_pid_list = receiver_dict['playerId']  # list of player ids in receiver.csv
 
     if player_id not in player_csv_pd_list:
         # if player does not exist there is nothing to delete
-        return False
+        return False, name_deleted
     else:
 
         # get indices of all player occurrences in the players.csv and receiver.csv data
@@ -313,12 +316,12 @@ def delete_player(player_id):
 
         # delete player from id name look up table and receiving plays count dictionary
         if player_id in player_id_name_lookup.keys():
-            player_id_name_lookup.pop(player_id)
+            name_deleted = player_id_name_lookup.pop(player_id)
 
         if player_id in rec_plays_count_dict.keys():
             rec_plays_count_dict.pop(player_id)
 
-        return True
+        return True, name_deleted
 
 
 # dictionaries that need to be loaded prior to running above functions

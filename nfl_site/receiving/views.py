@@ -95,12 +95,20 @@ def top_receiving_page(request):
 
 
 def add_receiver_page(request):
+    global player_dict
+
     message = ''
     add_button = ''
     del_button = ''
+    player_dict_loaded = ''
+    column_names = ['Player ID', 'Full Name', 'Total Receiving Yards',
+                    'Avg. Rec. Yards per Rec. Play', 'Total Receiving Plays']
 
     form = AddReceivingPlayerForm(request.POST or None)
     del_player_form = DelReceivingPlayerForm(request.POST or None)
+
+    if player_dict:
+        player_dict_loaded = 'true'
 
     if request.POST.get('Add') == 'Add':
         if form.is_valid():
@@ -122,13 +130,18 @@ def add_receiver_page(request):
 
             del_outcome = delete_player(player_id)
 
-            if del_outcome:
-                message = "player delete successful"
-            else:
-                message = "player delete Failed"
+            if del_outcome[0]:
+                message = "Player: " + del_outcome[1] + " (" + player_id + ") deleted successfully"
 
-    context = {'form': form, 'del_player_form': del_player_form, 'message': message,
-               'add_button': add_button, 'del_button': del_button}
+                # remove player from user view if they exist in it
+                if player_id in player_dict:
+                    player_dict.pop(player_id)
+            else:
+                message = "Player delete Failed player with ID: " + player_id + " does not exist."
+
+    context = {'form': form, 'del_player_form': del_player_form, 'message': message, 'column_names': column_names,
+               'player_dict': player_dict,  'player_dict_loaded': player_dict_loaded, 'add_button': add_button,
+               'del_button': del_button}
 
     return render(request, 'receiving/addreceiver.html', context)
 

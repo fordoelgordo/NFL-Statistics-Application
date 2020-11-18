@@ -67,5 +67,31 @@
 
     {% endif %}
 
+    {% if player_dict_loaded == "true" %}
+        <div class="container" style="padding-top: 25px">
+
+            <table class="table table-condensed table-bordered">
+                <thead>
+                    <tr>
+                        {% for item in column_names %}
+                            <th>{{ item }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in player_dict.items %}
+                        <tr>
+                            <td>{{ key }}</td>
+                            <td>{{ value.0 }}</td>
+                            <td> {{ value.1 }}</td>
+                            <td> {{ value.2 }}</td>
+                            <td> {{ value.3 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
 </body>
 </html>
