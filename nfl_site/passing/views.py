@@ -2,6 +2,7 @@ from django.shortcuts import render
 from passing import forms
 from static.team42libraries.csvtodict import csv_to_dict
 from operator import itemgetter
+from pandasql import sqldf
 
 import pandas as pd
 import pathlib
@@ -39,7 +40,6 @@ _RENAME_COLS = {
 pass_df = pd.DataFrame()
 players_df = pd.DataFrame()
 
-
 if pathlib.Path('static/archive/').exists():
     # Read associated csv files
     pass_df = csv_to_dict(f'{_DATA_PATH}passer.csv', 1)
@@ -48,7 +48,7 @@ if pathlib.Path('static/archive/').exists():
 
 # Create your views here.
 def pass_page(request):
-    global pass_df, players_df  #games_df, #plays_df
+    global pass_df, players_df
 
     if pass_df.empty or players_df.empty or request.POST.get('Refresh Data') == 'Refresh Data':
         pass_df = csv_to_dict(f'{_DATA_PATH}passer.csv', 1)
@@ -99,8 +99,18 @@ def pass_page(request):
     if request.POST.get('Add') == 'Add':
         form = forms.PassingForm(request.POST)
         if form.is_valid():
-            add_player(form)
-    
+            add_passing_player(form)
+
+    if request.POST.get('Delete') == 'Delete' or request.POST.get('Delete Player') == 'Delete Player':
+        form = forms.PassingForm(request.POST)
+        if form.is_valid():
+
+            if request.POST.get('Delete') == 'Delete':
+                delete_passing_player(form)
+
+            if request.POST.get('Delete Player') == 'Delete Player':
+                delete_passing_player(form, 1)
+
     return render(request,'passing/passing.html', context) 
 
 
@@ -128,24 +138,24 @@ def parse_form_entries(form):
         if len(name_filter) == 0:
             return {'form': form, 'empty': 'Player Does Not Exist!'}
 
-      
-    if passing_outcome != ""  and passing_direction != '' and passing_depth != '' and str(passing_length) != 'None':
-        results = pass_df.loc[(name_filter['playerId'].values[0] == pass_df['playerId'].values) & 
-                                (pass_df['passOutcomes'].values == passing_outcome) & 
-                                (pass_df['passLength'].values == passing_length) &
-                                (pass_df['passDirection'].values == passing_direction) &
-                                (pass_df['passDepth'].values == passing_depth)]
+    # Get dataframe of the player the user selects
+    results = pass_df.loc[(name_filter['playerId'].values[0] == pass_df['playerId'].values)]
 
-    elif passing_outcome == "" and str(passing_length) != 'None': 
-        results = pass_df.loc[(name_filter['playerId'].values[0] == pass_df['playerId'].values) & 
-                                (pass_df['passLength'].values == passing_length)]
+    # If user selects passng outcome
+    if passing_outcome != "":
+        results = results.loc[(results['passOutcomes'] == passing_outcome)]
 
-    elif passing_outcome != '': 
-        results = pass_df.loc[(name_filter['playerId'].values[0] == pass_df['playerId'].values) & 
-                                (pass_df['passOutcomes'].values == passing_outcome)]
+    # If user selects passing direction
+    if passing_direction != '':
+        results = results.loc[(results['passDirection'] == passing_direction)]
 
-    else:
-        results = pass_df.loc[(name_filter['playerId'].values[0] == pass_df['playerId'].values)]
+    # If user selects passing depth
+    if passing_depth != '':
+        results = results.loc[(results['passDepth'] == passing_depth)]
+
+    # If user enters passing length
+    if passing_length != 'None':
+        results = results.loc[(results['passLength'] == passing_length)]
 
     # If results has data
     if not results.empty:
@@ -186,8 +196,8 @@ def passing_analytics(analytics):
 def top_n_passing_yards(tp_count):
     global pass_df
     total_passing_dict = {}
-    pass_dict = pass_df.to_dict()
-
+    temp_df = pass_df[['playerId', 'passLength']]
+    pass_dict = temp_df.to_dict()
     for i in range(len(pass_dict['playerId'])):
         cell_val = pass_dict['passLength'][i]
         player_id = pass_dict['playerId'][i]
@@ -215,7 +225,8 @@ def get_player_name(player_id):
     global players_df
     return players_df.loc[(players_df['playerId'] == player_id)]['nameFull'].values[0]
 
-def add_player(form):
+
+def add_passing_player(form):
     global pass_df, players_df
 
     max_pass_id = int(pass_df['passId'].max())
@@ -273,3 +284,60 @@ def add_player(form):
                                )
 
     pass_df = pass_df.append(new_pass, ignore_index=True)
+
+
+def delete_passing_player(form, full_delete = 0):
+    global pass_df, players_df
+
+    check = [True, True, True, True]
+
+    # Get values from form
+    player_name = form.cleaned_data.get('player_name').title()
+    passing_outcome = form.cleaned_data.get('passing_outcome')
+    passing_direction = form.cleaned_data.get('passing_direction')
+    passing_depth = form.cleaned_data.get('passing_depth')
+    passing_length = str(form.cleaned_data.get('passing_length'))
+
+    player_name = player_name.split()
+    first_name = player_name[0]
+    last_name = player_name[1]
+
+    name_filter = players_df.loc[(players_df['nameFirst'] == first_name) & (players_df['nameLast'] == last_name)]
+
+    if len(name_filter) != 0:
+
+        # Get dataframe of the player the user selects
+        results = pass_df.loc[(name_filter['playerId'].values[0] == pass_df['playerId'].values)]
+
+        # Delete Player From
+        if full_delete:
+            pass_df = pass_df.drop(results.index)
+            players_df = players_df.drop(name_filter.index)
+
+        else:
+            # If user selects passng outcome
+            if passing_outcome != '':
+                results = results.loc[(results['passOutcomes'] == passing_outcome)]
+                check[0] = False
+
+            # If user selects passing direction
+            if passing_direction != '':
+                results = results.loc[(results['passDirection'] == passing_direction)]
+                check[1] = False
+
+            # If user selects passing depth
+            if passing_depth != '':
+                results = results.loc[(results['passDepth'] == passing_depth)]
+                check[2] = False
+
+            # If user enters passing length
+            if passing_length != 'None':
+                results = results.loc[(results['passLength'] == passing_length)]
+                check[3] = False
+
+            # Delete Player From
+            if full_delete and all(check):
+                players_df = players_df.drop(name_filter.index)
+
+            pass_df = pass_df.drop(results.index)
+            pass_df = pass_df.reset_index(drop=True)
