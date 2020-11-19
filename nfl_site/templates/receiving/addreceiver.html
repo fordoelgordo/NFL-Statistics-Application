@@ -1,15 +1,16 @@
-<html>
-<body>
-    <head>
-        <meta charset="utf-8">
-        <title>Receiving Statistics</title>
-            <!--Add boostrap styling-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Receiver</title>
+    <!--Add boostrap styling-->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     </head>
-
+</head>
+<body>
 
     <div class="container">
-        <h1>Receiving Statistics</h1>
+        <h1>Add Receiver</h1>
     </div>
 
     <!-- the `/` just points back to the home directory -->
@@ -18,28 +19,29 @@
     <button onclick="window.location.href='/receivingpage/topreceivingpage/'">Top Receivers</button>
     <button onclick="window.location.href='/receivingpage/addreceiverpage/'">Add Receiver</button>
 
-    <div style="margin: auto; max-width: 900px;">
-        <div class="row" style="width: 100%; display: flex; padding: 30px;">
+   <div class="container text-center" style="margin: auto; max-width: 900px; padding-top: 30px;">
+        <div class="row" style="width: 100%; display: flex;">
 
-            <div style="width: 50%; float: left; flex: 1; padding-left: 15px; padding-top: 1px;">
+            <div style="width: 50%; float: left; flex: 1;">
 
-                <h3>Search Player</h3>
+                <h3>Add Player</h3>
 
-                <form method="Post">
+                <form action="" method="Post">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <input type="Submit" class="btn btn-primary" name="Search" value="Search"/>
+                    <input type="Submit" class="btn btn-primary" name="Add" value="Add"/>
                 </form>
 
             </div>
 
-            <div style="width: 50%; float: right; flex: 1; padding-left: 15px; padding-top: 1px;">
-                <h3>Add Receiving Play</h3>
+            <div style="width: 50%; float: right; flex: 1;">
+
+                <h3>Delete Player</h3>
 
                 <form method="Post">
                     {% csrf_token %}
-                    {{ add_rec_play_form.as_p }}
-                    <input type="Submit" class="btn btn-primary" name="Add" value="Add"/>
+                    {{ del_player_form.as_p }}
+                    <input type="Submit" class="btn btn-primary" name="Delete" value="Delete"/>
                 </form>
 
             </div>
@@ -47,10 +49,26 @@
         </div>
     </div>
 
-    {% if button_click == "Clicked" or player_dict_loaded == "true" %}
+    {% if add_button == "Add" %}
+
         <div class="container" style="padding-top: 25px">
-            <!-- only shows if player not in data set -->
-            <h3>{{ error_msg }}</h3>
+            <!--shows add player message -->
+            <h3>{{ message }}</h3>
+        </div>
+
+    {% endif %}
+
+    {% if del_button == "Delete" %}
+
+        <div class="container" style="padding-top: 25px">
+            <!--shows delete player message -->
+            <h3>{{ message }}</h3>
+        </div>
+
+    {% endif %}
+
+    {% if player_dict_loaded == "true" %}
+        <div class="container" style="padding-top: 25px">
 
             <table class="table table-condensed table-bordered">
                 <thead>

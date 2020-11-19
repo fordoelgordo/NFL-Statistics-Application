@@ -67,7 +67,7 @@ def get_receiving_yards(player_id):
 # and value (total rec yards, avg rec yards per play, total rec plays)
 def get_rec_yards_dict(firstname, lastname):
     player_ids = get_player_id(firstname, lastname)  # this is a list of player ids that match name
-
+    full_name = firstname + ' ' + lastname
     if not player_ids:
         # if list returned by get_player_id is empty name does not exist in dataset
         # return empty dictionary
@@ -79,13 +79,15 @@ def get_rec_yards_dict(firstname, lastname):
             total_yards = get_receiving_yards(pid)
 
             # create key to get rec plays from prp dictionary
-            tup_key = (pid, firstname + ' ' + lastname)
+            # tup_key = (pid, firstname + ' ' + lastname)
 
-            if tup_key in prp.keys():
+            if pid in rec_plays_count_dict.keys():
 
-                temp_dict[pid] = (total_yards, float(total_yards)/float(prp[tup_key]), prp[tup_key])
+                temp_dict[pid] = [full_name, str(total_yards),
+                                  str(float(total_yards) / float(rec_plays_count_dict[pid])),
+                                  rec_plays_count_dict[pid]]
             else:
-                temp_dict[pid] = (total_yards, 0.0, 0)
+                temp_dict[pid] = [full_name, str(total_yards), '0.0', 0]
 
         return temp_dict
 
@@ -123,8 +125,11 @@ def top_n_rec_yards(num):
     # create dictionary containing keys (player id, player name)
     # and values (receiving yards, avg receiving yards per play, and total plays)
     for key, val in n_records.items():
-        if key in prp.keys():
-            total_avg_rec_dict[key] = (val, float(val) / float(prp[key]), prp[key])
+
+        pid = key[0]
+
+        if pid in rec_plays_count_dict.keys():
+            total_avg_rec_dict[key] = (val, float(val) / float(rec_plays_count_dict[pid]), rec_plays_count_dict[pid])
         else:
             total_avg_rec_dict[key] = (val, 0.0, 0.0)
 
@@ -140,13 +145,13 @@ def player_rec_plays():
     for i in range(len(pid_list)):
 
         if pid_list[i] in player_id_name_lookup.keys():
-            tup_key = (pid_list[i], player_id_name_lookup[pid_list[i]])
+            dict_key = pid_list[i]
             # if tuple key containing player id and full name does not exist in dictionary create a new
             # entry else add to the rec plays
-            if tup_key not in rec_plays_dict:
-                rec_plays_dict[tup_key] = 1
+            if dict_key not in rec_plays_dict:
+                rec_plays_dict[dict_key] = 1
             else:
-                rec_plays_dict[tup_key] += 1
+                rec_plays_dict[dict_key] += 1
 
     return rec_plays_dict
 
@@ -182,6 +187,143 @@ def avg_rec_yard_scatter(data_dict):
     return graph_div
 
 
+# add a receiving play to the receiver_dict data store
+def add_receiver_data(player_id, position, rec_yards):
+
+    global rec_plays_count_dict
+
+    data_dict = {'receiverId': '99999999', 'playId': '99999999', 'teamId': '99999999',
+                 'playerId': player_id, 'recPosition': position, 'recYards': rec_yards,
+                 'rec': '1', 'recYac': '0', 'rec1down': '0', 'recFumble': '0',
+                 'recPassDef': '0', 'recPassInt': '0', 'recEnd': '0', 'recNull': '0'}
+
+    # inserting data
+    for key in receiver_dict.keys():
+        receiver_dict[key].append(data_dict[key])
+
+    # increment the receiving plays count of the player who had a receiving play record added
+    # of player not in count dictionary add them
+    if player_id in rec_plays_count_dict:
+        rec_plays_count_dict[player_id] += 1
+    else:
+        rec_plays_count_dict[player_id] = 1
+
+
+# add a receiving play to the receiver_dict data store, checks for player existence
+# player exists returns true, if player dose not exist returns false
+def add_existing_receiver_data(player_id, position, rec_yards):
+
+    if player_id in player_dict['playerId']:
+
+        add_receiver_data(player_id, position, rec_yards)
+
+        return True
+
+    return False
+
+
+# returns the max player id value in data set
+def get_max_player_id():
+
+    pid_list_string = player_dict['playerId']
+
+    # convert player id's from strings to ints
+    pid_list = [int(i) for i in pid_list_string]
+
+    max_val = max(pid_list)  # get max id value
+
+    return max_val
+
+
+# add a new player and return their newly generated player id
+def add_player(firstname, lastname, position):
+
+    global player_id_name_lookup
+
+    new_pid = str(get_max_player_id() + 1)  # get a new player id for new player
+    full_name = firstname + ' ' + lastname
+
+    data_dict = {'playerId': new_pid, 'nameFirst': firstname, 'nameLast': lastname,
+                 'nameFull': full_name, 'position': position, 'collegeId': '555555',
+                 'nflId': '555555', 'combineId': '555555', 'college': 'UC', 'heightInches': '74',
+                 'weight': '246', 'dob': '2020-14-11', 'ageAtDraft': '20', 'playerProfileUrl': 'https://www.nfl.com/',
+                 'homeCity': 'Earth', 'homeState': 'Earth', 'homeCountry': 'Earth', 'highSchool': 'HS',
+                 'hsCity': 'Earth', 'hsState': 'Earth', 'hsCountry': 'Earth'}
+
+    # inserting new player data
+    for key in player_dict.keys():
+        player_dict[key].append(data_dict[key])
+
+    # add new player to the id name look up dictionary
+    player_id_name_lookup[new_pid] = full_name
+
+    return new_pid
+
+
+# function returns list of all indices a value is found at in a list
+def find_index(value, val_list):
+    index_list = []
+
+    for i, j in enumerate(val_list):
+        if j == value:
+            index_list.append(i)
+
+    return index_list
+
+
+# remove player from players.csv data
+def remove_from_player_csv(index_list):
+
+    # delete all occurrences of player in players.csv data
+    for i in index_list:
+        for key in player_dict.keys():
+            player_dict[key].pop(i)
+
+
+# remove player from receiver.csv data
+def remove_from_receiver_csv(index_list):
+    # sort the list to delete indices from largest to smallest
+    index_list = sorted(index_list, reverse=True)
+
+    # delete all occurrences of player in receiver.csv data
+    for i in index_list:
+        for key in receiver_dict.keys():
+            receiver_dict[key].pop(i)
+
+
+# function deletes player form data store, returns tuple with success boolean and name of deleted player
+def delete_player(player_id):
+    global player_id_name_lookup
+    global rec_plays_count_dict
+
+    name_deleted = ''
+
+    player_csv_pd_list = player_dict['playerId']  # list of player ids in player.csv
+    receiver_csv_pid_list = receiver_dict['playerId']  # list of player ids in receiver.csv
+
+    if player_id not in player_csv_pd_list:
+        # if player does not exist there is nothing to delete
+        return False, name_deleted
+    else:
+
+        # get indices of all player occurrences in the players.csv and receiver.csv data
+        player_index_list = find_index(player_id, player_csv_pd_list)
+        receiver_index_list = find_index(player_id, receiver_csv_pid_list)
+
+        # remove player from players.csv and receiver.csv data
+        remove_from_player_csv(player_index_list)
+        remove_from_receiver_csv(receiver_index_list)
+
+        # delete player from id name look up table and receiving plays count dictionary
+        if player_id in player_id_name_lookup.keys():
+            name_deleted = player_id_name_lookup.pop(player_id)
+
+        if player_id in rec_plays_count_dict.keys():
+            rec_plays_count_dict.pop(player_id)
+
+        return True, name_deleted
+
+
 # dictionaries that need to be loaded prior to running above functions
 # these should remain at the end of the file
 if pathlib.Path('static/archive/').exists():
@@ -189,4 +331,4 @@ if pathlib.Path('static/archive/').exists():
     player_dict = csv_to_dict("static/archive/players.csv")
     receiver_dict = csv_to_dict("static/archive/receiver.csv")
     player_id_name_lookup = create_id_name_lookup()  # dictionary that can get player name given id
-    prp = player_rec_plays()  # get dictionary containing players and their total receiving plays
+    rec_plays_count_dict = player_rec_plays()  # get dictionary containing players and their total receiving plays
