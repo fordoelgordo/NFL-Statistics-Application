@@ -284,6 +284,7 @@ def add_passing_player(form):
                                )
 
     pass_df = pass_df.append(new_pass, ignore_index=True)
+    pass_df = pass_df.reset_index(drop=True)
 
 
 def delete_passing_player(form, full_delete = 0):
