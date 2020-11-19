@@ -284,12 +284,11 @@ def add_passing_player(form):
                                )
 
     pass_df = pass_df.append(new_pass, ignore_index=True)
+    pass_df = pass_df.reset_index(drop=True)
 
 
 def delete_passing_player(form, full_delete = 0):
     global pass_df, players_df
-
-    check = [True, True, True, True]
 
     # Get values from form
     player_name = form.cleaned_data.get('player_name').title()
@@ -320,22 +319,18 @@ def delete_passing_player(form, full_delete = 0):
             # If user selects passng outcome
             if passing_outcome != '':
                 results = results.loc[(results['passOutcomes'] == passing_outcome)]
-                check[0] = False
 
             # If user selects passing direction
             if passing_direction != '':
                 results = results.loc[(results['passDirection'] == passing_direction)]
-                check[1] = False
 
             # If user selects passing depth
             if passing_depth != '':
                 results = results.loc[(results['passDepth'] == passing_depth)]
-                check[2] = False
 
             # If user enters passing length
             if passing_length != 'None':
                 results = results.loc[(results['passLength'] == passing_length)]
-                check[3] = False
 
             pass_df = pass_df.drop(results.index)
             pass_df = pass_df.reset_index(drop=True)
