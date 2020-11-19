@@ -7,10 +7,8 @@ if get_teams is not None:
     team_names = sorted(get_teams['draftTeam'].to_list())
 
 TEAM_CHOICES= [('all time','All Time'),]
-team_num = 1
 for name in team_names:
-    TEAM_CHOICES.append((str(team_num),name))
-    team_num = team_num + 1
+    TEAM_CHOICES.append((str(name),name))
 
 class RushersForm(forms.Form):
     first_name = forms.CharField(label = 'First Name', max_length=100,required=True)
