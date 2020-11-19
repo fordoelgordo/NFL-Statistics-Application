@@ -9,7 +9,6 @@ from nfl_site.libraries import csv_to_dict
 
 
 # ================== Below are functions that are used by the Rushers site ==================
-
 def readPlayers():
     if not pathlib.Path('static/archive/').exists():
         return
@@ -68,6 +67,10 @@ def get_Tuple(df_players,first_name,last_name):
         player_id_list = name_filter['playerId'].tolist()
         return True, player_id_list
 
+def deletePlayer(df_players, first_name,last_name):
+    df_players = df_players.loc[(df_players['nameFirst'] != first_name) & (df_players['nameLast'] != last_name)]
+    # df = df_players[df_players.nameFirst != first_name & df_players.nameLast != last_name]
+    
 
 
 def getPlayerTeam(player_id):

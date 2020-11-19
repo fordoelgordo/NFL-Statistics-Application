@@ -103,6 +103,12 @@
       {{ graph_div|safe }}
    </div>
    {% endif %}
+   
+   {% if deletable == True%}
+   <br>
+   <input type="Submit" class="btn btn-danger" name="Delete Player" value="Delete Player" />   
+   {% endif %}
+
 
 </body>
 
