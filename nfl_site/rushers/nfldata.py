@@ -67,11 +67,15 @@ def get_Tuple(df_players,first_name,last_name):
         player_id_list = name_filter['playerId'].tolist()
         return True, player_id_list
 
-def deletePlayer(df_players, first_name,last_name):
-    df_players = df_players.loc[(df_players['nameFirst'] != first_name) & (df_players['nameLast'] != last_name)]
-    # df = df_players[df_players.nameFirst != first_name & df_players.nameLast != last_name]
-    
-
+def deletePlayer(first_name,last_name):
+    print('Deleting ....',first_name,last_name)
+    global df_players
+    global all_rushers
+    #use getTuple here instead
+    name_filter = df_players.loc[(df_players['nameFirst'] == first_name) & (df_players['nameLast'] == last_name)]
+    player_id_list = name_filter['playerId'].tolist()
+    df_players = df_players.loc[(df_players['nameFirst'] != first_name) & (df_players['nameLast'] != last_name)] 
+    all_rushers = all_rushers.loc[(all_rushers['playerId'] != player_id_list[0])]   
 
 def getPlayerTeam(player_id):
     filter_df = df_rusher.loc[(df_rusher['playerId'] == player_id)]
@@ -106,12 +110,10 @@ def get_player_df(first_name, last_name):
         # for each player id in the player id list (the second value in temp tup) find all occuences of the player
         # id in the receiver csv
         for player_id in player_tuple[1]:
-            print(player_id)
             # get all rusher yards for playerId as long as they exist
             player_dict[player_id] = get_total_yards_for_player(player_id)
             player_team_id = getPlayerTeam(player_id) #list of teams player 
             player_team = getTeamName(player_team_id) 
-            print(player_team)
             outputDataFrame = outputDataFrame.append([[first_name,last_name,player_id,player_dict[player_id],player_team]])
         
         outputDataFrame.columns = ['First Name', 'Last Name', 'Player ID','Rush Yards','Team(s)']

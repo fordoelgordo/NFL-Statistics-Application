@@ -26,6 +26,9 @@
             </p>
 
             <input type="Submit" class="btn btn-primary" name="Search" value="Search" />
+            {% if deletable == True%}
+            <input type="submit" class="btn btn-danger btn-sm" name="Delete Player" value="Delete Player"/>            
+            {%endif%}
          </form>
       </div>
 
@@ -104,12 +107,6 @@
    </div>
    {% endif %}
    
-   {% if deletable == True%}
-   <br>
-   <input type="Submit" class="btn btn-danger" name="Delete Player" value="Delete Player" />   
-   {% endif %}
-
-
 </body>
 
 </html>
