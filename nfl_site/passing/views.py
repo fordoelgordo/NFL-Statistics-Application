@@ -100,16 +100,16 @@ def pass_page(request):
         form = forms.PassingForm(request.POST)
         if form.is_valid():
             add_passing_player(form)
+            context['form'] = form
 
     if request.POST.get('Delete') == 'Delete' or request.POST.get('Delete Player') == 'Delete Player':
         form = forms.PassingForm(request.POST)
         if form.is_valid():
-
             if request.POST.get('Delete') == 'Delete':
                 delete_passing_player(form)
-
             if request.POST.get('Delete Player') == 'Delete Player':
                 delete_passing_player(form, 1)
+            context['form'] = form
 
     return render(request,'passing/passing.html', context) 
 
@@ -312,7 +312,9 @@ def delete_passing_player(form, full_delete = 0):
         # Delete Player From
         if full_delete:
             pass_df = pass_df.drop(results.index)
+            pass_df = pass_df.reset_index(drop=True)
             players_df = players_df.drop(name_filter.index)
+            players_df = players_df.reset_index(drop=True)
 
         else:
             # If user selects passng outcome
@@ -334,10 +336,6 @@ def delete_passing_player(form, full_delete = 0):
             if passing_length != 'None':
                 results = results.loc[(results['passLength'] == passing_length)]
                 check[3] = False
-
-            # Delete Player From
-            if full_delete and all(check):
-                players_df = players_df.drop(name_filter.index)
 
             pass_df = pass_df.drop(results.index)
             pass_df = pass_df.reset_index(drop=True)
