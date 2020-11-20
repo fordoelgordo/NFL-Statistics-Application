@@ -48,9 +48,9 @@
     <div style="color:rgb(0, 0, 0); padding: 30px;"><br>
         <table id="passing_table" class="table table-bordered" width="100%" cellspacing="0">
             {% if time %}
-                <h4 style="color: white">Analytics Calculated in: <strong>{{ time }}</strong> seconds</h4>
+                <h4 style="color: white">Analytics Calculated in: <strong style="color: yellow;">{{ time }}</strong> seconds</h4>
                 {% if previous_time %}
-                    <h4 style="color: white">Previous Time: <strong>{{ previous_time }}</strong> seconds</h4>
+                    <h4 style="color: white">Previous Time: <strong style="color: yellow;">{{ previous_time }}</strong> seconds</h4>
                 {% endif %}
                 <br>
             {% endif %}
