@@ -4,6 +4,8 @@ from .nfldata import get_rec_yards_dict, top_n_rec_yards, avg_rec_yard_scatter, 
     add_receiver_data, add_existing_receiver_data, add_player, delete_player
 from .forms import ReceiveForm, TopReceiveForm, AddReceivingPlayForm, AddReceivingPlayerForm, DelReceivingPlayerForm
 
+import time
+
 # player_dict: key is players id. value is the following
 # array [player name, total receiving yards. avg rec yards per play, total receiving plays]
 player_dict = {}
@@ -15,6 +17,8 @@ def receiving_page(request):
     button_click = ''
     error_message = ''
     player_dict_loaded = ''
+    run_time = 0
+
     column_names = ['Player ID', 'Full Name', 'Total Receiving Yards',
                     'Avg. Rec. Yards per Rec. Play', 'Total Receiving Plays']
 
@@ -33,7 +37,9 @@ def receiving_page(request):
             last_name = form.cleaned_data.get("last_name")
 
             # get player dictionary containing receiving yards info
+            start_time = time.time()
             player_dict = get_rec_yards_dict(first_name, last_name)
+            run_time = time.time() - start_time
 
             # if dictionary is empty player does not exist in data frame
             # prepare display message indicating so
@@ -51,9 +57,11 @@ def receiving_page(request):
             if player_dict and player_id in player_dict.keys():
                 # update the current values displayed in the table, so that the entire avg receiving yards per play
                 # calculation does not need to be computed again
+                start_time = time.time()
                 update_existing_player_dict(player_id, rec_yards, position)
-            else:
+                run_time = time.time() - start_time
 
+            else:
                 data_add = add_existing_receiver_data(player_id, position, str(rec_yards))
 
                 if not data_add:
@@ -64,8 +72,8 @@ def receiving_page(request):
                     error_message = "receiving data successfully added for player with Id: " + player_id
 
     context = {'form': form, 'add_rec_play_form': add_rec_play_form, 'error_msg': error_message,
-               'column_names': column_names, 'player_dict': player_dict,
-               'player_dict_loaded' : player_dict_loaded, 'button_click': button_click}
+               'column_names': column_names, 'player_dict': player_dict, 'player_dict_loaded' : player_dict_loaded,
+               'run_time': run_time, 'button_click': button_click}
 
     return render(request, 'receiving/receiver.html', context)
 
