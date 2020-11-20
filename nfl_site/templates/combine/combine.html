@@ -95,9 +95,10 @@
                             </form>
                         </div>
                         <div id="stats">
-                            {% if stat != '' %}
-                            <p>Average: <b>{{ avg }}</b><br>Standard Deviation: <b>{{ std }}</b><br>Outlier if >= <b>{{ out_high}}</b> or <= <b>{{ out_low }}</b></p>
+                            {% if run_time != 0 %}
+                                <p>Running time: <strong>{{ run_time }}</strong> (microsec)</p>
                             {% endif %}
+                            <p>Average: <b>{{ avg }}</b><br>Standard Deviation: <b>{{ std }}</b><br>Outlier if >= <b>{{ out_high}}</b> or <= <b>{{ out_low }}</b></p>
                         </div>
                         <div id="displayTable">
                             <table class="table table-condensed table-bordered">

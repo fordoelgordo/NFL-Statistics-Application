@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from combine import forms # Import forms module from combine app
-from nfl_site.libraries import csv_to_dict, conv_height, mean, stddev # Get user functions
+from nfl_site.libraries import csv_to_dict, conv_height, mean, stddev, math, sumf # Get user functions
 from pathlib import Path
 import pandas as pd
 import numpy as np
+import time
 # Dava viz packages
 import plotly.offline as plot
 import plotly.express as px
@@ -37,7 +38,11 @@ if Path(data_path).exists():
     for measure in COMBINE_DICT:
         if measure != '':
             combine[measure] = combine[measure].apply(lambda x: float(x) if x != None else x)
-            
+
+# Global sum, counter and avg variables that we'll check
+total = 0
+counter = 0
+
 # response/combine page rendering
 def combine_page(request):
     form = forms.CombineForm()
@@ -46,8 +51,10 @@ def combine_page(request):
     df_dict = []
     df_rec = []
 
-    # Define combine as global so we can overwrite it
+    # Define globals that will persist outside the combine_page function calls
     global combine
+    global total
+    global counter
 
     # Set holding variables
     player_first_name = ''
@@ -57,6 +64,7 @@ def combine_page(request):
     combine_pos = ''
     num_players = 1
     user_stat = ""
+    run_time = 0
     avg = 0
     sd = 0
     out_high = 0
@@ -73,6 +81,7 @@ def combine_page(request):
     cone_stat = 0
     shuttle_60_stat = 0
     new_player = ""
+    stats_df = ""
     
     # Holding variables for the data figures
     scat_fig = ""
@@ -102,89 +111,7 @@ def combine_page(request):
                 shuttle_60_stat = new_stats.cleaned_data.get('shuttle_60_stat')
                 
             combine_filtered = combine
-
-            # Update the data based on the first and last name entered
-            name_filter = combine_filtered.loc[(combine_filtered['nameFirst'] == player_first_name) & (combine_filtered['nameLast'] == player_last_name)]
-            if not name_filter.empty:
-                player_exists = True
-            if player_exists:
-                if request.POST.get('Delete Player') == 'Delete Player':
-                    # Have to drop the player from the global combine dataset
-                    combine = combine[(combine['nameFirst'] != player_first_name) & (combine['nameLast'] != player_last_name)]
-                    # Now update the combine_filtered dataframe
-                    combine_filtered = combine
-            else:
-                if request.POST.get('Add Player') == 'Add Player':
-                    # Add the new player to the combine dataframe
-                    new_player = {
-                        'combineId':999999,
-                        'playerId': 999999,
-                        'combineYear':None,
-                        'combinePosition':None,
-                        'combineHeight':None,
-                        'combineWeight':None,
-                        'combineHand':None,
-                        'nameFirst':player_first_name,
-                        'nameLast':player_last_name,
-                        'nameFull':player_first_name + " " + player_last_name,
-                        'position':None,
-                        'collegeId':999999,
-                        'nflId':999999,
-                        'college':None,
-                        'heightInches':None,
-                        'weight':None,
-                        'dob':None,
-                        'ageAtDraft':21,
-                        'playerProfileUrl':"wwww.ucr.edu",
-                        'homeCity': "Riverside",
-                        'homeState': "CA",
-                        'homeCountry': "USA",
-                        'highSchool' : "Riverside High",
-                        'hsCity' : "Riverside",
-                        'hsState' : "CA",
-                        'hsCountry': "USA",
-                        'combineArm': np.nan,
-                        'combine40yd': np.nan,
-                        'combineVert': np.nan,
-                        'combineBench': np.nan,
-                        'combineShuttle': np.nan,
-                        'combineBroad': np.nan,
-                        'combine3cone': np.nan,
-                        'combine60ydShuttle': np.nan,
-                        'combineWonderlic': np.nan
-                    }
-                    
-                    # Update the records
-                    if combine_year:
-                        new_player['combineYear'] = combine_year
-                    else:
-                        #  Default to latest combine year in the dataset
-                        new_player['combineYear'] = max(combine.combineYear)
-                    if combine_pos:
-                        new_player['combinePosition'] = combine_pos
-                    else:
-                        # Default to QB for simplicity
-                        new_player['combinePosition'] = 'QB'
-
-                    if dash_stat:
-                        new_player['combine40yd'] = dash_stat
-                    if vert_stat:
-                        new_player['combineVert'] = vert_stat
-                    if bench_stat:
-                        new_player['combineBench'] = bench_stat
-                    if shuttle_stat:
-                        new_player['combineShuttle'] = shuttle_stat
-                    if broad_stat:
-                        new_player['combineBroad'] = broad_stat
-                    if cone_stat:
-                        new_player['combine3cone'] = cone_stat
-                    if shuttle_60_stat:
-                        new_player['combine60ydShuttle'] = shuttle_60_stat 
-
-                    # Add to the combine dataset
-                    combine = combine.append(new_player, ignore_index = True)
-                    combine_filtered = combine
-
+            stats_df = combine
             # Filter the data based on player entries
             if player_first_name:
                 combine_filtered = combine_filtered[combine_filtered['nameFirst'] == player_first_name]
@@ -192,13 +119,20 @@ def combine_page(request):
                 combine_filtered = combine_filtered[combine_filtered['nameLast'] == player_last_name]
             if combine_year:
                 combine_filtered = combine_filtered[combine_filtered['combineYear'] == combine_year]
+                stats_df = stats_df[stats_df['combineYear'] == combine_year]
             if combine_pos:
                 combine_filtered = combine_filtered[combine_filtered['combinePosition'] == combine_pos]
+                stats_df = stats_df[stats_df['combinePosition'] == combine_pos]
             if combine_event:
                 combine_filtered = combine_filtered[['playerId','combineYear','nameFirst','nameLast','combinePosition', 'position','college','combineHeightConv','combineWeight', combine_event]]
                 combine_filtered.columns = ['Player ID','Year','First Name','Last Name','Combine Position','College Position','College','Height','Weight', COMBINE_DICT[combine_event]]
-                avg = mean(combine_filtered, COMBINE_DICT[combine_event])
-                sd = stddev(combine_filtered, COMBINE_DICT[combine_event])
+                # Change computations of the average and std.dev depending on if players were just added or deleted
+                total = sumf(stats_df, combine_event) 
+                counter = len(stats_df.index)
+                begin = time.perf_counter()
+                avg = mean(stats_df, combine_event)
+                end = time.perf_counter()
+                sd = stddev(stats_df, combine_event)
                 if user_stat:
                     # Filter to players above the average ("above average" depends on the event, e.g. a 40-time < the average is considered above average)
                     if user_stat == 'aa':
@@ -243,13 +177,7 @@ def combine_page(request):
             else:
                 combine_filtered = combine_filtered[['playerId','combineYear','nameFirst','nameLast','combinePosition', 'position','college','combineHeightConv','combineWeight']]
                 combine_filtered.columns = ['Player ID','Year','First Name','Last Name','Combine Position','Collge Position','College','Height','Weight']
-            df_dict = combine_filtered.to_dict()
-            df_rec = combine_filtered.to_dict(orient='records')
-            avg = round(avg, 2)
-            sd = round(sd, 2)
-            out_high = avg + (3 * sd)
-            out_low = avg - (3 * sd)
-
+            
             # Code below is to create a scatterplot of wide receiver times vs their weight
             if combine_event:
                 # Get rid of the NaNs
@@ -318,6 +246,122 @@ def combine_page(request):
                     fig.update_layout(showlegend=False, title_text="Height vs. {}".format(COMBINE_DICT[combine_event]), title_font=dict(size=18, family='Arial', color='Blue'))
                     height_fig = plot.plot(fig, output_type='div')
 
-    context = {'form': form, 'statistics': statistics, 'new_stats':new_stats,'df_dict':df_dict, 'df_rec':df_rec, 'avg':avg, 'std':sd, 'stat':user_stat, 'out_high':out_high, 'out_low':out_low, 'hist_fig':hist_fig, 'weight_fig':weight_fig,'height_fig':height_fig, "player_exists":player_exists}
+        # Update the data based on the first and last name entered
+        name_filter = combine_filtered.loc[(combine_filtered['First Name'] == player_first_name) & (combine_filtered['Last Name'] == player_last_name)]
+        if not name_filter.empty:
+            player_exists = True
+        if player_exists:
+            if request.POST.get('Delete Player') == 'Delete Player':
+                # Recompute stats
+                total -= float(combine_filtered[(combine_filtered['First Name'] == player_first_name) & (combine_filtered['Last Name'] == player_last_name)][COMBINE_DICT[combine_event]])
+                counter -= 1
+                begin = time.perf_counter()
+                avg = total / counter
+                end = time.perf_counter()
+                
+                # Have to drop the player from the global combine dataset
+                combine = combine[(combine['nameFirst'] != player_first_name) & (combine['nameLast'] != player_last_name)]
+                combine_filtered = combine_filtered[(combine_filtered['First Name'] != player_first_name) & (combine_filtered['Last Name'] != player_last_name)]
+        else:
+            if request.POST.get('Add Player') == 'Add Player':
+                # Add the new player to the combine dataframe
+                new_player = {
+                    'combineId':999999,
+                    'playerId': 999999,
+                    'combineYear':None,
+                    'combinePosition':None,
+                    'combineHeight':None,
+                    'combineWeight':None,
+                    'combineHand':None,
+                    'nameFirst':player_first_name,
+                    'nameLast':player_last_name,
+                    'nameFull':player_first_name + " " + player_last_name,
+                    'position':None,
+                    'collegeId':999999,
+                    'nflId':999999,
+                    'college':None,
+                    'heightInches':None,
+                    'weight':None,
+                    'dob':None,
+                    'ageAtDraft':21,
+                    'playerProfileUrl':"wwww.ucr.edu",
+                    'homeCity': "Riverside",
+                    'homeState': "CA",
+                    'homeCountry': "USA",
+                    'highSchool' : "Riverside High",
+                    'hsCity' : "Riverside",
+                    'hsState' : "CA",
+                    'hsCountry': "USA",
+                    'combineArm': np.nan,
+                    'combine40yd': np.nan,
+                    'combineVert': np.nan,
+                    'combineBench': np.nan,
+                    'combineShuttle': np.nan,
+                    'combineBroad': np.nan,
+                    'combine3cone': np.nan,
+                    'combine60ydShuttle': np.nan,
+                    'combineWonderlic': np.nan
+                }
+                
+                # Update the records
+                if combine_year:
+                    new_player['combineYear'] = combine_year
+                else:
+                    #  Default to latest combine year in the dataset
+                    new_player['combineYear'] = max(combine.combineYear)
+                if combine_pos:
+                    new_player['combinePosition'] = combine_pos
+                else:
+                    # Default to QB for simplicity
+                    new_player['combinePosition'] = 'QB'
+
+                if dash_stat:
+                    new_player['combine40yd'] = dash_stat
+                if vert_stat:
+                    new_player['combineVert'] = vert_stat
+                if bench_stat:
+                    new_player['combineBench'] = bench_stat
+                if shuttle_stat:
+                    new_player['combineShuttle'] = shuttle_stat
+                if broad_stat:
+                    new_player['combineBroad'] = broad_stat
+                if cone_stat:
+                    new_player['combine3cone'] = cone_stat
+                if shuttle_60_stat:
+                    new_player['combine60ydShuttle'] = shuttle_60_stat 
+
+                # Add to the combine dataset
+                combine = combine.append(new_player, ignore_index = True)
+                combine_filtered = combine
+                if player_first_name:
+                    combine_filtered = combine_filtered[combine_filtered['nameFirst'] == player_first_name]
+                if player_last_name:
+                    combine_filtered = combine_filtered[combine_filtered['nameLast'] == player_last_name]
+                if combine_year:
+                    combine_filtered = combine_filtered[combine_filtered['combineYear'] == combine_year]
+                    stats_df = stats_df[stats_df['combineYear'] == combine_year]
+                if combine_pos:
+                    combine_filtered = combine_filtered[combine_filtered['combinePosition'] == combine_pos]
+                    stats_df = stats_df[stats_df['combinePosition'] == combine_pos]
+                if combine_event:
+                    combine_filtered = combine_filtered[['playerId','combineYear','nameFirst','nameLast','combinePosition', 'position','college','combineHeightConv','combineWeight', combine_event]]
+                    combine_filtered.columns = ['Player ID','Year','First Name','Last Name','Combine Position','College Position','College','Height','Weight', COMBINE_DICT[combine_event]]
+                
+                # Update the average calculation
+                total += float(combine[(combine['nameFirst'] == player_first_name) & (combine['nameLast'] == player_last_name)][combine_event])
+                counter += 1
+                begin = time.perf_counter()
+                avg = total / counter
+                end = time.perf_counter()
+
+        df_dict = combine_filtered.to_dict()
+        df_rec = combine_filtered.to_dict(orient='records')
+        avg = round(avg, 2)
+        sd = round(sd, 2)
+        out_high = round(avg + (3 * sd),2)
+        out_low = round(avg - (3 * sd),2)
+        run_time = round(end - begin,6)
+
+    context = {'form': form, 'statistics': statistics, 'new_stats':new_stats,'df_dict':df_dict, 'df_rec':df_rec, 'avg':avg, 'std':sd, 'stat':user_stat, 'out_high':out_high, 'out_low':out_low, 'hist_fig':hist_fig, 'weight_fig':weight_fig,'height_fig':height_fig, "player_exists":player_exists, "run_time":run_time*(10**6)}
 
     return render(request, 'combine/combine.html', context)
