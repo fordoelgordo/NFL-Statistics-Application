@@ -47,6 +47,13 @@
     {% if not results.empty %}
     <div style="color:rgb(0, 0, 0); padding: 30px;"><br>
         <table id="passing_table" class="table table-bordered" width="100%" cellspacing="0">
+            {% if time %}
+                <h4 style="color: white">Analytics Calculated in: <strong>{{ time }}</strong> seconds</h4>
+                {% if previous_time %}
+                    <h4 style="color: white">Previous Time: <strong>{{ previous_time }}</strong> seconds</h4>
+                {% endif %}
+                <br>
+            {% endif %}
             <thead>
                 <tr>
                 {% for item in columns %}
