@@ -51,13 +51,14 @@ if pathlib.Path('static/archive/').exists():
 
 # Create your views here.
 def pass_page(request):
-    global pass_df, players_df, previous_time
+    global pass_df, players_df, previous_time, top_players_df
 
     run_time = 0
 
     if pass_df.empty or players_df.empty or request.POST.get('Refresh Data') == 'Refresh Data':
         pass_df = csv_to_dict(f'{_DATA_PATH}passer.csv', 1)
         players_df = csv_to_dict(f'{_DATA_PATH}players.csv', 1)
+        top_players_df = pd.DataFrame()
 
 
     # Set holding variables
