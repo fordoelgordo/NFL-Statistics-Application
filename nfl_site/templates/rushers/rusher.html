@@ -99,7 +99,17 @@
       </tr>
    </table>
    </div>
+
+   <div>
+      <br>
+      {% if exists == 1%}
+      <h3>Total AVG Yards: {{total_avg_yards}}</h3>
+      <h3>Time: {{t_time}}</h3>
+      {%endif%}
+   </div>
    {% endif %} 
+
+
    
    {% if show_graph_button == "Show Graph"%}
    <br><div class="container" style="width: 85%; padding: 30px;">

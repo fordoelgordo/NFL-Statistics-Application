@@ -1,11 +1,12 @@
 from django.shortcuts import render
 import pandas as pd
 from .forms import RushersForm , TeamPickForm
-from .nfldata import get_player_df,get_rusher_yards_dic,get_top_rushers_df,create_ALL_TIME_context, getImageLinks , deletePlayer
+from .nfldata import get_player_df,get_rusher_yards_dic,get_top_rushers_df,create_ALL_TIME_context, getImageLinks , deletePlayer, get_AVG_of_top_df
 
 import plotly
 import plotly.graph_objs as go
 import plotly.express as px 
+import datetime
 
 def rusher_page(request):
     
@@ -38,7 +39,6 @@ def rusher_page(request):
             # filter out players based on the name entered
 
             if(delete_button == 'Delete Player'):
-                print('delete clicked')
                 deletePlayer(first_name,last_name)
 
             outputDataFrame = get_player_df(first_name,last_name)
@@ -61,14 +61,22 @@ def rusher_page(request):
         if team_form.is_valid():
             #dictionary of player id to their yards
             team_name  = team_form.cleaned_data.get('team_name')
+            a = datetime.datetime.now()
+
             rusher_dic = get_rusher_yards_dic(team_name) 
-            
+
             #getting the top 20 rushers [player id] = [total rush yards] 
             #Reverse ordered because we want top players first
             top_rushers = dict(sorted(rusher_dic.items(), key = lambda kv:(kv[1], kv[0]),reverse=True)[:20])
             outputDataFrame = get_top_rushers_df(top_rushers)
             exists = 1
-            context = create_ALL_TIME_context(form,team_form,team_submit,show_graph_button, outputDataFrame,exists,team_name)
+            total_avg_yards = get_AVG_of_top_df(outputDataFrame)
+            context = create_ALL_TIME_context(form,team_form,team_submit,show_graph_button, outputDataFrame,exists,team_name,total_avg_yards)
+            b = datetime.datetime.now()
+            t_time = b - a
+            print(t_time)
+            context['t_time'] = t_time
+
             if(show_graph_button == 'Show Graph'):
                 results = outputDataFrame[['Rush Yards','Total Plays']]
                 fig = px.scatter(results, x="Rush Yards", y="Total Plays", title="Total Rushing Yards per Play")

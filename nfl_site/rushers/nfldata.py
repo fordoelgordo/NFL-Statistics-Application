@@ -141,14 +141,10 @@ def get_rusher_yards_dic(team_name):
     if(team_name == 'all time'):
         player_id = all_rushers[["playerId"]].drop_duplicates().values.tolist()
         #TODO: Less Expensive, figure out how to reduce costs of lookup or move into own function
-        a = datetime.datetime.now()
         for id in player_id:
             # total_yards = all_rushers.loc[(all_rushers['playerId'] == id[0],'rushYards')].sum()
             total_yards = get_total_yards_for_player(id[0])
             total_rusher_dic.update({id[0]:total_yards})
-        b = datetime.datetime.now()
-        c = b - a
-        # print(c)
     else:
         # Get team ID
         team_id = get_team_ID(team_name)
@@ -160,7 +156,8 @@ def get_rusher_yards_dic(team_name):
         for id in player_id:
             total_yards = get_total_yards_for_player(id[0])
             total_rusher_dic.update({id[0]:total_yards})
-    
+
+ 
     return total_rusher_dic
 
 def get_team_ID(team_name):
@@ -195,11 +192,15 @@ def get_top_rushers_df(top_rushers):
     return outputDataFrame
 
 # create context for Top Rushers
-def create_ALL_TIME_context(form,team_form,team_submit,show_graph_button,outputDataFrame,exists,team_name):
+def create_ALL_TIME_context(form,team_form,team_submit,show_graph_button,outputDataFrame,exists,team_name,total_avg_yards):
     context = {'form': form, 'team_form': team_form,'team_submit': team_submit,'show_graph_button':show_graph_button,'columns' : outputDataFrame.columns, 'output':outputDataFrame,
-    'exists':exists,'team_name': team_name}
+    'exists':exists,'team_name': team_name, 'total_avg_yards':total_avg_yards}
     return context
 
+def get_AVG_of_top_df(outputDataFrame):
+    total = outputDataFrame['Rush Yards'].sum()
+    players = outputDataFrame['Player ID'].count()
+    return round(total/players,3)
 
 def createMapping():
     team_map = {}
