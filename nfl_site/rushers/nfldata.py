@@ -75,7 +75,9 @@ def deletePlayer(first_name,last_name):
     name_filter = df_players.loc[(df_players['nameFirst'] == first_name) & (df_players['nameLast'] == last_name)]
     player_id_list = name_filter['playerId'].tolist()
     df_players = df_players.loc[(df_players['nameFirst'] != first_name) & (df_players['nameLast'] != last_name)] 
-    all_rushers = all_rushers.loc[(all_rushers['playerId'] != player_id_list[0])]   
+    for pid in player_id_list:
+        print(pid)
+        all_rushers = all_rushers.loc[(all_rushers['playerId'] != pid)]   
 
 def getPlayerTeam(player_id):
     filter_df = df_rusher.loc[(df_rusher['playerId'] == player_id)]
