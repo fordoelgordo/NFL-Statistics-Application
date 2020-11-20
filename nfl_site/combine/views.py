@@ -3,6 +3,7 @@ from combine import forms # Import forms module from combine app
 from nfl_site.libraries import csv_to_dict, conv_height, mean, stddev # Get user functions
 from pathlib import Path
 import pandas as pd
+import numpy as np
 # Dava viz packages
 import plotly.offline as plot
 import plotly.express as px
@@ -41,8 +42,12 @@ if Path(data_path).exists():
 def combine_page(request):
     form = forms.CombineForm()
     statistics = forms.CombineStats()
+    new_stats = forms.NewStats()
     df_dict = []
     df_rec = []
+
+    # Define combine as global so we can overwrite it
+    global combine
 
     # Set holding variables
     player_first_name = ''
@@ -59,7 +64,16 @@ def combine_page(request):
     weight_fig = ""
     height_fig = ""
     hist_fig = ""
-
+    player_exists = False
+    dash_stat = 0
+    vert_stat = 0
+    bench_stat = 0
+    shuttle_stat = 0
+    broad_stat = 0
+    cone_stat = 0
+    shuttle_60_stat = 0
+    new_player = ""
+    
     # Holding variables for the data figures
     scat_fig = ""
     data_viz = combine
@@ -67,6 +81,8 @@ def combine_page(request):
     if request.method == "POST": # Means someone filled out our form
         form = forms.CombineForm(request.POST)
         statistics = forms.CombineStats(request.POST)
+        new_stats = forms.NewStats(request.POST)
+
         if form.is_valid(): 
             player_first_name = form.cleaned_data.get('player_first_name').title()
             player_last_name = form.cleaned_data.get('player_last_name').title()
@@ -76,7 +92,98 @@ def combine_page(request):
             if statistics.is_valid():
                 num_players = statistics.cleaned_data.get('num_players')
                 user_stat = statistics.cleaned_data.get('statistic')
+            if new_stats.is_valid():
+                dash_stat = new_stats.cleaned_data.get('dash_stat')
+                vert_stat = new_stats.cleaned_data.get('vert_stat')
+                bench_stat = new_stats.cleaned_data.get('bench_stat')
+                shuttle_stat = new_stats.cleaned_data.get('shuttle_stat')
+                broad_stat = new_stats.cleaned_data.get('broad_stat')
+                cone_stat = new_stats.cleaned_data.get('cone_stat')
+                shuttle_60_stat = new_stats.cleaned_data.get('shuttle_60_stat')
+                
             combine_filtered = combine
+
+            # Update the data based on the first and last name entered
+            name_filter = combine_filtered.loc[(combine_filtered['nameFirst'] == player_first_name) & (combine_filtered['nameLast'] == player_last_name)]
+            if not name_filter.empty:
+                player_exists = True
+            if player_exists:
+                if request.POST.get('Delete Player') == 'Delete Player':
+                    # Have to drop the player from the global combine dataset
+                    combine = combine[(combine['nameFirst'] != player_first_name) & (combine['nameLast'] != player_last_name)]
+                    # Now update the combine_filtered dataframe
+                    combine_filtered = combine
+            else:
+                if request.POST.get('Add Player') == 'Add Player':
+                    # Add the new player to the combine dataframe
+                    new_player = {
+                        'combineId':999999,
+                        'playerId': 999999,
+                        'combineYear':None,
+                        'combinePosition':None,
+                        'combineHeight':None,
+                        'combineWeight':None,
+                        'combineHand':None,
+                        'nameFirst':player_first_name,
+                        'nameLast':player_last_name,
+                        'nameFull':player_first_name + " " + player_last_name,
+                        'position':None,
+                        'collegeId':999999,
+                        'nflId':999999,
+                        'college':None,
+                        'heightInches':None,
+                        'weight':None,
+                        'dob':None,
+                        'ageAtDraft':21,
+                        'playerProfileUrl':"wwww.ucr.edu",
+                        'homeCity': "Riverside",
+                        'homeState': "CA",
+                        'homeCountry': "USA",
+                        'highSchool' : "Riverside High",
+                        'hsCity' : "Riverside",
+                        'hsState' : "CA",
+                        'hsCountry': "USA",
+                        'combineArm': np.nan,
+                        'combine40yd': np.nan,
+                        'combineVert': np.nan,
+                        'combineBench': np.nan,
+                        'combineShuttle': np.nan,
+                        'combineBroad': np.nan,
+                        'combine3cone': np.nan,
+                        'combine60ydShuttle': np.nan,
+                        'combineWonderlic': np.nan
+                    }
+                    
+                    # Update the records
+                    if combine_year:
+                        new_player['combineYear'] = combine_year
+                    else:
+                        #  Default to latest combine year in the dataset
+                        new_player['combineYear'] = max(combine.combineYear)
+                    if combine_pos:
+                        new_player['combinePosition'] = combine_pos
+                    else:
+                        # Default to QB for simplicity
+                        new_player['combinePosition'] = 'QB'
+
+                    if dash_stat:
+                        new_player['combine40yd'] = dash_stat
+                    if vert_stat:
+                        new_player['combineVert'] = vert_stat
+                    if bench_stat:
+                        new_player['combineBench'] = bench_stat
+                    if shuttle_stat:
+                        new_player['combineShuttle'] = shuttle_stat
+                    if broad_stat:
+                        new_player['combineBroad'] = broad_stat
+                    if cone_stat:
+                        new_player['combine3cone'] = cone_stat
+                    if shuttle_60_stat:
+                        new_player['combine60ydShuttle'] = shuttle_60_stat 
+
+                    # Add to the combine dataset
+                    combine = combine.append(new_player, ignore_index = True)
+                    combine_filtered = combine
 
             # Filter the data based on player entries
             if player_first_name:
@@ -89,7 +196,7 @@ def combine_page(request):
                 combine_filtered = combine_filtered[combine_filtered['combinePosition'] == combine_pos]
             if combine_event:
                 combine_filtered = combine_filtered[['playerId','combineYear','nameFirst','nameLast','combinePosition', 'position','college','combineHeightConv','combineWeight', combine_event]]
-                combine_filtered.columns = ['Player ID','Year','First Name','Last Name','Combine Position','Collge Position','College','Height','Weight', COMBINE_DICT[combine_event]]
+                combine_filtered.columns = ['Player ID','Year','First Name','Last Name','Combine Position','College Position','College','Height','Weight', COMBINE_DICT[combine_event]]
                 avg = mean(combine_filtered, COMBINE_DICT[combine_event])
                 sd = stddev(combine_filtered, COMBINE_DICT[combine_event])
                 if user_stat:
@@ -210,8 +317,7 @@ def combine_page(request):
                     )
                     fig.update_layout(showlegend=False, title_text="Height vs. {}".format(COMBINE_DICT[combine_event]), title_font=dict(size=18, family='Arial', color='Blue'))
                     height_fig = plot.plot(fig, output_type='div')
-                    
 
-    context = {'form': form, 'statistics': statistics, 'df_dict':df_dict, 'df_rec':df_rec, 'avg':avg, 'std':sd, 'stat':user_stat, 'out_high':out_high, 'out_low':out_low, 'hist_fig':hist_fig, 'weight_fig':weight_fig,'height_fig':height_fig}
+    context = {'form': form, 'statistics': statistics, 'new_stats':new_stats,'df_dict':df_dict, 'df_rec':df_rec, 'avg':avg, 'std':sd, 'stat':user_stat, 'out_high':out_high, 'out_low':out_low, 'hist_fig':hist_fig, 'weight_fig':weight_fig,'height_fig':height_fig, "player_exists":player_exists}
 
     return render(request, 'combine/combine.html', context)

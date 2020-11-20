@@ -9,7 +9,6 @@ from nfl_site.libraries import csv_to_dict
 
 
 # ================== Below are functions that are used by the Rushers site ==================
-
 def readPlayers():
     if not pathlib.Path('static/archive/').exists():
         return
@@ -31,7 +30,7 @@ if pathlib.Path('static/archive/').exists():
     df_rusher = readRushers()
     df_teams = readTeams()
     df_players = readPlayers()
-    all_rushers = df_rusher[["playerId","rushYards","rushNull"]]
+    all_rushers = df_rusher[["playerId","rushYards","rushNull","teamId"]]
     
 
 
@@ -68,7 +67,15 @@ def get_Tuple(df_players,first_name,last_name):
         player_id_list = name_filter['playerId'].tolist()
         return True, player_id_list
 
-
+def deletePlayer(first_name,last_name):
+    print('Deleting ....',first_name,last_name)
+    global df_players
+    global all_rushers
+    #use getTuple here instead
+    name_filter = df_players.loc[(df_players['nameFirst'] == first_name) & (df_players['nameLast'] == last_name)]
+    player_id_list = name_filter['playerId'].tolist()
+    df_players = df_players.loc[(df_players['nameFirst'] != first_name) & (df_players['nameLast'] != last_name)] 
+    all_rushers = all_rushers.loc[(all_rushers['playerId'] != player_id_list[0])]   
 
 def getPlayerTeam(player_id):
     filter_df = df_rusher.loc[(df_rusher['playerId'] == player_id)]
@@ -103,12 +110,10 @@ def get_player_df(first_name, last_name):
         # for each player id in the player id list (the second value in temp tup) find all occuences of the player
         # id in the receiver csv
         for player_id in player_tuple[1]:
-            print(player_id)
             # get all rusher yards for playerId as long as they exist
             player_dict[player_id] = get_total_yards_for_player(player_id)
             player_team_id = getPlayerTeam(player_id) #list of teams player 
             player_team = getTeamName(player_team_id) 
-            print(player_team)
             outputDataFrame = outputDataFrame.append([[first_name,last_name,player_id,player_dict[player_id],player_team]])
         
         outputDataFrame.columns = ['First Name', 'Last Name', 'Player ID','Rush Yards','Team(s)']
@@ -131,21 +136,36 @@ def get_name(player_id):
     return full_name
 
 # function to get rushers dictionary {player id} = {total yards they have}
-def get_rusher_yards_dic():
+def get_rusher_yards_dic(team_name):
     total_rusher_dic = {}
-    player_id = all_rushers[["playerId"]].drop_duplicates().values.tolist()
+    if(team_name == 'all time'):
+        player_id = all_rushers[["playerId"]].drop_duplicates().values.tolist()
+        #TODO: Less Expensive, figure out how to reduce costs of lookup or move into own function
+        a = datetime.datetime.now()
+        for id in player_id:
+            # total_yards = all_rushers.loc[(all_rushers['playerId'] == id[0],'rushYards')].sum()
+            total_yards = get_total_yards_for_player(id[0])
+            total_rusher_dic.update({id[0]:total_yards})
+        b = datetime.datetime.now()
+        c = b - a
+        # print(c)
+    else:
+        # Get team ID
+        team_id = get_team_ID(team_name)
 
+        #Filter all rushers by the certain team chosen
+        team_df = all_rushers.loc[(all_rushers['teamId'] == team_id)]
+        player_id = team_df[["playerId"]].drop_duplicates().values.tolist()
 
-    #TODO: Less Expensive, figure out how to reduce costs of lookup or move into own function
-    a = datetime.datetime.now()
-    for id in player_id:
-        # total_yards = all_rushers.loc[(all_rushers['playerId'] == id[0],'rushYards')].sum()
-        total_yards = get_total_yards_for_player(id[0])
-        total_rusher_dic.update({id[0]:total_yards})
-    b = datetime.datetime.now()
-    c = b - a
-    # print(c)
+        for id in player_id:
+            total_yards = get_total_yards_for_player(id[0])
+            total_rusher_dic.update({id[0]:total_yards})
+    
     return total_rusher_dic
+
+def get_team_ID(team_name):
+    get_team = df_teams.loc[(df_teams['draftTeam'] == team_name)]
+    return get_team['teamId'].to_list()[0]
 
 
 def get_total_plays(id):
@@ -175,10 +195,62 @@ def get_top_rushers_df(top_rushers):
     return outputDataFrame
 
 # create context for Top Rushers
-def create_ALL_TIME_context(form,team_form,team_submit,show_graph_button,outputDataFrame,exists):
+def create_ALL_TIME_context(form,team_form,team_submit,show_graph_button,outputDataFrame,exists,team_name):
     context = {'form': form, 'team_form': team_form,'team_submit': team_submit,'show_graph_button':show_graph_button,'columns' : outputDataFrame.columns, 'output':outputDataFrame,
-    'exists':exists}
+    'exists':exists,'team_name': team_name}
     return context
+
+
+def createMapping():
+    team_map = {}
+    team_map['TB'] = 'Tampa Bay Buccaneers'
+    team_map['DAL'] = 'Dallas Cowboys'
+    team_map['CIN'] = 'Cincinnati Bengals'
+    team_map['NYJ'] = 'New York Jets'
+    team_map['NYG'] = 'New York Giants'
+    team_map['ATL'] = 'Atlanta Falcons'
+    team_map['NO'] = 'New Orleans Saints'
+    team_map['GB'] = 'Green Bay Packers'
+    team_map['KC'] = 'Kansas City Chiefs'
+    team_map['HO'] = 'Houston Texans'
+    team_map['BUF'] = 'Buffalo Bills'
+    team_map['MIA'] = 'Miami Dolphins'
+    team_map['SEA'] = 'Seattle Seahawks'
+    team_map['CHI'] = 'Chicago Bears'
+    team_map['NE'] = 'New England Patriots'
+    team_map['CLV'] = 'Cleveland Browns'
+    team_map['DEN'] = 'Denver Broncos'
+    team_map['SL'] = 'Los Angeles Rams'
+    team_map['PIT'] = 'Pittsburgh Steelers'
+    team_map['LA'] = 'Los Angeles Rams'
+    team_map['SD'] = 'Los Angeles Chargers'
+    team_map['BLT'] = 'Baltimore Ravens'
+    team_map['MIN'] = 'Minnesota Vikings'
+    team_map['OAK'] = 'Las Vegas Raiders'
+    team_map['DET'] = 'Detroit Lions'
+    team_map['SF'] = 'San Francisco 49ers'
+    team_map['WAS'] = 'Washington Football Team'
+    team_map['PHI'] = 'Philadelphia Eagles'
+    team_map['LAR'] = 'Los Angeles Rams'
+    team_map['IND'] = 'Indianapolis Colts'
+    team_map['ARZ'] = 'Arizona Cardinals'
+    team_map['JAX'] = 'Jacksonville Jaguars'
+    team_map['CAR'] = 'Carolina Panthers'
+    team_map['TEN'] = 'Tennessee Titans'
+    team_map['HST'] = 'Houston Texans'
+    team_map['LAC'] = 'Los Angeles Chargers'
+    team_map['ARI'] = 'Arizona Cardinals'
+    team_map['HOU'] = 'Houston Texans'
+    team_map['BAL'] = 'Baltimore Ravens'
+    team_map['CLE'] = 'Cleveland Browns'
+    return team_map
+
+
+
+
+
+ 
+    
 
 
 # get path to image for player 

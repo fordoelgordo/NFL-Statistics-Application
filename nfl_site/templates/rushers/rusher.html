@@ -26,6 +26,9 @@
             </p>
 
             <input type="Submit" class="btn btn-primary" name="Search" value="Search" />
+            {% if deletable == True%}
+            <input type="submit" class="btn btn-danger btn-sm" name="Delete Player" value="Delete Player"/>            
+            {%endif%}
          </form>
       </div>
 
@@ -67,8 +70,10 @@
 
    {% if exists == 0 %}
    <h2>Error: {{first_name}} {{last_name}}</h2>
-   {% elif exists == 1%}
-   <h2>Displaying the Top 20 Rushers!</h2>
+   {% elif exists == 1 and team_name == "all time"%}
+   <h2>Displaying the Top 20 Rushers of {{team_name }}!</h2>
+   {% elif exists == 1 and team_name != "all time"%}
+   <h2>Displaying the Top 20 Rushers of {{team_name }}!</h2>
    {% else %}
    <img src="{{player_img}}" alt="image">
    {% endif %}
@@ -101,7 +106,7 @@
       {{ graph_div|safe }}
    </div>
    {% endif %}
-
+   
 </body>
 
 </html>

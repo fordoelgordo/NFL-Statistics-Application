@@ -1,7 +1,6 @@
 from django import forms
 from django.core import validators
 
-
 PASSING_OUTCOME = [
     ('',''),
     ('complete', 'Complete'), 
