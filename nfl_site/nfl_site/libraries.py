@@ -248,6 +248,14 @@ Comments: custom "average" calculation that takes in a Pandas DataFrame and a na
 '''
 import math # to access isnan function
 import numpy as np
+
+def sumf(df, column):
+    ret = 0
+    for x in df[column]:
+        if not math.isnan(x):
+            ret += x
+    return ret
+
 def mean(df, column):
     ret = 0
     counter = 0
