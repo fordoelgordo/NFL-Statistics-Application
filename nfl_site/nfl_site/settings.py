@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rushers', # Adding the rushers app
     'receiving',
     'player_management', # Add, Amend, Delete players
+    'standings',
 ]
 
 MIDDLEWARE = [
