@@ -6,51 +6,68 @@
         <!--Add boostrap styling-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
-<style>       
-    hr{
-        height: 1px;
-        background-color: rgb(255, 0, 0);
-        border: none;
+<style type="text/css">       
+    .container-fluid {
+        text-align: center;
+        background-color: #e8e4e3;
+        size: 100%;
+    }
+    .container-fluid h1 {
+        font-family: Verdana;
+        text-decoration: underline;
+        padding: 25px;
+        font-weight: bold;
+    }
+    .container-fluid img {
+        padding: 15px;
+    }
+    .navbar {
+        background-color: #1408A3;
+    }
+    .navbar ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    text-align: left;
+    }
+    .navbar li{
+        display: inline-block;
+        padding: 25px;
+        width: 125px;
+        text-align: center;
+    }
+    .navbar ul li a {
+        color: white;
+        font-size: 16px;
     }
 </style>
-<body style="background-color:powderblue;">
-
-<h1>This is the NFL SITE</h1>
-<img src="/static/images/nfl.jpg" width = "300" height="300">	
-<h2>Choose What You Want To View: </h2>
-<hr>
-
-{% if data_exists %}
-    <div>
-        <!-- One way to press a button and give it what to do onClick -->
-        <form action="rusherspage/" method="get">
-            <button style="margin:5px;" name="rushers" type="submit" value="Rushers">Rushers</button>
-        </form>
-
-        <!-- Another way to create buttons and have them do something on click with extra attrib. -->
-        <form action="receivingpage/" method="get">
-            <button style="margin:5px;" name="receiving" type="submit" value="receiving">Receiving</button>
-        </form>
-
-        <form action="passerpage/" method="get">
-            <button style="margin:5px;" name="passing" type="submit" value="Passers">Passers</button>
-        </form>
-        <!--Note that the home.html utilizes the combinepage/ URL i've defined in my combine app-->
-        <form action="combinepage/" method="get">
-            <button style="margin:5px;" name="combine" type="submit" value="Combine">Combine</button>
-        </form>
-        <form action="PlayerManagement/" method="get">
-            <button style="margin:5px;" name="player_management" type="submit" value="Player Management">Player Management</button>
-        </form>
-    </div>
-{% else %}
+<body style="background-color:white;">
+<!-- Add bootstrap navbar styling to the page-->
+<div class="navbar">
+    <a class="navbar-brand">
+        <img src="https://static.www.nfl.com/image/upload/v1554321393/league/nvfr7ogywskqrfaiu38m.svg" width="70" height="70" class="d-inline-block align-top" alt="" loading="lazy">
+    </a>
+    <ul>
+      <li><a href="PlayerManagement/">Player Management</a></li>
+      <li><a href="combinepage/">Combine</a></li>
+      <li><a href="passerpage/">Passing</a></li>
+      <li><a href="rusherspage/">Rushing</a></li>
+      <li><a href="receivingpage/">Receiving</a></li>
+      <li><a href="standingspage/">NFL Team Standings</a></li>
+    </ul>
+  </div>
+<div>
+    {% if data_exists == false %}
     <div id='btn'>
         <label style="color:rgb(255, 0, 0)" for="dwn">Data Does Not Exist</label>
         <form style="color:rgb(0, 0, 0)" method="get">
             <input type="submit" class="btn btn-primary" name="Download" value="Download" id='dwn'>
         </form>
     </div>
-{% endif %}
-
-</body>
+    {% endif %}
+</div>
+<div class="container-fluid">
+    <h1>Welcome to our NFL Statistics Application!</h1>
+    <img src="/static/images/nfl.jpg" width = "650" height="650">
+</div>
 </html>

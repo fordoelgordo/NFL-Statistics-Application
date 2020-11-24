@@ -30,4 +30,5 @@ urlpatterns = [
     path('',include('rushers.urls')),
     path('', include('receiving.urls')),
     path('', include('player_management.urls')),
+    path('', include('standings.urls')),
 ]
