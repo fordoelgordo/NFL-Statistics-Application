@@ -18,6 +18,7 @@ from django.urls import include, path
 from django.conf.urls import url
 from response import views as resp_views
 from combine import views as combine_views
+from standings import views as standings_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
