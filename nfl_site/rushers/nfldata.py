@@ -31,7 +31,7 @@ if pathlib.Path('static/archive/').exists():
     df_teams = readTeams()
     df_players = readPlayers()
     all_rushers = df_rusher[["playerId","rushYards","rushNull","teamId"]]
-    
+    top_rushers_dictionary = {}    
 
 
 
@@ -71,12 +71,17 @@ def deletePlayer(first_name,last_name):
     print('Deleting ....',first_name,last_name)
     global df_players
     global all_rushers
+    global top_rushers_dictionary
     #use getTuple here instead
     name_filter = df_players.loc[(df_players['nameFirst'] == first_name) & (df_players['nameLast'] == last_name)]
     player_id_list = name_filter['playerId'].tolist()
     df_players = df_players.loc[(df_players['nameFirst'] != first_name) & (df_players['nameLast'] != last_name)] 
     for pid in player_id_list:
-        all_rushers = all_rushers.loc[(all_rushers['playerId'] != pid)]   
+        all_rushers = all_rushers.loc[(all_rushers['playerId'] != pid)]
+        if top_rushers_dictionary:
+            del top_rushers_dictionary[pid]
+
+           
 
 def getPlayerTeam(player_id):
     filter_df = df_rusher.loc[(df_rusher['playerId'] == player_id)]
@@ -90,9 +95,6 @@ def getTeamName(team_id):
         team_names.append(team_name)
     return team_names
 
-# def get_all_teams_dic():
-#     all_teams = df_teams[['teamId']['draftTeam']].unique().tolist()
-#     print(all_teams)
 
 def get_total_yards_for_player(player_id):
     player_rush_yards = int(all_rushers.loc[(all_rushers['playerId'] == player_id,'rushYards')].sum())
@@ -138,14 +140,20 @@ def get_name(player_id):
 
 # function to get rushers dictionary {player id} = {total yards they have}
 def get_rusher_yards_dic(team_name):
+    global top_rushers_dictionary
     total_rusher_dic = {}
-    if(team_name == 'all time'):
-        player_id = all_rushers[["playerId"]].drop_duplicates().values.tolist()
-        #TODO: Less Expensive, figure out how to reduce costs of lookup or move into own function
-        for id in player_id:
-            # total_yards = all_rushers.loc[(all_rushers['playerId'] == id[0],'rushYards')].sum()
-            total_yards = get_total_yards_for_player(id[0])
-            total_rusher_dic.update({id[0]:total_yards})
+    if not top_rushers_dictionary:
+        if(team_name == 'all time'):                
+                player_id = all_rushers[["playerId"]].drop_duplicates().values.tolist()
+                #TODO: Less Expensive, figure out how to reduce costs of lookup or move into own function
+                for id in player_id:
+                    # total_yards = all_rushers.loc[(all_rushers['playerId'] == id[0],'rushYards')].sum()
+                    total_yards = get_total_yards_for_player(id[0])
+                    total_rusher_dic.update({id[0]:total_yards})
+                top_rushers_dictionary = total_rusher_dic
+                return top_rushers_dictionary
+    elif team_name == 'all time':
+        return top_rushers_dictionary
     else:
         # Get team ID
         team_id = get_team_ID(team_name)
@@ -157,8 +165,6 @@ def get_rusher_yards_dic(team_name):
         for id in player_id:
             total_yards = get_total_yards_for_player(id[0])
             total_rusher_dic.update({id[0]:total_yards})
-
- 
     return total_rusher_dic
 
 def get_team_ID(team_name):
