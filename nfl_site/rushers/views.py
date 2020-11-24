@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import pandas as pd
 from .forms import RushersForm , TeamPickForm
-from .nfldata import get_player_df,get_rusher_yards_dic,get_top_rushers_df,create_ALL_TIME_context, getImageLinks , deletePlayer, get_AVG_of_top_df, getFullTeamName
+from .nfldata import get_player_df,get_rusher_yards_dic,get_top_rushers_df, create_ALL_TIME_context, getImageLinks , deletePlayer, get_AVG_of_top_df, getFullTeamName, getTeamImage
 
 import plotly
 import plotly.graph_objs as go
@@ -69,6 +69,10 @@ def rusher_page(request):
 
             if team_name != 'all time':
                 team_name = getFullTeamName(team_name)
+                team_img = getTeamImage(team_name)
+            else:
+                team_img = "https://www.freepnglogos.com/uploads/nfl-logo-png-0.png"
+
 
             #getting the top 20 rushers [player id] = [total rush yards] 
             #Reverse ordered because we want top players first
@@ -77,9 +81,12 @@ def rusher_page(request):
             exists = 1
             total_avg_yards = get_AVG_of_top_df(outputDataFrame)
             context = create_ALL_TIME_context(form,team_form,team_submit,show_graph_button, outputDataFrame,exists,team_name,total_avg_yards)
+            context['team_img'] = team_img
             b = datetime.datetime.now()
             t_time = b - a
             context['t_time'] = t_time
+
+
 
             if(show_graph_button == 'Show Graph'):
                 results = outputDataFrame[['Rush Yards','Total Plays']]

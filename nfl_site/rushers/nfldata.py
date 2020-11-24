@@ -274,6 +274,30 @@ def getImageLinks(first_name,last_name):
             print(pathToImage)
     return pathToImage
 
+def getTeamImage(team_name):
+    filtered_name = parseTeamName(team_name)
+    substr = "https://static.www.nfl.com/t_person_squared_mobile/"
+    print(filtered_name)
+    site ='https://www.nfl.com/teams/'+filtered_name
+    print(site)
+    html = urlopen(site)
+    bs = BeautifulSoup(html, 'html.parser')
+    images = bs.find_all('img', {"alt": team_name+' logo' })
+    for image in images:
+        url = image['src']
+        if substr in url:
+            pathToImage = url.replace('t_lazy/','')
+
+    return pathToImage
+
+
+
+def parseTeamName(team_name):
+    team_name = team_name.lower()
+    team_name = team_name.replace(' ','-')
+    return team_name
+
+
 def getFullTeamName(team_abbreviation):
     global team_map
     return team_map[team_abbreviation]

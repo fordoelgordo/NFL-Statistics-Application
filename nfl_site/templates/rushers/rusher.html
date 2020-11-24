@@ -9,15 +9,15 @@
    <link rel="stylesheet" href="{% static "css/rushers/rushers.css" %}" />
 </head>
 
-<body style="background-color:darksalmon; margin-left:2.5em; margin-right: 2.5em; ">
+<body style="background-color:azure; margin-left:2.5em; margin-right: 2.5em; ">
    <h1>Rushing Statistics</h1>
-   <button onclick="window.location.href='/' ">Back Home!</button>
-   <hr>
+   <button class="btn btn-primary" style="background-color: orange; color: black;" onclick="window.location.href='/' ">Back Home!</button>
+   <hr style="height:2px;border-width:0;color:#1408A3;background-color: #1408A3">
    <br>
 
-   <div id = "wrapper" class="row" style="width: 100%; display: flex; padding: 30px;">
+   <div id = "wrapper" class="row" style=" background-color: #1408A3; width: 100%; display: flex; padding: 30px;">
 
-      <div id="PlayerNames" class="names" style="width: 50%; float: left; flex: 1; padding-left: 15px; padding-top: 1px;">
+      <div id="PlayerNames" class="names" style="color:rgb(0, 0, 0);background-color:rgb(255, 255, 255); width: 50%; float: left; flex: 1; padding-left: 15px; padding-top: 1px;">
          <form method="Post">
             <h3>Search Player</h3>
             <p>
@@ -33,7 +33,7 @@
       </div>
 
 
-      <div id="TeamPicker" class="teams" style="width: 50%; float: right; flex: 1; padding-left: 15px; padding-top: 1px;" >
+      <div id="TeamPicker" class="teams" style="color:rgb(0, 0, 0);background-color:rgb(255, 255, 255);width: 50%; float: right; flex: 1; padding-left: 15px; padding-top: 1px;" >
          <form method="Post">
             <h3>Search Top Rushers</h3>
             <p>
@@ -72,10 +72,12 @@
    <h2>Error: {{first_name}} {{last_name}}</h2>
    {% elif exists == 1 and team_name == "all time"%}
    <h2>Displaying the Top 20 Rushers of {{team_name }}!</h2>
+   <img src="{{team_img}}" alt="team_image" width="200" height="200">
    {% elif exists == 1 and team_name != "all time"%}
    <h2>Displaying the Top 20 Rushers of the {{team_name }}!</h2>
+   <img src="{{team_img}}" alt="team_image" width="200" height="200">
    {% else %}
-   <img src="{{player_img}}" alt="image">
+   <img src="{{player_img}}" alt="player_image">
    {% endif %}
 
 
