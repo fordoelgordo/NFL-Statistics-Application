@@ -26,12 +26,59 @@ def readTeams():
     team_df = df[['teamId','draftTeam']].drop_duplicates()
     return team_df
 
+def createMapping():
+    team_map = {}
+    team_map['TB'] = 'Tampa Bay Buccaneers'
+    team_map['DAL'] = 'Dallas Cowboys'
+    team_map['CIN'] = 'Cincinnati Bengals'
+    team_map['NYJ'] = 'New York Jets'
+    team_map['NYG'] = 'New York Giants'
+    team_map['ATL'] = 'Atlanta Falcons'
+    team_map['NO'] = 'New Orleans Saints'
+    team_map['GB'] = 'Green Bay Packers'
+    team_map['KC'] = 'Kansas City Chiefs'
+    team_map['HO'] = 'Houston Texans'
+    team_map['BUF'] = 'Buffalo Bills'
+    team_map['MIA'] = 'Miami Dolphins'
+    team_map['SEA'] = 'Seattle Seahawks'
+    team_map['CHI'] = 'Chicago Bears'
+    team_map['NE'] = 'New England Patriots'
+    team_map['CLV'] = 'Cleveland Browns'
+    team_map['DEN'] = 'Denver Broncos'
+    team_map['SL'] = 'Los Angeles Rams'
+    team_map['PIT'] = 'Pittsburgh Steelers'
+    team_map['LA'] = 'Los Angeles Rams'
+    team_map['SD'] = 'Los Angeles Chargers'
+    team_map['BLT'] = 'Baltimore Ravens'
+    team_map['MIN'] = 'Minnesota Vikings'
+    team_map['OAK'] = 'Las Vegas Raiders'
+    team_map['DET'] = 'Detroit Lions'
+    team_map['SF'] = 'San Francisco 49ers'
+    team_map['WAS'] = 'Washington Football Team'
+    team_map['PHI'] = 'Philadelphia Eagles'
+    team_map['LAR'] = 'Los Angeles Rams'
+    team_map['IND'] = 'Indianapolis Colts'
+    team_map['ARZ'] = 'Arizona Cardinals'
+    team_map['JAX'] = 'Jacksonville Jaguars'
+    team_map['CAR'] = 'Carolina Panthers'
+    team_map['TEN'] = 'Tennessee Titans'
+    team_map['HST'] = 'Houston Texans'
+    team_map['LAC'] = 'Los Angeles Chargers'
+    team_map['ARI'] = 'Arizona Cardinals'
+    team_map['HOU'] = 'Houston Texans'
+    team_map['BAL'] = 'Baltimore Ravens'
+    team_map['CLE'] = 'Cleveland Browns'
+    return team_map
+
+
 if pathlib.Path('static/archive/').exists():
     df_rusher = readRushers()
     df_teams = readTeams()
     df_players = readPlayers()
     all_rushers = df_rusher[["playerId","rushYards","rushNull","teamId"]]
     top_rushers_dictionary = {}    
+    team_map = createMapping()
+
 
 
 
@@ -142,7 +189,7 @@ def get_name(player_id):
 def get_rusher_yards_dic(team_name):
     global top_rushers_dictionary
     total_rusher_dic = {}
-    if not top_rushers_dictionary:
+    if not top_rushers_dictionary and team_name == 'all time':
         if(team_name == 'all time'):                
                 player_id = all_rushers[["playerId"]].drop_duplicates().values.tolist()
                 #TODO: Less Expensive, figure out how to reduce costs of lookup or move into own function
@@ -209,56 +256,6 @@ def get_AVG_of_top_df(outputDataFrame):
     players = outputDataFrame['Player ID'].count()
     return round(total/players,3)
 
-def createMapping():
-    team_map = {}
-    team_map['TB'] = 'Tampa Bay Buccaneers'
-    team_map['DAL'] = 'Dallas Cowboys'
-    team_map['CIN'] = 'Cincinnati Bengals'
-    team_map['NYJ'] = 'New York Jets'
-    team_map['NYG'] = 'New York Giants'
-    team_map['ATL'] = 'Atlanta Falcons'
-    team_map['NO'] = 'New Orleans Saints'
-    team_map['GB'] = 'Green Bay Packers'
-    team_map['KC'] = 'Kansas City Chiefs'
-    team_map['HO'] = 'Houston Texans'
-    team_map['BUF'] = 'Buffalo Bills'
-    team_map['MIA'] = 'Miami Dolphins'
-    team_map['SEA'] = 'Seattle Seahawks'
-    team_map['CHI'] = 'Chicago Bears'
-    team_map['NE'] = 'New England Patriots'
-    team_map['CLV'] = 'Cleveland Browns'
-    team_map['DEN'] = 'Denver Broncos'
-    team_map['SL'] = 'Los Angeles Rams'
-    team_map['PIT'] = 'Pittsburgh Steelers'
-    team_map['LA'] = 'Los Angeles Rams'
-    team_map['SD'] = 'Los Angeles Chargers'
-    team_map['BLT'] = 'Baltimore Ravens'
-    team_map['MIN'] = 'Minnesota Vikings'
-    team_map['OAK'] = 'Las Vegas Raiders'
-    team_map['DET'] = 'Detroit Lions'
-    team_map['SF'] = 'San Francisco 49ers'
-    team_map['WAS'] = 'Washington Football Team'
-    team_map['PHI'] = 'Philadelphia Eagles'
-    team_map['LAR'] = 'Los Angeles Rams'
-    team_map['IND'] = 'Indianapolis Colts'
-    team_map['ARZ'] = 'Arizona Cardinals'
-    team_map['JAX'] = 'Jacksonville Jaguars'
-    team_map['CAR'] = 'Carolina Panthers'
-    team_map['TEN'] = 'Tennessee Titans'
-    team_map['HST'] = 'Houston Texans'
-    team_map['LAC'] = 'Los Angeles Chargers'
-    team_map['ARI'] = 'Arizona Cardinals'
-    team_map['HOU'] = 'Houston Texans'
-    team_map['BAL'] = 'Baltimore Ravens'
-    team_map['CLE'] = 'Cleveland Browns'
-    return team_map
-
-
-
-
-
- 
-    
 
 
 # get path to image for player 
@@ -276,5 +273,11 @@ def getImageLinks(first_name,last_name):
             pathToImage = url.replace('t_lazy/','')
             print(pathToImage)
     return pathToImage
+
+def getFullTeamName(team_abbreviation):
+    global team_map
+    return team_map[team_abbreviation]
+
+
 
 # ================== Above are functions that are used by the Rushers site =================
