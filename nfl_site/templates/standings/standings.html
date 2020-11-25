@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- {% load static %} -->
+{% load static %}
 <html>
     <head>
         <meta charset="utf-8">
@@ -8,7 +8,10 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>    
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+        <!-- Link jQuery -->
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+        <!-- CSS styling -->
         <style type="text/css">
             #leaguetype {
                 padding: 10px 20px;
@@ -33,6 +36,26 @@
             }
             #south {
                 border: solid 1px black;
+            }
+            #leagueTab img {
+                width: 50px;
+            }
+            /* table.table-fit {
+                width: auto !important;
+                table-layout: auto !important;
+                height: auto !important;
+            }
+            table.table-fit thead th, table.table-fit tfoot th {
+                width: auto !important;
+                height: auto !important;
+            }
+            table.table-fit tbody td, table.table-fit tfoot td {
+                width: auto !important;
+                height: auto !important;
+            } */
+            .table {
+                width: 80%;
+                max-width: 95%^;
             }
         </style>
     </head>
@@ -67,17 +90,42 @@
                     <!-- Empty column-->
                 </div>
             </div>
+            <!-- div for league year selection-->
             <div class="row">
-                <!-- div for league year selection-->
                 <div id="leagueyear">
                     <form method="POST">
-                        <h6>Select year</h6> 
+                        <label>Year</label> 
                         {{ year_form.year_val }}
+                        <label>Season</label>
+                        {{ year_form.season_val }}
                         {% csrf_token %} <!--Enable users to enter info on the form-->
                         <input type="submit" class="btn btn-primary btn-sm" value="Submit">
                     </form>
                 </div>
             </div>
+            <!-- Change the layout based on the button pressed-->
+            {% if league %}
+            <div class="container-fluid">
+                <table class="table table-condensed table-hover" id="leagueTab">
+                    <thead class="thead-inverse">
+                        <tr>
+                            {% for key, value in df_dict.items %}
+                                <th>{{ key }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for rec in df_rec %}
+                        <tr>
+                            {% for i2, k2 in rec.items %}
+                                <td>     {{ k2 }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
             <div class="row">
                 <div class="col">
                     <div class="row" id="west">
@@ -96,6 +144,9 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
+        <!-- Link my standings.js javascript -->
+        <script src="{%static "js/standings.js" %}"></script>
     </body>
 </html>
