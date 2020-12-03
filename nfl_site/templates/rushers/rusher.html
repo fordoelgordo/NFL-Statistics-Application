@@ -11,13 +11,16 @@
 
 <body style="background-color:azure; margin-left:2.5em; margin-right: 2.5em; ">
    <h1>Rushing Statistics</h1>
-   <button class="btn btn-primary" style="background-color: orange; color: black;" onclick="window.location.href='/' ">Back Home!</button>
+   <button class="btn btn-primary" style="background-color: orange; color: black;"
+      onclick="window.location.href='/' ">Back Home!</button>
    <hr style="height:2px;border-width:0;color:#1408A3;background-color: #1408A3">
    <br>
 
-   <div id = "wrapper" class="row" style=" background-color: #1408A3; width: 100%; display: flex; padding: 30px; border: solid blue;">
+   <div id="wrapper" class="row"
+      style=" background-color: hsl(245, 91%, 34%); width: 100%; display: flex; padding: 30px; border: solid blue;">
 
-      <div id="PlayerNames" class="names" style="color:rgb(0, 0, 0);background-color:rgb(255, 255, 255); width: 50%; float: left; flex: 1; padding-left: 15px; padding-top: 1px; border: solid blue;">
+      <div id="PlayerNames" class="names"
+         style="color:rgb(0, 0, 0);background-color:rgb(255, 255, 255); width: 50%; float: left; flex: 1; padding-left: 15px; padding-top: 1px; border: solid blue;">
          <form method="Post">
             <h3>Search Player</h3>
             <p>
@@ -27,13 +30,14 @@
 
             <input type="Submit" class="btn btn-primary" name="Search" value="Search" />
             {% if deletable == True%}
-            <input type="submit" class="btn btn-danger btn-sm" name="Delete Player" value="Delete Player"/>            
+            <input type="submit" class="btn btn-danger btn-sm" name="Delete Player" value="Delete Player" />
             {%endif%}
          </form>
       </div>
 
 
-      <div id="TeamPicker" class="teams" style="color:rgb(0, 0, 0);background-color:rgb(255, 255, 255);width: 50%; float: right; flex: 1; padding-left: 15px; padding-top: 1px; border: solid blue;" >
+      <div id="TeamPicker" class="teams"
+         style="color:rgb(0, 0, 0);background-color:rgb(255, 255, 255);width: 50%; float: right; flex: 1; padding-left: 15px; padding-top: 1px; border: solid blue;">
          <form method="Post">
             <h3>Search Top Rushers</h3>
             <p>
@@ -48,21 +52,26 @@
    </div>
 
    <style>
-      img {
+      /* img {
          display: block;
          margin-left: auto;
          margin-right: auto;
          border: 5px solid #874444;
-      }
-      table, th, td {
+      } */
+      table,
+      th,
+      td {
          border-style: double;
-         border-color:dimgray;
+         border-color: dimgray;
       }
-      th, td {
-        padding: 5px;
+
+      th,
+      td {
+         padding: 5px;
       }
+
       th {
-        text-align: left;
+         text-align: left;
       }
    </style>
 
@@ -70,9 +79,24 @@
 
    {% if exists == 0 %}
    <h2>Error: {{first_name}} {{last_name}}</h2>
+
    {% elif exists == 1 and team_name == "all time"%}
-   <h2>Displaying the Top 20 Rushers of {{team_name }}!</h2>
-   <img src="{{team_img}}" alt="team_image" width="200" height="200">
+   <h2>Displaying the Top 20 Rushers of All Time!</h2>
+   <div class="row">
+      <div class="container-fluid">
+          <div class="row" style="border:solid blue" >
+              <div class="col-7" id="container1" style="border:solid red; display:inline-block; vertical-align: top;">
+                     <img src="{{team_img}}" alt="team_image" width="200" height="200">                  
+              </div>
+
+              <div class="col-5" id="container2" style="border:solid green; display:inline-block;">
+                  <div> <h3>Total Avg Yards: </h3> </div>
+                  <div><h3>Top Player:</h3> </div>
+                  <div> <h3> Best Rushing Team: </h3></div>
+              </div>
+          </div>
+      </div>
+  </div>
    {% elif exists == 1 and team_name != "all time"%}
    <h2>Displaying the Top 20 Rushers of the {{team_name }}!</h2>
    <img src="{{team_img}}" alt="team_image" width="200" height="200">
@@ -82,24 +106,24 @@
 
 
 
-   <div id = "Table">
-   <table style="width:100%">
-      <tr>
-         {% for item in columns %}
-         <th style="color:darkslategray"><i>{{ item }}</th>
-         </i>
-         {% endfor %}
-      </tr>
-      <tr>
-         {% for key, value in output.items %}
-         <td>
-            {% for i in value %}
-            {{ i }}<br>
+   <div id="Table">
+      <table style="width:100%">
+         <tr>
+            {% for item in columns %}
+            <th style="color:darkslategray"><i>{{ item }}</th>
+            </i>
             {% endfor %}
-         </td>
-         {% endfor %}
-      </tr>
-   </table>
+         </tr>
+         <tr>
+            {% for key, value in output.items %}
+            <td>
+               {% for i in value %}
+               {{ i }}<br>
+               {% endfor %}
+            </td>
+            {% endfor %}
+         </tr>
+      </table>
    </div>
 
    <div>
@@ -109,16 +133,17 @@
       <h3>Time To Load Page: {{t_time}} sec</h3>
       {%endif%}
    </div>
-   {% endif %} 
+   {% endif %}
 
 
-   
+
    {% if show_graph_button == "Show Graph"%}
-   <br><div class="container" style="width: 85%; padding: 30px;">
+   <br>
+   <div class="container" style="width: 85%; padding: 30px;">
       {{ graph_div|safe }}
    </div>
    {% endif %}
-   
+
 </body>
 
 </html>
