@@ -277,9 +277,7 @@ def getImageLinks(first_name,last_name):
 def getTeamImage(team_name):
     filtered_name = parseTeamName(team_name)
     substr = "https://static.www.nfl.com/t_person_squared_mobile/"
-    print(filtered_name)
     site ='https://www.nfl.com/teams/'+filtered_name
-    print(site)
     html = urlopen(site)
     bs = BeautifulSoup(html, 'html.parser')
     images = bs.find_all('img', {"alt": team_name+' logo' })
@@ -302,6 +300,33 @@ def getFullTeamName(team_abbreviation):
     global team_map
     return team_map[team_abbreviation]
 
+def getFirstValue(outputDataFrame):
+    top_rush = outputDataFrame.loc[outputDataFrame.Rank == 1]
+    full_name = str(top_rush.at[0,'First Name']+' '+top_rush.at[0,'Last Name'])
+    return full_name
+
+
+def get_top_rushing_team(outputDataFrame):
+    # messing with getting the team with the best rushers
+    
+    team_list = outputDataFrame['Team(s)'].tolist()
+    teamz = {}
+    maximum = 0 
+    topTeam = ''
+    for i in team_list:
+        for team in i:
+        # here we take the first bc both values the same just abrev change
+            if team[0] in teamz:
+                teamz[team[0]] += 1
+            else:
+                teamz[team[0]] = 1
+
+    for i in teamz:
+        if teamz[i] > maximum:
+            topTeam = i
+            maximum = teamz[i]
+    return getFullTeamName(topTeam)
+    
 
 
 # ================== Above are functions that are used by the Rushers site =================
