@@ -2,7 +2,7 @@ from django.shortcuts import render
 import pandas as pd
 from .forms import RushersForm , TeamPickForm
 from .nfldata import get_player_df,get_rusher_yards_dic,get_top_rushers_df, create_ALL_TIME_context, getImageLinks , deletePlayer, get_AVG_of_top_df, getFullTeamName, getTeamImage
-from .nfldata import getFirstValue, get_top_rushing_team
+from .nfldata import getFirstValue, get_top_rushing_team, get_top_team
 
 import plotly
 import plotly.graph_objs as go
@@ -86,6 +86,7 @@ def rusher_page(request):
 
             context['top_rusher'] = getFirstValue(outputDataFrame)
             context['top_rushing_team'] = get_top_rushing_team(outputDataFrame)
+            context['top_team'] = get_top_team()
 
 
             

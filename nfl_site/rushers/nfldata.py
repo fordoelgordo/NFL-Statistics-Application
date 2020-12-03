@@ -135,6 +135,7 @@ def getPlayerTeam(player_id):
     get_team = filter_df['teamId'].drop_duplicates().tolist()
     return get_team
 
+#getting team names for list of team id's
 def getTeamName(team_id):
     team_names = []
     for i in team_id:
@@ -142,6 +143,9 @@ def getTeamName(team_id):
         team_names.append(team_name)
     return team_names
 
+#getting team name for one team id
+def getTeamName2(team_id):
+    return df_teams[df_teams['teamId'] == team_id]['draftTeam']
 
 def get_total_yards_for_player(player_id):
     player_rush_yards = int(all_rushers.loc[(all_rushers['playerId'] == player_id,'rushYards')].sum())
@@ -308,7 +312,6 @@ def getFirstValue(outputDataFrame):
 
 def get_top_rushing_team(outputDataFrame):
     # messing with getting the team with the best rushers
-    
     team_list = outputDataFrame['Team(s)'].tolist()
     teamz = {}
     maximum = 0 
@@ -325,8 +328,30 @@ def get_top_rushing_team(outputDataFrame):
         if teamz[i] > maximum:
             topTeam = i
             maximum = teamz[i]
+
     return getFullTeamName(topTeam)
-    
+
+def get_top_team():
+    global all_rushers 
+    global df_teams
+    maximum = 0 
+    topTeam = ''
+    all_teams = df_teams.teamId.to_list()
+
+    #check the sum of all the rush yards of each team and get the max
+    for team in all_teams:
+        value = all_rushers.loc[all_rushers['teamId'] == team,'rushYards'].sum()
+        if value > maximum:
+            # print('totalYds = ',value)
+            # print('TeamId=',team)
+            # print(getTeamName2(team).iloc[0])
+            maximum = value
+            topTeam = team
+
+    abrv = getTeamName2(topTeam)
+    full_team_name = getFullTeamName(abrv.iloc[0])
+
+    return full_team_name
 
 
 # ================== Above are functions that are used by the Rushers site =================
