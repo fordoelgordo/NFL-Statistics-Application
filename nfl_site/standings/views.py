@@ -107,17 +107,23 @@ combined['Division'] = combined.apply(set_div, axis=1)
 # Re-arrange the ordering of the columns
 combined = combined[['NFL Team','Conference','Division','season','seasonType','Wins','Losses','WinPct','PF','PA','Net Pts']]
 
-# response/combine page rendering
+# standings page rendering
 def standings(request):
     year_form = forms.YearForm
     
     # Set holding variables
-    year_val = 0
-    season_val = ""
+    year_val = 0 # Default to 2019 unless user selects a different year
     combined_filtered = combined
-    league = False
+    season_val = ""
+    league = True # Default to the league view
+    conference = False
+    division = False
     df_dict = []
     df_rec = []
+    nfc_dict = []
+    nfc_rec = []
+    afc_dict = []
+    afc_rec = []
 
     if request.method == "POST": # Means someone filled out our player_form
         year_form = forms.YearForm(request.POST)
@@ -134,15 +140,30 @@ def standings(request):
             combined_filtered.sort_values(by=['WinPct','Wins','PF','PA'], ascending =[False,False,False,True], inplace = True, na_position='first')
 
     if request.POST.get('Division') == 'Division':
-        print("Division button clicked")
+        division = True
+        league = False
+        conference = False
 
-    if request.POST.get('Conference') == 'Conference':
-        print("Conference button clicked")
+    if request.POST.get('Conference') == 'Conference' or conference:
+        conference = True
+        league = False
+        division = False
+        # Create two datasets, one for NFC and one for AFC
+        nfc = combined_filtered[combined_filtered['Conference'] == 'NFC']
+        nfc.drop('Conference', axis=1, inplace=True)
+        afc = combined_filtered[combined_filtered['Conference'] == 'AFC']
+        afc.drop('Conference', axis=1, inplace=True)
+        nfc_dict = nfc.to_dict()
+        nfc_rec = nfc.to_dict(orient='records')
+        afc_dict = afc.to_dict()
+        afc_rec = afc.to_dict(orient='records')
 
     if request.POST.get('League') == 'League':
         league = True
+        conference = False
+        division = False
         df_dict = combined_filtered.to_dict()
         df_rec = combined_filtered.to_dict(orient='records')
-           
-    context = {'year_form': year_form, 'df_dict':df_dict, 'df_rec':df_rec, 'league':league}
+        
+    context = {'year_form': year_form, 'df_dict':df_dict, 'df_rec':df_rec, 'nfc_dict':nfc_dict, 'nfc_rec':nfc_rec, 'afc_dict':afc_dict, 'afc_rec':afc_rec, 'league':league, 'conference':conference, 'division':division}
     return render(request, 'standings/standings.html', context)
