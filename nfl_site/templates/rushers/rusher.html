@@ -1,50 +1,54 @@
-{% load static %}
 <html>
-
-<head>
-   <meta charset="utf-8">
-   <title>Rushing Statistics Page</title>
-   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-   <!-- <link rel="stylesheet" href="{% static "css/rushers/rushers.css" %}" /> -->
-</head>
 <body>
-<style type="text/css">
-   .navbar {
-       background-color: #1408A3;
-   }
-   .navbar ul {
-   list-style-type: none;
-   margin: 0px;
-   padding: 0px;
-   text-align: left;
-   }
-   .navbar li{
-       display: inline-block;
-       padding: 25px;
-       width: 125px;
-       text-align: center;
-   }
-   .navbar ul li a {
-       color: white;
-       font-size: 16px;
-   }
-   .navbar h1{
-       color: white;
-   }
-</style>
 
-<div class="navbar">
-   <a class="navbar-brand">
-       <img src="https://static.www.nfl.com/image/upload/v1554321393/league/nvfr7ogywskqrfaiu38m.svg" width="70" height="70" class="d-inline-block align-top" alt="" loading="lazy">
-   </a>
+   <head>
+      <meta charset="utf-8">
+      <title>Rushing Statistics Page</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+   </head>
 
-   <h1>Rushing Statistics</h1>
-   <ul>
-      <li><a href="/">Back Home!</a></li>
-   <br>
-   </ul>
-</div>
+   <style type="text/css">
+      .navbar {
+         background-color: #1408A3;
+      }
+
+      .navbar ul {
+         list-style-type: none;
+         margin: 0px;
+         padding: 0px;
+         text-align: left;
+      }
+
+      .navbar li {
+         display: inline-block;
+         padding: 25px;
+         width: 125px;
+         text-align: center;
+      }
+
+      .navbar ul li a {
+         color: white;
+         font-size: 16px;
+      }
+
+      .navbar h1 {
+         color: white;
+      }
+   </style>
+
+   <div class="navbar">
+      <a class="navbar-brand">
+         <img src="https://static.www.nfl.com/image/upload/v1554321393/league/nvfr7ogywskqrfaiu38m.svg" width="70"
+            height="70" class="d-inline-block align-top" alt="" loading="lazy">
+      </a>
+
+      <h1>Rushing Statistics</h1>
+      <ul>
+         <li><a href="/">Back Home!</a></li>
+         <br>
+      </ul>
+   </div>
 
    <div id="wrapper" class="row"
       style=" background-color: hsl(245, 91%, 34%); width: 100%; display: flex; padding: 30px; border: solid blue;">
@@ -82,12 +86,7 @@
    </div>
 
    <style>
-      /* img {
-         display: block;
-         margin-left: auto;
-         margin-right: auto;
-         border: 5px solid #874444;
-      } */
+
       table,
       th,
       td {
@@ -114,36 +113,48 @@
    <h2>Displaying the Top 20 Rushers of All Time!</h2>
    <div class="row">
       <div class="container-fluid">
-          <div class="row" style="border:solid blue" >
-              <div class="col-7" id="container1" style="border:solid red; display:inline-block; vertical-align: top;">
-                     <img src="{{team_img}}" alt="team_image" width="200" height="200">                  
-              </div>
+         <div class="row" style="border:solid blue; padding: .50%;">
+            <div class="col-7" id="container1" style="display:inline-block; vertical-align: top;">
+               <img src="{{team_img}}" alt="team_image" width="200" height="200">
+            </div>
 
-              <div class="col-5" id="container2" style="border:solid green; display:inline-block;">
-                  <div> <h3 style="text-align:justify">Total Rushing Avg Yards: {{total_avg_yards}}</h3> </div>
-                  <div><h3 style="text-align:justify">Top Rushing Player: {{top_rusher}}</h3> </div>
-                  <div> <h3 style="text-align:justify"> Top Rushing Team Yards: {{top_team}}</h3></div>
-                  <div> <h3 style="text-align:justify"> Team w/ Most Top Rushers: {{top_rushing_team}}</h3></div>
-              </div>
-          </div>
+            <div class="col-5" id="container2" style="display:inline-block;">
+               <div>
+                  <h3 style="text-align:justify">Total Rushing Avg Yards: {{total_avg_yards}}</h3>
+               </div>
+               <div>
+                  <h3 style="text-align:justify">Top Rushing Player: {{top_rusher}}</h3>
+               </div>
+               <div>
+                  <h3 style="text-align:justify"> Top Rushing Team Yards: {{top_team}}</h3>
+               </div>
+               <div>
+                  <h3 style="text-align:justify"> Team w/ Most Top Rushers: {{top_rushing_team}}</h3>
+               </div>
+            </div>
+         </div>
       </div>
-  </div>
+   </div>
    {% elif exists == 1 and team_name != "all time"%}
    <h2>Displaying the Top 20 Rushers of the {{team_name }}!</h2>
    <div class="row">
       <div class="container-fluid">
-          <div class="row" style="border:solid blue" >
-              <div class="col-7" id="container1" style="border:solid red; display:inline-block; vertical-align: top;">
-                     <img src="{{team_img}}" alt="team_image" width="200" height="200">                  
-              </div>
+         <div class="row" style="border:solid blue">
+            <div class="col-7" id="container1" style="border:solid red; display:inline-block; vertical-align: top;">
+               <img src="{{team_img}}" alt="team_image" width="200" height="200">
+            </div>
 
-              <div class="col-5" id="container2" style="border:solid green; display:inline-block;">
-                  <div> <h3 style="text-align:justify">Total Rushing Avg Yards: {{total_avg_yards}}</h3> </div>
-                  <div><h3 style="text-align:justify">Top Rushing Player: {{top_rusher}}</h3> </div>
-              </div>
-          </div>
+            <div class="col-5" id="container2" style="border:solid green; display:inline-block;">
+               <div>
+                  <h3 style="text-align:justify">Total Rushing Avg Yards: {{total_avg_yards}}</h3>
+               </div>
+               <div>
+                  <h3 style="text-align:justify">Top Rushing Player: {{top_rusher}}</h3>
+               </div>
+            </div>
+         </div>
       </div>
-  </div>
+   </div>
    {% else %}
    <img src="{{player_img}}" alt="player_image">
    {% endif %}
@@ -188,5 +199,4 @@
    {% endif %}
 
 </body>
-
 </html>
