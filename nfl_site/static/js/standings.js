@@ -1,8 +1,15 @@
 /* League table variables */
 var tab = $('#leagueTab tr'); // Grab the leage table
 var n = $('#leagueTab >tbody >tr').length; // Find table length so we can loop through
-console.log(tab);
-console.log(n);
+
+//Test loop
+$(document).ready(function(){
+    $('table.rep').each(function(){
+        $(this).find('tr').each(function(){
+            console.log("hi");
+        });
+    });
+});
 
 // Loop through the table and set the images
 for (var i = 1; i <= n; ++i) {
@@ -47,6 +54,4 @@ for (var i = 1; i <= n; ++i) {
         img_n = img.replace("TEMP", str);
     }
     ele.prepend("<picture>"+src1_n+src2_n+src3_n+img_n+"</picture>");
-    console.log(ele.html());
 }    
-
