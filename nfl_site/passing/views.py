@@ -55,7 +55,7 @@ def pass_page(request):
 
     run_time = 0
 
-    if pass_df.empty or players_df.empty or request.POST.get('Refresh Data') == 'Refresh Data':
+    if pass_df.empty or players_df.empty:
         pass_df = csv_to_dict(f'{_DATA_PATH}passer.csv', 1)
         players_df = csv_to_dict(f'{_DATA_PATH}players.csv', 1)
         top_players_df = pd.DataFrame()
@@ -82,9 +82,7 @@ def pass_page(request):
             context = {'analytics': analytics, 'results': top_players_df.head(abs(top_player_count)), 'columns' : top_players_df.columns, 'n_count' : top_player_count}
             run_time = time.time() - start_time
             if previous_time != 0:
-                #difference = float(previous_time) - float(time)
                 context['previous_time'] = str(previous_time)
-                #context['difference'] = str(difference)
             previous_time = run_time
             context['time'] = str(run_time)
             context['form'] = form
@@ -181,7 +179,6 @@ def parse_form_entries(form):
         results = results.drop(columns=_DROP_FRAME)
         results = results.rename(columns=_RENAME_COLS)
         results.insert(loc=0, column='#', value=np.arange(start=1, stop=len(results)+1))
-
 
     return {'form': form, 'results': results, 'columns' : results.columns}
 
@@ -316,9 +313,9 @@ def add_passing_player(form):
             
         else:
             new_top_n = pd.DataFrame({'Player Name': player_name,
-                                    'Total Passing Length (Yards)': passing_length,
+                                    'Total Passing Length (Yards)': int(passing_length),
                                     'Total Times Passed (from csv)': 1,
-                                    'Average Passing Length (Yards)': round(passing_length/1, 3),
+                                    'Average Passing Length (Yards)': round(int(passing_length)/1, 3),
 
                                     },
                                     index=[0]
