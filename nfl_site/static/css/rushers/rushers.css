@@ -4,27 +4,27 @@
 /* Style the playerNames div */
 
 
-#wrapper{
+/* #wrapper{
     border: 1px solid blue;
-}
+} */
 
-#PlayerNames {
+/* #PlayerNames {
     /* display: inline-block; 
     width:200px;
     height:200px;
     margin-left: 5px;  */
-    border: 3px solid red;
+    border: 3px solid blue;
     /* vertical-align:middle; */
 
-}
-
+/* 
 #TeamPicker {
     /* display: inline-block;
     margin-left: 55%;
     width:200px;
     height:200px;
     margin-top: 0; */
-    border: 3px solid green;
+
+    border: 3px solid blue;
     /* vertical-align:middle; */
 
-}
+} */
