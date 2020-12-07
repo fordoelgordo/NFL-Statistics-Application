@@ -94,9 +94,9 @@ combined.drop(['homeTeamFinalScore_x','visitingTeamFinalScore_x','homeWin_x','vi
 # Append the division and conference to the dataset
 combined['Conference'] = np.where(combined['NFL Team'].isin(['NO','GB','SEA','LAR','TB','ARI','CHI','SF','DET','MIN','CAR','PHI','ATL','WAS','DAL','NYG']), 'NFC','AFC')
 def set_div(x):
-    if x['NFL Team'] in ['LAR','SEA','ARI','SF','KC','LV','DEN','LAC']:
+    if x['NFL Team'] in ['LAR','SEA','ARI','SF','KC','LV','DEN','LAC','LA','SD']:
         return 'West'
-    if x['NFL Team'] in ['NO','TB','CAR','ATL','IND','TEN','HOU','JAX']:
+    if x['NFL Team'] in ['NO','TB','CAR','ATL','IND','TEN','HOU','JAX','HST']:
         return 'South'
     if x['NFL Team'] in ['PHI','NYG','DAL','WAS','BUF','MIA','NE','NYJ']:
         return 'East'
@@ -124,6 +124,22 @@ def standings(request):
     nfc_rec = []
     afc_dict = []
     afc_rec = []
+    nfc_east_dict = []
+    nfc_west_dict = []
+    nfc_south_dict = []
+    nfc_north_dict = []
+    nfc_east_rec = []
+    nfc_west_rec = []
+    nfc_north_rec = []
+    nfc_south_rec = []
+    afc_east_dict = []
+    afc_west_dict = []
+    afc_north_dict = []
+    afc_south_dict  = []
+    afc_east_rec = []
+    afc_west_rec = []
+    afc_north_rec = []
+    afc_south_rec = []
 
     if request.method == "POST": # Means someone filled out our player_form
         year_form = forms.YearForm(request.POST)
@@ -143,6 +159,39 @@ def standings(request):
         division = True
         league = False
         conference = False
+        # We now need to return the data for each division/conference combo
+        nfc_east = combined_filtered[(combined_filtered['Conference'] == 'NFC') & (combined_filtered['Division'] == 'East')]
+        nfc_west = combined_filtered[(combined_filtered['Conference'] == 'NFC') & (combined_filtered['Division'] == 'West')]
+        nfc_south = combined_filtered[(combined_filtered['Conference'] == 'NFC') & (combined_filtered['Division'] == 'South')]
+        nfc_north = combined_filtered[(combined_filtered['Conference'] == 'NFC') & (combined_filtered['Division'] == 'North')]
+        afc_east = combined_filtered[(combined_filtered['Conference'] == 'AFC') & (combined_filtered['Division'] == 'East')]
+        afc_west = combined_filtered[(combined_filtered['Conference'] == 'AFC') & (combined_filtered['Division'] == 'West')]
+        afc_south = combined_filtered[(combined_filtered['Conference'] == 'AFC') & (combined_filtered['Division'] == 'South')]
+        afc_north = combined_filtered[(combined_filtered['Conference'] == 'AFC') & (combined_filtered['Division'] == 'North')]
+        nfc_east.drop(['Conference','Division'], axis=1, inplace=True)
+        nfc_west.drop(['Conference','Division'], axis=1, inplace=True)
+        nfc_south.drop(['Conference','Division'], axis=1, inplace=True)
+        nfc_north.drop(['Conference','Division'], axis=1, inplace=True)
+        afc_east.drop(['Conference','Division'], axis=1, inplace=True)
+        afc_west.drop(['Conference','Division'], axis=1, inplace=True)
+        afc_south.drop(['Conference','Division'], axis=1, inplace=True)
+        afc_north.drop(['Conference','Division'], axis=1, inplace=True)
+        nfc_east_dict = nfc_east.to_dict()
+        nfc_west_dict = nfc_west.to_dict()
+        nfc_south_dict = nfc_south.to_dict()
+        nfc_north_dict = nfc_north.to_dict()
+        afc_east_dict = afc_east.to_dict()
+        afc_west_dict = afc_west.to_dict()
+        afc_north_dict = afc_north.to_dict()
+        afc_south_dict = afc_south.to_dict()
+        nfc_east_rec = nfc_east.to_dict(orient='records')
+        nfc_west_rec = nfc_west.to_dict(orient='records')
+        nfc_north_rec = nfc_north.to_dict(orient='records')
+        nfc_south_rec = nfc_south.to_dict(orient='records')
+        afc_east_rec = afc_east.to_dict(orient='records')
+        afc_west_rec = afc_west.to_dict(orient='records')
+        afc_north_rec = afc_north.to_dict(orient='records')
+        afc_south_rec = afc_south.to_dict(orient='records')
 
     if request.POST.get('Conference') == 'Conference' or conference:
         conference = True
@@ -164,6 +213,6 @@ def standings(request):
         division = False
         df_dict = combined_filtered.to_dict()
         df_rec = combined_filtered.to_dict(orient='records')
-        
-    context = {'year_form': year_form, 'df_dict':df_dict, 'df_rec':df_rec, 'nfc_dict':nfc_dict, 'nfc_rec':nfc_rec, 'afc_dict':afc_dict, 'afc_rec':afc_rec, 'league':league, 'conference':conference, 'division':division}
+    
+    context = {'year_form': year_form, 'df_dict':df_dict, 'df_rec':df_rec, 'nfc_dict':nfc_dict, 'nfc_rec':nfc_rec, 'afc_dict':afc_dict, 'afc_rec':afc_rec, 'league':league, 'conference':conference, 'division':division, 'nfc_east_dict':nfc_east_dict, 'nfc_west_dict':nfc_west_dict, 'nfc_south_dict':nfc_south_dict, 'nfc_north_dict':nfc_north_dict, 'nfc_east_rec':nfc_east_rec, 'nfc_west_rec':nfc_west_rec, 'nfc_north_rec':nfc_north_rec, 'nfc_south_rec':nfc_south_rec, 'afc_east_dict':afc_east_dict, 'afc_west_dict':afc_west_dict, 'afc_north_dict':afc_north_dict, 'afc_south_dict':afc_south_dict, 'afc_east_rec':afc_east_rec, 'afc_west_rec':afc_west_rec, 'afc_north_rec':afc_north_rec, 'afc_south_rec':afc_south_rec}
     return render(request, 'standings/standings.html', context)
