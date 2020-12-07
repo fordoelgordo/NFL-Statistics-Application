@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class StandingsConfig(AppConfig):
-    name = 'standings'
+class ManagementConfig(AppConfig):
+    name = 'management'

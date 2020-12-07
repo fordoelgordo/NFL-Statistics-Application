@@ -1,35 +1,318 @@
 <!DOCTYPE html>
-<!-- {% load static %} -->
+{% load static %}
 <html>
     <head>
         <meta charset="utf-8">
-        <title>NFL Team Standings Page</title>
-        
-        <!-- Bootstrap 4 -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">  
+        <title>Standings Site</title>
+         <!-- Bootstrap 4 -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+        <!-- Link jQuery -->
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+        <!-- CSS styling -->
         <style type="text/css">
-        </style> 
+            .navbar {
+                background-color:  #1408A3;
+            }
+            .navbar a {
+                color: white;
+                font-size: 32px;
+            }
+            #leaguetype {
+                padding: 10px 20px;
+                border-radius: 50px;
+            }
+            .container-fluid {
+                width: 97%;
+            }
+            #leagueyear {
+                padding: 10px;
+            }
+            #west {
+                border: solid 1px black;
+                text-align: center;
+                padding: 10;
+            }
+            #east {
+                border: solid 1px black;
+            }
+            #north {
+                border: solid 1px black;
+            }
+            #south {
+                border: solid 1px black;
+            }
+            #leagueTab img {
+                width: 50px;
+            }
+            #nfc_conf_col h4 {
+                text-align: center;
+                background-color:  #1408A3;
+                color: white;
+            }
+            #afc_conf_col h4 {
+                text-align: center;
+                background-color:  #1408A3;
+                color: white;
+            }
+            /* table.table-fit {
+                width: auto !important;
+                table-layout: auto !important;
+                height: auto !important;
+            }
+            table.table-fit thead th, table.table-fit tfoot th {
+                width: auto !important;
+                height: auto !important;
+            }
+            table.table-fit tbody td, table.table-fit tfoot td {
+                width: auto !important;
+                height: auto !important;
+            } */
+            #leagueTab {
+                width: 80%;
+                max-width: 95%;
+            }
+        </style>
     </head>
     <body>
         <!-- Webpage header-->
-        <div id="header">
-            <div class = "jumbotron">
-                <h1>NFL Standings</h1>
-                <input type="submit" class = "btn btn-primary btn-sm" onclick="window.location.href='/'" value="Back Home!">
+        <nav class = "navbar">
+            <a class="navbar-brand" href="#" onclick="window.location.href='/'">
+                <img src="https://static.www.nfl.com/image/upload/v1554321393/league/nvfr7ogywskqrfaiu38m.svg" width="70" height="70" class="d-inline-block align-top" alt="" loading="lazy">
+                NFL Standings
+            </a>            
+        </nav> 
+        <!-- Overarching container holding all our elements-->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col">
+                    <!-- Empty column -->
+                </div>
+                <!-- League type selection-->
+                <div class="col">
+                    <div id="leaguetype">
+                        <form method="POST">
+                            <div class="btn-group" role="group" aria-label="" id="actionButtons">
+                                <input type="submit" class="btn btn-outline-primary" name="Division" value="Division">
+                                <input type="submit" class="btn btn-outline-primary" name="Conference" value = "Conference">
+                                <input type="submit" class="btn btn-outline-primary" name="League" value="League">
+                            </div>
+                            {% csrf_token %} <!--Enable users to enter info on the form-->
+                        <form>
+                    </div>
+                </div>
+                <div class="col">
+                    <!-- Empty column-->
+                </div>
             </div>
-        </div>
-        <!-- Team standings will go in these containers -->
-        <div class="row">
+            <!-- div for league year selection-->
+            <div class="row">
+                <div id="leagueyear">
+                    <form method="POST">
+                        <label>Year</label> 
+                        {{ year_form.year_val }}
+                        <label>Season</label>
+                        {{ year_form.season_val }}
+                        {% csrf_token %} <!--Enable users to enter info on the form-->
+                        <input type="submit" class="btn btn-primary btn-sm" value="Submit">
+                    </form>
+                </div>
+            </div>
+            <!-- Change the layout based on the button pressed-->
+            {% if league %}
+            <div class="container-fluid">
+                <table class="table table-condensed table-hover" id="leagueTab">
+                    <thead class="thead-inverse">
+                        <tr>
+                            {% for key, value in df_dict.items %}
+                                <th>{{ key }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for rec in df_rec %}
+                        <tr>
+                            {% for i2, k2 in rec.items %}
+                                <td>     {{ k2 }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% elif conference %}
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-7" id="container1">
-                        <h1> Left container</h1>
+                    <div class="col-6" id="nfc_conf_col">
+                        <h4> NFC </h4>
+                        <table class="table table-condensed table-hover" id="nfc_conf">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    {% for key, value in nfc_dict.items %}
+                                    <th>{{ key }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rec in nfc_rec %}
+                                    <tr>
+                                        {% for i, k in rec.items %}
+                                        <td> {{ k }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <script>
+                            /* NFC Table */
+                            var tab = $('#nfc_conf tr'); // Grab the leage table
+                            var n = $('#nfc_conf >tbody >tr').length; // Find table length so we can loop through
+                            // Loop through the table and set the images
+                            for (var i = 1; i <= n; ++i) {
+                                var str = tab.eq(i).find('td').eq(0).text();
+                                var ele = tab.eq(i).find('td').eq(0);
+                                str = str.trim();
+                                var src1 = "<source media=\"(min-width:30px)\" srcset=\"https://static.www.nfl.com/t_q-best/league/api/clubs/logos/\">"
+                                var src2 = "<source media=\"(min-width:30px)\" srcset=\"https://static.www.nfl.com/t_q-best/league/api/clubs/logos/\">"
+                                var src3 = "<source srcset=\"https://static.www.nfl.com/t_q-best/league/api/clubs/logos/\">"
+                                var img = "<img width=\"40\" height=\"40\" alt=\"TEMP logo\" class=\"img-fluid\" src=\"https://static.www.nfl.com/t_q-best/league/api/clubs/logos/\">"
+                                if (str === "HST") {
+                                    var src1_n = src1.replace("/logos/", "/logos/"+"HOU");
+                                    var src2_n = src2.replace("/logos/", "/logos/"+"HOU");
+                                    var src3_n = src3.replace("/logos/","/logos/"+"HOU");
+                                    var img_n = img.replace("/logos/","/logos/"+"HOU");
+                                    img_n = img.replace("TEMP", "HOU");
+                                }
+                                else if (str === "OAK") {
+                                    var src1_n = src1.replace("/logos/", "/logos/"+"LV");
+                                    var src2_n = src2.replace("/logos/", "/logos/"+"LV");
+                                    var src3_n = src3.replace("/logos/","/logos/"+"LV");
+                                    var img_n = img.replace("/logos/","/logos/"+"LV");
+                                    img_n = img.replace("TEMP", "OAK");
+                                }
+                                else if (str === "SL") {
+                                    var src1_n = "<source media=\"(min-width:1024px)\" srcset=\"https://assets.stickpng.com/thumbs/580b585b2edbce24c47b2b5b.png\">";
+                                    var src2_n = "<source media=\"(min-width:768px)\" srcset=\"https://assets.stickpng.com/thumbs/580b585b2edbce24c47b2b5b.png\">"
+                                    var src3_n = "<source srcset=\"https://assets.stickpng.com/thumbs/580b585b2edbce24c47b2b5b.png\">"
+                                    var img_n = "<img alt=\"SL logo\" class=\"img-fluid\" src=\"https://assets.stickpng.com/thumbs/580b585b2edbce24c47b2b5b.png\">"
+                                }
+                                else if (str === "SD") {
+                                    var src1_n = "<source media=\"(min-width:1024px)\" srcset=\"https://sportslogohistory.com/wp-content/uploads/2017/12/los_angeles_chargers_2017-pres.png\">";
+                                    var src2_n = "<source media=\"(min-width:768px)\" srcset=\"https://sportslogohistory.com/wp-content/uploads/2017/12/los_angeles_chargers_2017-pres.png\">"
+                                    var src3_n = "<source srcset=\"https://sportslogohistory.com/wp-content/uploads/2017/12/los_angeles_chargers_2017-pres.png\">"
+                                    var img_n = "<img alt=\"SL logo\" class=\"img-fluid\" src=\"https://sportslogohistory.com/wp-content/uploads/2017/12/los_angeles_chargers_2017-pres.png\">"
+                                }
+                                else {
+                                    var src1_n = src1.replace("/logos/", "/logos/"+str);
+                                    var src2_n = src2.replace("/logos/", "/logos/"+str);
+                                    var src3_n = src3.replace("/logos/","/logos/"+str);
+                                    var img_n = img.replace("/logos/","/logos/"+str);
+                                    img_n = img.replace("TEMP", str);
+                                }
+                                ele.prepend("<picture>"+src1_n+src2_n+src3_n+img_n+"</picture>");
+                                console.log(ele.html());
+                            }
+
+                        </script>
                     </div>
-                    <div class="col-5" id="container2">
-                        <h1> Right container
+                    <div class="col-6" id="afc_conf_col">
+                        <h4> AFC </h4>
+                        <table class="table table-condensed table-hover" id="afc_conf">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    {% for key, value in afc_dict.items %}
+                                    <th>{{ key }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rec in afc_rec %}
+                                    <tr>
+                                        {% for i, k in rec.items %}
+                                        <td> {{ k }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <script>
+                        /* AFC Table */
+                        var tab = $('#afc_conf tr'); // Grab the leage table
+                        var n = $('#afc_conf >tbody >tr').length; // Find table length so we can loop through
+                        // Loop through the table and set the images
+                        for (var i = 1; i <= n; ++i) {
+                            var str = tab.eq(i).find('td').eq(0).text();
+                            var ele = tab.eq(i).find('td').eq(0);
+                            str = str.trim();
+                            var src1 = "<source media=\"(min-width:30px)\" srcset=\"https://static.www.nfl.com/t_q-best/league/api/clubs/logos/\">"
+                            var src2 = "<source media=\"(min-width:30px)\" srcset=\"https://static.www.nfl.com/t_q-best/league/api/clubs/logos/\">"
+                            var src3 = "<source srcset=\"https://static.www.nfl.com/t_q-best/league/api/clubs/logos/\">"
+                            var img = "<img width=\"40\" height=\"40\" alt=\"TEMP logo\" class=\"img-fluid\" src=\"https://static.www.nfl.com/t_q-best/league/api/clubs/logos/\">"
+                            if (str === "HST") {
+                                var src1_n = src1.replace("/logos/", "/logos/"+"HOU");
+                                var src2_n = src2.replace("/logos/", "/logos/"+"HOU");
+                                var src3_n = src3.replace("/logos/","/logos/"+"HOU");
+                                var img_n = img.replace("/logos/","/logos/"+"HOU");
+                                img_n = img.replace("TEMP", "HOU");
+                            }
+                            else if (str === "OAK") {
+                                var src1_n = src1.replace("/logos/", "/logos/"+"LV");
+                                var src2_n = src2.replace("/logos/", "/logos/"+"LV");
+                                var src3_n = src3.replace("/logos/","/logos/"+"LV");
+                                var img_n = img.replace("/logos/","/logos/"+"LV");
+                                img_n = img.replace("TEMP", "OAK");
+                            }
+                            else if (str === "SL") {
+                                var src1_n = "<source media=\"(min-width:1024px)\" srcset=\"https://assets.stickpng.com/thumbs/580b585b2edbce24c47b2b5b.png\">";
+                                var src2_n = "<source media=\"(min-width:768px)\" srcset=\"https://assets.stickpng.com/thumbs/580b585b2edbce24c47b2b5b.png\">"
+                                var src3_n = "<source srcset=\"https://assets.stickpng.com/thumbs/580b585b2edbce24c47b2b5b.png\">"
+                                var img_n = "<img width=\"40\" height=\"40\" alt=\"SL logo\" class=\"img-fluid\" src=\"https://assets.stickpng.com/thumbs/580b585b2edbce24c47b2b5b.png\">"
+                            }
+                            else if (str === "SD") {
+                                var src1_n = "<source media=\"(min-width:1024px)\" srcset=\"https://sportslogohistory.com/wp-content/uploads/2017/12/los_angeles_chargers_2017-pres.png\">";
+                                var src2_n = "<source media=\"(min-width:768px)\" srcset=\"https://sportslogohistory.com/wp-content/uploads/2017/12/los_angeles_chargers_2017-pres.png\">"
+                                var src3_n = "<source srcset=\"https://sportslogohistory.com/wp-content/uploads/2017/12/los_angeles_chargers_2017-pres.png\">"
+                                var img_n = "<img width=\"40\" height=\"40\" alt=\"SL logo\" class=\"img-fluid\" src=\"https://sportslogohistory.com/wp-content/uploads/2017/12/los_angeles_chargers_2017-pres.png\">"
+                            }
+                            else {
+                                var src1_n = src1.replace("/logos/", "/logos/"+str);
+                                var src2_n = src2.replace("/logos/", "/logos/"+str);
+                                var src3_n = src3.replace("/logos/","/logos/"+str);
+                                var img_n = img.replace("/logos/","/logos/"+str);
+                                img_n = img.replace("TEMP", str);
+                            }
+                            ele.prepend("<picture>"+src1_n+src2_n+src3_n+img_n+"</picture>");
+                            console.log(ele.html());
+                        }
+
+                    </script>
+                </div>
+            </div>
+            {% else %}
+            <div class="row">
+                <div class="col">
+                    <div class="row" id="west">
+                        <p class="text-center">West</p>
+                    </div>
+                    <div class="row" id="north">
+                        <h3>North</h3>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row" id="east">
+                        <h3>East</h3>
+                    </div>
+                    <div class="row" id="south">
+                        <h3>South</h3>
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
+        <!-- Link my standings.js javascript -->
+        <script src="{%static "js/standings.js" %}"></script>
     </body>
 </html>
