@@ -41,6 +41,7 @@ _RENAME_COLS = {
 pass_df = pd.DataFrame()
 players_df = pd.DataFrame()
 top_players_df = pd.DataFrame()
+new_pass = pd.DataFrame()
 previous_time = 0
 
 if pathlib.Path('static/archive/').exists():
@@ -51,7 +52,7 @@ if pathlib.Path('static/archive/').exists():
 
 # Create your views here.
 def pass_page(request):
-    global pass_df, players_df, previous_time, top_players_df
+    global pass_df, players_df, previous_time, top_players_df, new_pass
 
     run_time = 0
 
@@ -117,14 +118,19 @@ def pass_page(request):
         if form.is_valid():
             add_passing_player(form)
             context['form'] = form
+            context['results'] = new_pass
+            context['columns'] = new_pass.columns
+            context['new_entry'] = "New Entry Added"
 
     if request.POST.get('Delete') == 'Delete' or request.POST.get('Delete Player') == 'Delete Player':
         form = forms.PassingForm(request.POST)
         if form.is_valid():
             if request.POST.get('Delete') == 'Delete':
                 delete_passing_player(form)
+                context['player_delete'] = "Passing Data for Player Deleted"
             if request.POST.get('Delete Player') == 'Delete Player':
                 delete_passing_player(form, 1)
+                context['player_delete'] = "Player Deleted"
             context['form'] = form
 
     return render(request,'passing/passing.html', context) 
@@ -243,7 +249,7 @@ def get_player_name(player_id):
 
 
 def add_passing_player(form):
-    global pass_df, players_df, top_players_df
+    global pass_df, players_df, top_players_df, new_pass
 
     max_pass_id = int(pass_df['passId'].max())
     max_player_id = int(players_df['playerId'].max())
@@ -301,6 +307,11 @@ def add_passing_player(form):
 
     pass_df = pass_df.append(new_pass, ignore_index=True)
     pass_df = pass_df.reset_index(drop=True)
+
+    new_pass.insert(0, 'Player Name', f'{first_name} {last_name}')
+    new_pass = new_pass.drop(columns=['passId', 'playerId'])
+    new_pass = new_pass.rename(columns=_RENAME_COLS)
+    new_pass.insert(loc=0, column='#', value=np.arange(start=1, stop=len(new_pass)+1))
 
     if not top_players_df.empty:
         temp_df = top_players_df.loc[top_players_df['Player Name']==player_name]
