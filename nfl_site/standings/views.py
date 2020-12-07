@@ -92,9 +92,9 @@ combined['Net Pts'] = combined.apply(lambda x: int(x['PF'] - x['PA']), axis = 1)
 combined.drop(['homeTeamFinalScore_x','visitingTeamFinalScore_x','homeWin_x','visitWin_x','visitorTeam','homeTeamFinalScore_y','visitingTeamFinalScore_y','homeWin_y','visitWin_y'], axis=1, inplace=True)
 
 # Append the division and conference to the dataset
-combined['Conference'] = np.where(combined['NFL Team'].isin(['NO','GB','SEA','LAR','TB','ARI','CHI','SF','DET','MIN','CAR','PHI','ATL','WAS','DAL','NYG']), 'NFC','AFC')
+combined['Conference'] = np.where(combined['NFL Team'].isin(['NO','GB','SEA','LAR','TB','ARI','CHI','SF','DET','MIN','CAR','PHI','ATL','WAS','DAL','NYG','SL']), 'NFC','AFC')
 def set_div(x):
-    if x['NFL Team'] in ['LAR','SEA','ARI','SF','KC','LV','DEN','LAC','LA','SD']:
+    if x['NFL Team'] in ['LAR','SEA','ARI','SF','KC','LV','DEN','LAC','LA','SD','OAK','SL']:
         return 'West'
     if x['NFL Team'] in ['NO','TB','CAR','ATL','IND','TEN','HOU','JAX','HST']:
         return 'South'
