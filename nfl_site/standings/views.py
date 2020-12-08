@@ -36,6 +36,9 @@ if pathlib.Path(data_path).exists():
     teams.loc[teams['teamId'] == 3800, 'draftTeam'] = 'ARI'
     teams.loc[teams['teamId'] == 325, 'draftTeam'] = 'BAL'
     teams.loc[teams['teamId'] == 1050, 'draftTeam'] = 'CLE'
+    teams = teams.append({'draft':2019, 'draftTeam':'LA', 'teamId':2510}, ignore_index=True)
+    teams = teams.append({'draft':2019, 'draftTeam':'HST', 'teamId':2120}, ignore_index=True)
+
 
     # Read in games data
     games = pd.read_csv(data_path + 'games.csv')
@@ -87,12 +90,13 @@ combined['PF'] = combined.apply(lambda x: int(x['homeTeamFinalScore_x'] + x['vis
 combined['PA'] = combined.apply(lambda x: int(x['visitingTeamFinalScore_x'] + x['homeTeamFinalScore_y']), axis=1)
 combined['Wins'] = combined.apply(lambda x: int(x['homeWin_x'] + x['visitWin_y']), axis = 1)
 combined['Losses'] = combined.apply(lambda x: int(x['visitWin_x'] + x['homeWin_y']), axis = 1)
-combined['WinPct'] = combined.apply(lambda x: "%0.2f%%" % (100 * x['Wins'] / (x['Wins'] + x['Losses'])), axis = 1)
+combined['WinPct'] = combined.apply(lambda x: x['Wins'] / (x['Wins'] + x['Losses']), axis = 1)
+combined['WinPct'] = combined['WinPct'].apply(lambda x: '{:.2f}%'.format(x))
 combined['Net Pts'] = combined.apply(lambda x: int(x['PF'] - x['PA']), axis = 1)
 combined.drop(['homeTeamFinalScore_x','visitingTeamFinalScore_x','homeWin_x','visitWin_x','visitorTeam','homeTeamFinalScore_y','visitingTeamFinalScore_y','homeWin_y','visitWin_y'], axis=1, inplace=True)
 
 # Append the division and conference to the dataset
-combined['Conference'] = np.where(combined['NFL Team'].isin(['NO','GB','SEA','LAR','TB','ARI','CHI','SF','DET','MIN','CAR','PHI','ATL','WAS','DAL','NYG','SL']), 'NFC','AFC')
+combined['Conference'] = np.where(combined['NFL Team'].isin(['NO','GB','SEA','LAR','TB','ARI','CHI','SF','DET','MIN','CAR','PHI','ATL','WAS','DAL','NYG','SL','LA']), 'NFC','AFC')
 def set_div(x):
     if x['NFL Team'] in ['LAR','SEA','ARI','SF','KC','LV','DEN','LAC','LA','SD','OAK','SL']:
         return 'West'
