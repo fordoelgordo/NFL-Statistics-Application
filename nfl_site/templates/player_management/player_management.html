@@ -21,17 +21,24 @@
         <!-- Tempus Dominus Bootstrap 4 -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css" integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs=" crossorigin="anonymous" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js" integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script> <!-- Add custom css styling sheet-->
-            
+        <style type="text/css">
+            .navbar {
+                background-color:  #1408A3;
+            }
+            .navbar a {
+                color: white;
+                font-size: 32px;
+            }
+        </style> 
     </head>
     <body>
         <!-- Webpage header-->
-        <div id="header">
-            <div class = "jumbotron">
-                <h1>Edit the player database here</h1>
-                <input type="submit" class = "btn btn-primary btn-sm" onclick="window.location.href='/'" value="Back Home!">
-                <!-- <button onclick="window.location.href='/'">Back Home!</button> -->
-            </div>
-        </div>
+        <nav class = "navbar">
+            <a class="navbar-brand" href="#" onclick="window.location.href='/'">
+                <img src="https://static.www.nfl.com/image/upload/v1554321393/league/nvfr7ogywskqrfaiu38m.svg" width="70" height="70" class="d-inline-block align-top" alt="" loading="lazy">
+                Player Management
+            </a>            
+        </nav> 
         <!-- div for player names-->
         <div id="playerNames">
             <form method="POST">
