@@ -109,7 +109,7 @@ def pass_page(request):
             top_player_count = context['n_count']
             context['results'] = pd.DataFrame()
 
-            fig = px.scatter(results, x="Total Passing Length (Yards)", y="Total Times Passed (from csv)", title="Total Passing Length vs Total Times Passed")
+            fig = px.scatter(results, x="Total Passing Length (Yards)", y="Total Times Passed (from csv)", hover_name="Player Name", title="Total Passing Length vs Total Times Passed")
             graph_div = plotly.offline.plot(fig, output_type="div")
             context['graph_div'] = graph_div
 
