@@ -5,8 +5,9 @@
         <meta charset="UTF-8">
         <title>Top Receiving Yards</title>
         <!--Add boostrap styling-->
-            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     </head>
 
     <style type="text/css">
@@ -21,7 +22,7 @@
         }
         .navbar li{
             display: inline-block;
-            padding: 25px;
+            padding: 25px 0px 25px 0px;
             width: 125px;
             text-align: center;
         }
@@ -35,18 +36,31 @@
     </style>
 
     <div class="navbar">
-        <a class="navbar-brand">
+        <a class="navbar-brand" href="#" onclick="window.location.href='/'">
             <img src="https://static.www.nfl.com/image/upload/v1554321393/league/nvfr7ogywskqrfaiu38m.svg" width="70" height="70" class="d-inline-block align-top" alt="" loading="lazy">
         </a>
 
-        <h1>Top Receiving Yards</h1>
-
         <ul>
-          <li><a href="/">Back Home!</a></li>
-          <li><a href="/receivingpage/">Receiving Statistics</a></li>
-          <li><a href="/receivingpage/topreceivingpage/">Top Receivers</a></li>
-          <li><a href="/receivingpage/addreceiverpage/">Add Receiver</a></li>
+            <li><a href="/">Home</a></li>
+            <li><a href="/PlayerManagement/">Player Management</a></li>
+            <li><a href="/combinepage/">Combine</a></li>
+            <li><a href="/passerpage/">Passing</a></li>
+            <li><a href="/rusherspage/">Rushing</a></li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" >Receiving <span class="caret"></span></a>
+                    <ul class="dropdown-menu" style="background-color: #1408A3; width: 200px">
+                        <li><a href="/receivingpage/" style="float: left">Receiving Statistics</a></li>
+                        <li><a href="/receivingpage/topreceivingpage/" style="float: left">Top Receivers</a></li>
+                        <li><a href="/receivingpage/addreceiverpage/" style="float: left">Add Receiver</a></li>
+                    </ul>
+            </li>
+            <li><a href="/standings/">NFL Team Standings</a></li>
+
         </ul>
+    </div>
+
+    <div class="container">
+        <h1>Top Receiving Yards</h1>
     </div>
 
     <div class="container text-center">
