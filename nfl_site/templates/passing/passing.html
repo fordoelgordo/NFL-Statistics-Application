@@ -44,7 +44,7 @@
     <body style="background-color:white;">
     <!-- Add bootstrap navbar styling to the page-->
     <div class="navbar">
-        <a class="navbar-brand">
+        <a class="navbar-brand" href="#" onclick="window.location.href='/'">
             <img src="https://static.www.nfl.com/image/upload/v1554321393/league/nvfr7ogywskqrfaiu38m.svg" width="70" height="70" class="d-inline-block align-top" alt="" loading="lazy">
         </a>
         <ul>
@@ -81,13 +81,16 @@
             </form>
         </div>
     </div>
+    <h2 style="padding-left: 15px; color:black">{{empty}}</h2>
+    <h2 style="padding-left: 15px; color:black">{{new_entry}}</h2>
+    <h2 style="padding-left: 15px; color:black">{{player_delete}}</h2>
     {% if graph_div %}
         <br><div class="container" style="width: 85%; padding: 30px;">
             {{ graph_div|safe }}
         </div>
     {% else %}
-        {% if not results.empty %}
-        <div style="color:rgb(0, 0, 0); padding: 30px;"><br>
+        {% if not results.empty%}
+        <div style="color:rgb(0, 0, 0); padding-left: 15px; padding-right: 15px; padding-top: 15px;"><br>
             <table id="passing_table" class="table table-bordered" width="100%" cellspacing="0">
                 {% if time %}
                     <h4 style="color: black">Analytics Calculated in: <strong style="color: red;">{{ time }}</strong> seconds</h4>
@@ -117,11 +120,9 @@
             </table>
         </div>
         {% else %}
-            <h2 style="padding: 15px; color:black">No Entries For Selected Player in Pass.csv</h2>
+            <h2 style="padding-left: 15px; color:black">No Passing Data/Entries for Selected Player</h2>
         {% endif %}
     {% endif %}
-
-    <h2 style="padding: 15px; color:black">{{empty}}</h2>
 
 </body>
 </html>
