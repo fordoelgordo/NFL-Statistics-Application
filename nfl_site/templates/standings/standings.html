@@ -12,11 +12,23 @@
         <!-- CSS styling -->
         <style type="text/css">
             .navbar {
-                background-color:  #1408A3;
+                background-color: #1408A3;
             }
-            .navbar a {
+            .navbar ul {
+            list-style-type: none;
+            margin: 0px;
+            padding: 0px;
+            text-align: left;
+            }
+            .navbar li{
+                display: inline-block;
+                padding: 25px 0px 25px 0px;
+                width: 125px;
+                text-align: center;
+            }
+            .navbar ul li a {
                 color: white;
-                font-size: 32px;
+                font-size: 16px;
             }
             #leaguetype {
                 padding: 10px 20px;
@@ -137,16 +149,32 @@
     </head>
     <body>
         <!-- Webpage header-->
-        <nav class = "navbar">
-            <a class="navbar-brand" href="#" onclick="window.location.href='/'">
-                <img src="https://static.www.nfl.com/image/upload/v1554321393/league/nvfr7ogywskqrfaiu38m.svg" width="70" height="70" class="d-inline-block align-top" alt="" loading="lazy">
-                NFL Standings
-            </a>            
-        </nav> 
-        <!-- Overarching container holding all our elements-->
+        <div class="navbar" style="display: inline-block; width: 100%">
+            <div class="container" style="float: left; width: 48%">
+                <a class="navbar-brand" href="#" onclick="window.location.href='/'">
+                    <img src="https://static.www.nfl.com/image/upload/v1554321393/league/nvfr7ogywskqrfaiu38m.svg" width="70" height="70" class="d-inline-block align-top" alt="" loading="lazy">
+                </a>
+                <ul>
+                    <li><a href="/PlayerManagement/">Player Management</a></li>
+                    <li><a href="/combinepage/">Combine</a></li>
+                    <li><a href="/passerpage/">Passing</a></li>
+                    <li><a href="/rusherspage/">Rushing</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" >Receiving <span class="caret"></span></a>
+                            <ul class="dropdown-menu" style="background-color: #1408A3; width: 200px">
+                                <li><a href="/receivingpage/" style="float: left">Receiving Statistics</a></li>
+                                <li><a href="/receivingpage/topreceivingpage/">Top Receivers</a></li>
+                                <li><a href="/receivingpage/addreceiverpage/">Add Receiver</a></li>
+                            </ul>
+                    </li>
+                    <li><a href="/standings/">NFL Team Standings</a></li>
+                </ul>
+            </div>
+        </div>        <!-- Overarching container holding all our elements-->
         <div class="container-fluid">
             <div class="row">
-                <div class="col">
+                <h1 style="color:black; padding: 15px">NFL Standings</h1>
+                <div class="col" style="max-width: 20%">
                     <!-- Empty column -->
                 </div>
                 <!-- League type selection-->
@@ -165,7 +193,7 @@
                 <div class="col">
                     <!-- Empty column-->
                 </div>
-            </div>
+            </div><br>
             <!-- div for league year selection-->
             <div class="row">
                 <div id="leagueyear">
