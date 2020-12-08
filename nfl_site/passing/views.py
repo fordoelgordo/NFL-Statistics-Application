@@ -32,7 +32,7 @@ _DROP_FRAME = [
 
 _RENAME_COLS = {
     'passPosition' : 'Pass Position',
-    'passOutcomes' : 'Pass Outcomes',
+    'passOutcomes' : 'Pass Outcome',
     'passDirection' : 'Pass Direction',
     'passDepth' : 'Pass Depth',
     'passLength' : 'Pass Length'
