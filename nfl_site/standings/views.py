@@ -91,7 +91,7 @@ combined['PA'] = combined.apply(lambda x: int(x['visitingTeamFinalScore_x'] + x[
 combined['Wins'] = combined.apply(lambda x: int(x['homeWin_x'] + x['visitWin_y']), axis = 1)
 combined['Losses'] = combined.apply(lambda x: int(x['visitWin_x'] + x['homeWin_y']), axis = 1)
 combined['WinPct'] = combined.apply(lambda x: x['Wins'] / (x['Wins'] + x['Losses']), axis = 1)
-combined['WinPct'] = combined['WinPct'].apply(lambda x: '{:.2f}%'.format(x))
+combined['WinPct'] = combined['WinPct'].apply(lambda x: '{:.2%}'.format(x))
 combined['Net Pts'] = combined.apply(lambda x: int(x['PF'] - x['PA']), axis = 1)
 combined.drop(['homeTeamFinalScore_x','visitingTeamFinalScore_x','homeWin_x','visitWin_x','visitorTeam','homeTeamFinalScore_y','visitingTeamFinalScore_y','homeWin_y','visitWin_y'], axis=1, inplace=True)
 

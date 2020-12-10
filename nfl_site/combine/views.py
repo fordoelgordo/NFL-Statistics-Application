@@ -82,7 +82,9 @@ def combine_page(request):
     shuttle_60_stat = 0
     new_player = ""
     stats_df = ""
-    
+    begin = 0
+    end = 0
+
     # Holding variables for the data figures
     scat_fig = ""
     data_viz = combine
@@ -126,6 +128,10 @@ def combine_page(request):
             if combine_event:
                 combine_filtered = combine_filtered[['playerId','combineYear','nameFirst','nameLast','combinePosition', 'position','college','combineHeightConv','combineWeight', combine_event]]
                 combine_filtered.columns = ['Player ID','Year','First Name','Last Name','Combine Position','College Position','College','Height','Weight', COMBINE_DICT[combine_event]]
+                if combine_event in ['combineArm','combineVert','combineBench','combineBroad','combineWonderlic']:
+                            combine_filtered.sort_values(by=COMBINE_DICT[combine_event], ascending = False, inplace = True, na_position='last')
+                else:
+                    combine_filtered.sort_values(by=COMBINE_DICT[combine_event], ascending = True, inplace = True, na_position='last')
                 # Change computations of the average and std.dev depending on if players were just added or deleted
                 total = sumf(stats_df, combine_event) 
                 counter = len(stats_df.index)
